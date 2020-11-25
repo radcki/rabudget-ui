@@ -1,0 +1,4 @@
+vue.config.js
+/tests/e2e/plugins/**/*.*
+/tests/**/*.*
+*.d.ts

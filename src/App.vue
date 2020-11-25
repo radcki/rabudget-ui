@@ -1,28 +1,64 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+  <v-app>
+    <navigation-drawer />
+
+    <v-main>
+      <router-view></router-view>
+    </v-main>
+    <modal-dialog></modal-dialog>
+  </v-app>
 </template>
 
-<script>
-import HelloWorld from './components/HelloWorld.vue'
+<script lang="ts">
+import { Vue, Component, Watch } from 'vue-property-decorator';
+import { Action, namespace } from 'vuex-class';
+import { Budget } from '@/typings/api/budget/GetBudgetList';
+import NavigationDrawer from '@/components/NavigationDrawer.vue';
 
-export default {
-  name: 'App',
+const budgetsStore = namespace('budgets');
+const accountStore = namespace('account');
+const oidcStore = namespace('oidcStore');
+
+@Component({
   components: {
-    HelloWorld
+    NavigationDrawer,
+  },
+})
+export default class App extends Vue {
+  drawer = true;
+  loadingOverlay = false;
+
+  minNavSelected = true;
+  get minNav() {
+    return this.mobile ? false : this.minNavSelected;
+  }
+
+  get mobile() {
+    return this.$vuetify.breakpoint.mobile;
+  }
+
+  @budgetsStore.State('budgets') budgets!: Budget[];
+  @oidcStore.Getter('oidcIsAuthenticated') isAuthenticated!: boolean;
+  @Action('init') initStore!: () => Promise<void>;
+
+  @accountStore.Action('logout') logout!: () => Promise<void>;
+
+  switchLocale(locale: string) {
+    console.log(locale);
+    //todo
+  }
+
+  created() {
+    if (this.isAuthenticated) {
+      this.initStore();
+    }
+  }
+
+  @Watch('isAuthenticated')
+  onAuthenticationchange(isAuthenticated) {
+    if (isAuthenticated) {
+      this.initStore();
+    }
   }
 }
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
