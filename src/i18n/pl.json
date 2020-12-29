@@ -52,7 +52,9 @@
     "every": "Co",
     "reset": "Resetuj",
     "from": "Od",
-    "none": "Brak"
+    "none": "Brak",
+    "noData": "Brak danych",
+    "loadMore": "Wczytaj więcej"
   },
   "account": {
     "logged": "Zalogowany"
@@ -72,6 +74,55 @@
     "title": "Zarządzanie budżetami",
     "name": "Nazwa",
     "newBudget": "Nowy budżet",
-    "startingDate": "Data startu"
+    "startingDate": "Data startu",
+    "deleteBudget": {
+      "title": "Usunięcie budżetu",
+      "message": "Czy napewno chcesz usunąć budżet **{budgetName}**?"
+    }
+  },
+  "error": {
+    "generic": "Wystąpił nieokreślony błąd",
+    "failure": "Niepowodzenie",
+    "fieldRequired": "Pole jest wymagane"
+  },
+  "budgetCategories": {
+    "transactionsTransfer": "Przenieś wszystkie transakcje",
+    "edit": "Edytuj kategorię",
+    "remove": "Usuń kategorię",
+    "spending": "Wydatki",
+    "create": "Dodaj kategorię",
+    "name": "Nazwa kategorii",
+    "icon": "Ikona",
+    "budgeteAmounts": "Zabudżetowana miesięczna kwota",
+    "budgetedAmounts": "Zabudżetowane miesięczne kwoty",
+    "validFrom": "Obowiązuje od",
+    "budgetedAmount": "Kwota",
+    "dailyAmount": "Dziennie",
+    "yearlyAmount": "Rocznie",
+    "saving": "Oszcędności",
+    "income": "Wpływy",
+    "noCategories": "Brak kategorii",
+    "title": "Kategorie budżetowe"
+  },
+  "overview": {
+    "title": "Przegląd"
+  },
+  "trasnsactionHistory": {
+    "title": "Historia transakcji"
+  },
+  "transaction": {
+    "amount": "Kwota",
+    "description": "Opis",
+    "transactionDate": "Data transakcji",
+    "addSubtransanction": "Dodaj subtransakcję",
+    "removeTransanction": "Usuń transakcję",
+    "changeTransactionDate": "Zmień datę transakcji",
+    "removeConfirmTitle": "Usuwanie transakcji",
+    "removeConfirm": "Transakcja zostanie usunięta. Czy jesteś pewien?"
+  },
+  "newTransaction": {
+    "createSpending": "Dodaj wydatek",
+    "createSaving": "Dodaj oszczędność",
+    "createIncome": "Dodaj dochód"
   }
 }

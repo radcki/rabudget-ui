@@ -28,7 +28,7 @@ const dictionaries = namespace('dictionaries');
 
 @Component
 export default class CategoryIconSelect extends Vue {
-  @Prop({ type: [Object, Number] }) value!: string | BudgetCategoryIconDto;
+  @Prop({ type: [Object, Number, String] }) value!: string | BudgetCategoryIconDto;
   @Prop(Boolean) returnObject!: boolean;
   @Prop(Boolean) filled!: boolean;
   @Prop(String) label!: string;

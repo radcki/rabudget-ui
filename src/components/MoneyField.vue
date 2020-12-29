@@ -16,24 +16,26 @@
             {{ label }}
           </label>
           <currency-input
-            v-if="currency"
-            v-model="innerValue"
+            v-if="currencyCode"
+            ref="inputField"
+            v-model="innerValue.amount"
             :readonly="readonly"
-            :currency="currency.code"
+            :currency="currencyCode"
             locale="PL"
-            v-on="$listeners"
             @focus="hasFocus = true"
-            @blur="hasFocus = false"
+            @blur="onBlur"
+            @keyup="$emit('keyup', $event)"
           />
           <input
             v-else
-            v-model="innerValue"
+            ref="inputField"
+            v-model="innerValue.amount"
             :readonly="readonly"
             type="number"
             step="0.01"
-            v-on="$listeners"
             @focus="hasFocus = true"
-            @blur="hasFocus = false"
+            @blur="onBlur"
+            @keyup="$emit('keyup', $event)"
           />
         </div>
       </div>
@@ -42,7 +44,7 @@
           <div class="v-messages__wrapper">
             <div v-if="errors.length > 0" class="v-messages theme--dark error--text" role="alert">
               <div class="v-messages__wrapper">
-                <div class="v-messages__message">Pole jest wymagane.</div>
+                <div class="v-messages__message">{{ $t('error.fieldRequired') }}</div>
               </div>
             </div>
           </div>
@@ -66,7 +68,8 @@
 
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
-import { Currency } from '@/typings/Currency';
+import { MoneyAmount } from '@/typings/MoneyAmount';
+import { eCurrencyCode } from '@/typings/enums/eCurrencyCode';
 
 @Component({
   inject: {
@@ -76,21 +79,45 @@ import { Currency } from '@/typings/Currency';
   },
 })
 export default class MoneyField extends Vue {
-  @Prop(Number) value!: number;
+  @Prop(Object) value!: MoneyAmount;
   @Prop(String) label!: string;
   @Prop(Array) rules!: ((v) => boolean | string)[];
   @Prop(Boolean) clearable!: boolean;
+  @Prop(Boolean) filled!: boolean;
   @Prop(Boolean) readonly!: boolean;
+  @Prop(Boolean) dense!: boolean;
   @Prop(Boolean) hideDetails!: boolean;
-  @Prop(Object) currency!: Currency;
   @Prop(String) prependIcon!: any;
 
-  innerValue = this.value ? this.value : null;
+  innerValue: MoneyAmount = this.value
+    ? this.value
+    : {
+        amount: 0,
+        currencyCode: null,
+      };
   hasFocus = false;
 
   errors: string[] = [];
+
+  get currencyCode() {
+    return this.innerValue.currencyCode ? eCurrencyCode[this.innerValue.currencyCode] : '';
+  }
+
   mounted() {
-    (this as any).form.register(this);
+    if ((this as any).form) {
+      (this as any).form.register(this);
+    }
+  }
+
+  focus() {
+    const field = this.$refs['inputField'] as HTMLElement;
+    if (field) {
+      if (field.tagName == 'input') {
+        field.focus();
+      } else {
+        (field as any).$el.focus();
+      }
+    }
   }
 
   validate() {
@@ -144,8 +171,8 @@ export default class MoneyField extends Vue {
     return classes.join(' ');
   }
 
-  get wrapperClass(): string {
-    const classes: string[] = ['v-input v-text-field v-text-field--is-booted'];
+  get wrapperClass(): string[] {
+    const classes: string[] = ['v-input v-text-field', 'v-text-field--is-booted'];
 
     if (this.innerValue != null || this.hasFocus) {
       classes.push('v-input--is-label-active');
@@ -166,8 +193,25 @@ export default class MoneyField extends Vue {
     if (this.errors.length > 0) {
       classes.push('error--text');
     }
+    if (this.filled) {
+      classes.push('v-text-field--enclosed');
+      classes.push('v-text-field--filled');
+    }
+    if (this.hideDetails) {
+      classes.push('v-input--hide-details');
+    }
+    if (!this.label) {
+      classes.push('v-text-field--single-line');
+    }
+    if (this.dense) {
+      classes.push('v-input--dense');
+    }
+    return classes;
+  }
 
-    return classes.join(' ');
+  onBlur() {
+    this.hasFocus = false;
+    this.$emit('blur');
   }
 
   @Watch('value')

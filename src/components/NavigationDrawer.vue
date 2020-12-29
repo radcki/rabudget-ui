@@ -39,6 +39,18 @@
       </v-list>
     </v-expand-transition>
 
+    <v-list>
+      <menu-item
+        v-for="(item, i) in menuItems"
+        :key="item.name + i.toString()"
+        :name="item.name"
+        :icon="item.icon"
+        :to="item.to"
+        :children="item.children"
+        :collapsed="minNav"
+      ></menu-item>
+    </v-list>
+
     <template v-slot:append>
       <v-expand-transition>
         <div v-if="!minNav" class="navigationBarAccent pb-3">
@@ -85,14 +97,17 @@
 import { Vue, Component } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import { Budget } from '@/typings/api/budget/GetBudgetList';
-import { modalService } from 'vue-modal-dialog';
+import { MenuItem } from '@/typings/MenuItem';
+import MenuItemComponent from '@/components/MenuItem.vue';
 
 const budgetsStore = namespace('budgets');
 const accountStore = namespace('account');
 const oidcStore = namespace('oidcStore');
 
 @Component({
-  components: {},
+  components: {
+    'menu-item': MenuItemComponent,
+  },
 })
 export default class App extends Vue {
   drawer = true;
@@ -110,6 +125,50 @@ export default class App extends Vue {
     return this.activeBudget ? this.activeBudget.name : this.$t('general.none').toString();
   }
 
+  get menuItems(): MenuItem[] {
+    if (!this.activeBudget) {
+      return [];
+    }
+    return [
+      {
+        name: this.$t('overview.title').toString(),
+        icon: 'mdi-home',
+        to: { name: 'overview' },
+        children: [],
+      },
+      // {
+      //   name: this.$t('trasnsactionHistory.title').toString(),
+      //   icon: 'mdi-format-list-bulleted',
+      //   to: { name: 'transactionHistory' },
+      //   children: [],
+      // },
+      // {
+      //   name: this.$t('transactionSchedules.transactionSchedules').toString(),
+      //   icon: 'mdi-calendar-c lock',
+      //   to: { name: 'transactionSchedules' },
+      //   children: [],
+      // },
+      // {
+      //   name: this.$t('reports.reports').toString(),
+      //   icon: 'mdi-poll-box',
+      //   to: { name: 'reports' },
+      //   children: [],
+      // },
+      {
+        name: this.$t('budgetCategories.title').toString(),
+        icon: 'mdi-tune',
+        to: { name: 'budgetCategories' },
+        children: [],
+      },
+      // {
+      //   name: this.$t('general.allocations').toString(),
+      //   icon: 'mdi-directions',
+      //   to: { name: 'allocations' },
+      //   children: [],
+      // },
+    ];
+  }
+
   @budgetsStore.State('budgets') budgets!: Budget[];
   @budgetsStore.Getter('activeBudget') activeBudget!: Budget;
   @accountStore.Action('logout') logout!: () => Promise<void>;
@@ -118,21 +177,11 @@ export default class App extends Vue {
 
   async openBudgetsDialog() {
     const budgetsManager = () => import('@/modals/BudgetsManager.vue');
-    await modalService
-      .open(budgetsManager, {
-        data: { width: 900, title: this.$t('budgetsManager.title').toString() },
-      })
-      .then(
-        modalSubmit => {
-          console.log('modalSubmit', modalSubmit);
-        },
-        modalCancel => {
-          console.log('modalCancel', modalCancel);
-        },
-      )
-      .catch(err => {
-        console.log('err', err);
-      });
+
+    await this.$modal.open(budgetsManager, null, {
+      width: 900,
+      title: this.$t('budgetsManager.title').toString(),
+    });
   }
 }
 </script>

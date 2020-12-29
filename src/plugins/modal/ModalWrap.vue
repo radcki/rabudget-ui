@@ -17,14 +17,26 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
-import { modalService } from 'vue-modal-dialog';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { ModalConfig } from './modal.component';
 
-@Component({})
+@Component({
+  provide: function () {
+    return {
+      setPayload: this.setPayload,
+      payload: this.payload,
+      submit: this.submit,
+      cancel: this.cancel,
+    };
+  },
+})
 export default class ModalWrap extends Vue {
-  @Prop(Object) options!: any;
+  @Prop(Object) options!: ModalConfig;
+  @Prop(Function) submitModal!: () => void;
+  @Prop(Object) payload!: any;
 
   public dialogOpen = true;
+  payloadInternal: any = Object.assign({}, this.payload);
 
   get width() {
     return this.options && this.options.width ? this.options.width : 500;
@@ -34,10 +46,14 @@ export default class ModalWrap extends Vue {
   }
 
   submit() {
-    modalService.submit();
+    this.$emit('submit', this.payloadInternal);
   }
   cancel() {
-    modalService.cancel();
+    this.$emit('cancel');
+  }
+
+  setPayload(data: any) {
+    this.payloadInternal = data;
   }
 
   @Watch('dialogOpen')

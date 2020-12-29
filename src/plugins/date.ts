@@ -1,5 +1,13 @@
 import { format } from 'date-fns';
 import { VueConstructor } from 'vue';
+import plDateLocale from 'date-fns/locale/pl';
+import enDateLocale from 'date-fns/locale/en-GB';
+import i18n from './i18n';
+
+const dateLocales = {
+  pl: plDateLocale,
+  en: enDateLocale,
+};
 
 export const DatePlugin = {
   install(Vue: VueConstructor) {
@@ -8,5 +16,10 @@ export const DatePlugin = {
     };
 
     Vue.filter('shortDate', (v: Date) => format(v, 'yyyy-MM-dd'));
+    Vue.filter('dateFormat', (value, formatString, locale: string | null) => {
+      console.log('locale', locale);
+      const dateLocale = dateLocales[locale || i18n.locale];
+      return !value ? '-' : format(value, formatString || 'yyyy-MM-dd', { locale: dateLocale });
+    });
   },
 };

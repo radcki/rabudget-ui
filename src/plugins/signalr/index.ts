@@ -1,5 +1,5 @@
 import * as signalR from '@aspnet/signalr';
-import { VueConstructor } from 'vue/types/vue';
+import { VueConstructor } from 'vue/types/umd';
 import { eBudgetHubEvent, eTransactionHubEvent, eAllocationHubEvent } from './types';
 
 // new signalR.HubConnectionBuilder()

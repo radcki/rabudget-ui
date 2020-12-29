@@ -4,6 +4,7 @@ import * as CreateBudget from '@/typings/api/budget/CreateBudget';
 import * as UpdateBudgetName from '@/typings/api/budget/UpdateBudgetName';
 import * as RemoveBudget from '@/typings/api/budget/RemoveBudget';
 import * as UpdateBudgetStartingDate from '@/typings/api/budget/UpdateBudgetStartingDate';
+import * as GetBudgetBalance from '@/typings/api/budget/GetBudgetBalance';
 
 class BudgetApi {
   private baseUrl = 'budget/';
@@ -19,6 +20,11 @@ class BudgetApi {
       v.startingDate = new Date(v.startingDate);
       return v;
     });
+    return data;
+  }
+  async getBudgetsBalance(query: GetBudgetBalance.Query): Promise<GetBudgetBalance.Response> {
+    const url = this.baseUrl + 'balance';
+    const data = await (await api.get<GetBudgetBalance.Response>(url, query)).data;
     return data;
   }
 

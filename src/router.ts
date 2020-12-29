@@ -20,12 +20,22 @@ const router = new Router({
     {
       path: '/',
       name: 'home',
-      redirect: { name: 'newBudget' },
+      redirect: { name: 'overview' },
     },
     {
       path: '/budget/new',
       name: 'newBudget',
       component: () => import('@/pages/budgets/NewBudget.vue'),
+    },
+    {
+      path: '/overview',
+      name: 'overview',
+      component: () => import('@/pages/overview/Overview.vue'),
+    },
+    {
+      path: '/budget-categories',
+      name: 'budgetCategories',
+      component: () => import('@/pages/budgetCategories/BudgetCategories.vue'),
     },
     {
       path: '/auth/signinwin/main', // Needs to match redirectUri in you oidcSettings

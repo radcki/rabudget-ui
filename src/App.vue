@@ -5,7 +5,9 @@
     <v-main>
       <router-view></router-view>
     </v-main>
-    <modal-dialog></modal-dialog>
+    <!--
+    <modal-dialog></modal-dialog> -->
+    <r-modal />
   </v-app>
 </template>
 

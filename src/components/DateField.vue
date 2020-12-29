@@ -9,19 +9,21 @@
   >
     <template v-slot:activator="{ on }">
       <v-text-field
+        ref="inputField"
         v-model="date"
-        class="r-date-field"
-        :type="pickerType"
+        :class="classes"
+        :type="inputType"
         max="9999-12-31"
         :filled="filled"
         :format="dateFormat"
         :clearable="clearable"
         :label="label"
+        :dense="dense"
         :rules="rules"
         :hide-details="hideDetails"
-        :prepend-icon="mdiCalendar"
+        :prepend-icon="icon"
         :prepend-inner-icon="readonly ? 'lock' : ''"
-        :readonly="readonly"
+        :readonly="readonly || disableInput"
         v-on="on"
       ></v-text-field>
     </template>
@@ -30,6 +32,7 @@
       v-model="date"
       :readonly="readonly"
       :type="pickerType"
+      :locale="$i18n.locale"
       @input="dateMenu = false"
     ></v-date-picker>
   </v-menu>
@@ -48,7 +51,6 @@
 </style>
 
 <script lang="ts">
-import { mdiCalendar } from '@mdi/js';
 import { format } from 'date-fns';
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
 import { debounce } from 'debounce';
@@ -61,15 +63,23 @@ export default class DateField extends Vue {
   @Prop(Boolean) clearable!: boolean;
   @Prop(Boolean) readonly!: boolean;
   @Prop(Boolean) filled!: boolean;
+  @Prop(Boolean) dense!: boolean;
+  @Prop(Boolean) disableInput!: boolean;
   @Prop(Boolean) hideDetails!: boolean;
   @Prop(String) type!: 'date' | 'month';
 
   date: string | null = null;
   dateMenu = false;
-  mdiCalendar = mdiCalendar;
   debouncedEmit: any = null;
 
   get pickerType() {
+    return this.type == 'month' ? 'month' : 'date';
+  }
+
+  get inputType() {
+    if (this.disableInput) {
+      return 'text';
+    }
     return this.type == 'month' ? 'month' : 'date';
   }
 
@@ -80,6 +90,14 @@ export default class DateField extends Vue {
   get isMobile() {
     return !this.$vuetify.breakpoint.smAndUp;
   }
+  get classes() {
+    const classList: string[] = ['r-date-field'];
+    return classList;
+  }
+
+  get icon() {
+    return this.dense ? undefined : 'mdi-calendar';
+  }
 
   @Watch('date')
   OnInput(value) {
@@ -89,9 +107,28 @@ export default class DateField extends Vue {
     this.debouncedEmit('input', new Date(value));
   }
 
+  @Watch('dateMenu')
+  onCalendarOpenClose(isOpen) {
+    if (!isOpen) {
+      setTimeout(() => {
+        this.debouncedEmit('change', new Date(this.date));
+      }, 250);
+    }
+  }
+
   @Watch('value')
   OnValueChange(value) {
     this.date = !value ? null : format(value, this.dateFormat);
+  }
+
+  focus() {
+    const field = this.$refs['inputField'];
+    if (field) {
+      const inputs = ((field as Vue).$el as HTMLElement).getElementsByTagName('input');
+      if (inputs.length > 0) {
+        inputs[0].dispatchEvent(new Event('click'));
+      }
+    }
   }
 
   mounted() {

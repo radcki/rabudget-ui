@@ -1,28 +1,16 @@
+import { ConfirmOptions, ConfirmDialogOptions } from './confirm.plugin';
+
 declare module 'vue/types/vue' {
   interface Vue {
-    $confirm(options: ConfirmOptions): Promise<boolean | any>,
-    open(title: string, message: string, options: ConfirmDialogOptions): Promise<boolean | any>
+    $msgBox: MessageBox;
+    open(title: string, message: string, options: ConfirmDialogOptions): Promise<boolean | any>;
   }
 }
 
-export interface ConfirmOptions {
-  title: string;
-  message: string;
-  options: ConfirmDialogOptions
-}
-
-export interface ConfirmDialogOptions {
-  color?: string | undefined,
-  selectList?: any[] | undefined,
-  select?: boolean | undefined,
-  width?: number | undefined,
-  input?: boolean | undefined,
-  buttons?: DialogButtons
-}
-
-export interface DialogButtons {
-  yes: boolean | undefined,
-  no: boolean | undefined,
-  cancel: boolean | undefined,
-  ok: boolean | undefined
+interface MessageBox {
+  custom: (options: ConfirmOptions) => Promise<boolean | any>;
+  confirm: (title: string, message: string) => Promise<boolean>;
+  error: (title: string, message: string) => Promise<boolean>;
+  apiError: (error: any) => Promise<boolean>;
+  success: (title: string, message: string) => Promise<boolean>;
 }
