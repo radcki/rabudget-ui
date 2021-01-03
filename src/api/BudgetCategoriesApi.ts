@@ -1,5 +1,6 @@
 import api from './ApiService';
 import * as GetBudgetCategoriesList from '@/typings/api/budgetCategories/GetBudgetCategoriesList';
+import * as GetBudgetCategoryBalance from '@/typings/api/budgetCategories/GetBudgetCategoryBalance';
 import * as CreateBudgetCategory from '@/typings/api/budgetCategories/CreateBudgetCategory';
 
 class BudgetCategoriesApi {
@@ -29,6 +30,15 @@ class BudgetCategoriesApi {
     const url = this.baseUrl + 'create';
 
     return await (await api.post<CreateBudgetCategory.Result>(url, command)).data;
+  }
+
+  async getBudgetCategoryBalance(
+    query: GetBudgetCategoryBalance.Query,
+  ): Promise<GetBudgetCategoryBalance.Result> {
+    const url = this.baseUrl + 'balance';
+    const data = await (await api.get<GetBudgetCategoryBalance.Result>(url, query)).data;
+
+    return data;
   }
 }
 

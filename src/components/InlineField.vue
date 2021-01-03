@@ -121,6 +121,7 @@ export default class InlineField extends Vue {
   innerValue = this.value;
   initialValue = JSON.parse(JSON.stringify(this.value));
   editMode = false;
+  timeout: null | NodeJS.Timeout = null;
 
   startEdit() {
     this.editMode = true;
@@ -142,8 +143,13 @@ export default class InlineField extends Vue {
   async finishEdit() {
     this.$nextTick(() => {
       if (JSON.stringify(this.innerValue) != JSON.stringify(this.initialValue)) {
-        this.$emit('input', this.innerValue);
-        this.$emit('change', this.innerValue);
+        if (this.timeout) {
+          clearTimeout(this.timeout);
+        }
+        this.timeout = setTimeout(() => {
+          this.$emit('input', this.innerValue);
+          this.$emit('change', this.innerValue);
+        }, 50);
       }
       this.editMode = false;
     });

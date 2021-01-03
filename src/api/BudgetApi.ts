@@ -22,6 +22,7 @@ class BudgetApi {
     });
     return data;
   }
+
   async getBudgetsBalance(query: GetBudgetBalance.Query): Promise<GetBudgetBalance.Response> {
     const url = this.baseUrl + 'balance';
     const data = await (await api.get<GetBudgetBalance.Response>(url, query)).data;

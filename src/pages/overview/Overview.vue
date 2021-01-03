@@ -2,34 +2,53 @@
   <v-container fluid>
     <v-row>
       <v-col class="d-flex flex-grow-0" style="width: 480px">
-        <new-transaction
-          @spending-created="handleSpendingCreated"
-          @income-created="handleIncomeCreated"
-          @saving-created="handleSavingCreated"
-        ></new-transaction>
+        <new-transaction></new-transaction>
       </v-col>
-      <v-col></v-col>
+      <v-col>
+        <v-row>
+          <v-col>
+            <value-card
+              v-if="budgetBalance"
+              :value="budgetBalance.totalBalance"
+              :label="$t('overview.totalBalance')"
+              color="income"
+              :loading="$wait.is('loading.budgetBalance*')"
+            ></value-card>
+          </v-col>
+          <v-col>
+            <value-card
+              v-if="budgetBalance"
+              :value="budgetBalance.unassignedFunds"
+              :label="$t('overview.unassignedFunds')"
+              color="blue-grey darken-1"
+              :loading="$wait.is('loading.budgetBalance*')"
+            ></value-card
+          ></v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <categories-balance :category-type="eBudgetCategoryType.Spending"></categories-balance>
+          </v-col>
+        </v-row>
+      </v-col>
     </v-row>
     <v-row>
       <v-col>
         <mini-transaction-list
           :title="$t('general.spendings')"
           :category-type="eBudgetCategoryType.Spending"
-          @provide-reload="setSpendingReload"
         ></mini-transaction-list>
       </v-col>
       <v-col>
         <mini-transaction-list
           :title="$t('general.incomes')"
           :category-type="eBudgetCategoryType.Income"
-          @provide-reload="setIncomeReload"
         ></mini-transaction-list
       ></v-col>
       <v-col>
         <mini-transaction-list
           :title="$t('general.savings')"
           :category-type="eBudgetCategoryType.Saving"
-          @provide-reload="setSavingReload"
         ></mini-transaction-list
       ></v-col>
     </v-row>
@@ -42,65 +61,56 @@ import { namespace } from 'vuex-class';
 import { Budget } from '@/typings/api/budget/GetBudgetList';
 import { eBudgetCategoryType } from '@/typings/enums/eBudgetCategoryType';
 import BudgetApi from '@/api/BudgetApi';
+import { MoneyAmount } from '@/typings/MoneyAmount';
+import { BudgetBalanceDto } from '@/typings/api/budget/GetBudgetBalance';
+import { BalanceNotificationEvents } from '@/plugins/signalr';
 
 const budgetsStore = namespace('budgets');
-
-interface ExposedMethods {
-  fetchSpendingTransactions: null | (() => Promise<void>);
-  fetchIncomeTransactions: null | (() => Promise<void>);
-  fetchSavingTransactions: null | (() => Promise<void>);
-}
 
 @Component({
   components: {
     'new-transaction': () => import('./components/NewTransaction.vue'),
     'mini-transaction-list': () => import('./components/MiniTransactionsList.vue'),
+    'categories-balance': () => import('./components/CategoriesBalance.vue'),
+    'value-card': () => import('./components/ValueCard.vue'),
   },
 })
 export default class Overview extends Vue {
   @budgetsStore.Getter('activeBudget') activeBudget!: Budget | null;
   eBudgetCategoryType = eBudgetCategoryType;
 
-  exposedMethods: ExposedMethods = {
-    fetchSpendingTransactions: null,
-    fetchIncomeTransactions: null,
-    fetchSavingTransactions: null,
-  };
+  budgetBalance: null | BudgetBalanceDto = null;
+  unassignedFunds: null | MoneyAmount = null;
+
   mounted() {
     if (this.activeBudget) {
       this.fetchBudgetBalance();
     }
+
+    this.$notificationHub.on(
+      BalanceNotificationEvents.TotalBalanceChanged,
+      this.fetchBudgetBalance,
+    );
   }
-  setSpendingReload(fn: () => Promise<void>) {
-    this.exposedMethods.fetchSpendingTransactions = fn;
-  }
-  setSavingReload(fn: () => Promise<void>) {
-    this.exposedMethods.fetchSavingTransactions = fn;
-  }
-  setIncomeReload(fn: () => Promise<void>) {
-    this.exposedMethods.fetchIncomeTransactions = fn;
-  }
-  handleSpendingCreated() {
-    if (this.exposedMethods.fetchSpendingTransactions) {
-      this.exposedMethods.fetchSpendingTransactions();
-    }
-  }
-  handleSavingCreated() {
-    if (this.exposedMethods.fetchSpendingTransactions) {
-      this.exposedMethods.fetchSavingTransactions();
-    }
-  }
-  handleIncomeCreated() {
-    if (this.exposedMethods.fetchSpendingTransactions) {
-      this.exposedMethods.fetchIncomeTransactions();
-    }
+  beforeDestroy() {
+    this.$notificationHub.off(
+      BalanceNotificationEvents.TotalBalanceChanged,
+      this.fetchBudgetBalance,
+    );
   }
 
   async fetchBudgetBalance() {
-    const response = await BudgetApi.getBudgetsBalance({
-      budgetId: this.activeBudget.budgetId,
-    });
-    console.log(response);
+    this.$wait.start('loading.budgetBalance');
+    try {
+      const response = await BudgetApi.getBudgetsBalance({
+        budgetId: this.activeBudget.budgetId,
+      });
+      this.budgetBalance = response.data;
+    } catch (error) {
+      this.$msgBox.apiError(error);
+    } finally {
+      this.$wait.end('loading.budgetBalance');
+    }
   }
 
   @Watch('activeBudget')

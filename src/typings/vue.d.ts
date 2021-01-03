@@ -1,3 +1,4 @@
+import { NotificationHub } from '@/plugins/signalr';
 import Vue from 'vue';
 import VueWait from 'vue-wait';
 
@@ -8,7 +9,7 @@ declare module 'vue/types/vue' {
     $keycloak: any;
     $currencyConfig: any;
     $categoryIcons: object;
-    $notificationHub: Vue;
+    $notificationHub: NotificationHub;
     $oidc: {
       isAuthenticated: boolean;
     };

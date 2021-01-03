@@ -116,6 +116,7 @@ import { BudgetCategoryDto } from '@/typings/api/budgetCategories/GetBudgetCateg
 import { eBudgetCategoryType } from '@/typings/enums/eBudgetCategoryType';
 import InlineField from '@/components/InlineField.vue';
 import TransactionsApi from '@/api/TransactionsApi';
+import { TransactionNotificationEvents } from '@/plugins/signalr';
 
 const budgetsStore = namespace('budgets');
 
@@ -162,7 +163,6 @@ export default class MiniTransactionsList extends Vue {
   }
 
   async fetchTransactions() {
-    console.log('fetchTransactions');
     if (!this.activeBudget) {
       return;
     }
@@ -185,7 +185,17 @@ export default class MiniTransactionsList extends Vue {
 
   mounted() {
     this.fetchTransactions();
-    this.$emit('provide-reload', this.fetchTransactions);
+
+    this.$notificationHub.on(
+      TransactionNotificationEvents.TransactionListChanged,
+      this.fetchTransactions,
+    );
+  }
+  beforeDestroy() {
+    this.$notificationHub.off(
+      TransactionNotificationEvents.TransactionListChanged,
+      this.fetchTransactions,
+    );
   }
 
   loadMore() {
@@ -193,8 +203,6 @@ export default class MiniTransactionsList extends Vue {
   }
 
   async updateTransactionDescription(transaction: GetTransactionList.TransactionDto) {
-    console.log('updateTransactionDescription', transaction);
-
     this.$wait.start(`saving.transaction.description${transaction.transactionId}`);
     try {
       const result = await TransactionsApi.updateTransactionDescription({
@@ -236,7 +244,6 @@ export default class MiniTransactionsList extends Vue {
       await TransactionsApi.removeTransaction({
         transactionId: transaction.transactionId,
       });
-      this.fetchTransactions();
     } catch (error) {
       this.$msgBox.apiError(error);
     } finally {

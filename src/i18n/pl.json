@@ -105,7 +105,9 @@
     "title": "Kategorie budżetowe"
   },
   "overview": {
-    "title": "Przegląd"
+    "title": "Przegląd",
+    "totalBalance": "Środki w portfelu",
+    "unassignedFunds": "Niezagospodarowane środki"
   },
   "trasnsactionHistory": {
     "title": "Historia transakcji"

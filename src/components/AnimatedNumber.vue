@@ -1,13 +1,14 @@
 <template>
-  <span>{{ formatValue(Number(animatedValue)) }}</span>
+  <span>{{ moneyValue | money }}</span>
 </template>
 <script lang="ts">
+import { MoneyAmount } from '@/typings/MoneyAmount';
 import anime from 'animejs';
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
 
 @Component
 export default class AnimatedNumber extends Vue {
-  @Prop({ type: [Number, String], default: 0, required: true }) value!: number | string;
+  @Prop({ type: Object, required: true }) value!: MoneyAmount;
   @Prop({ type: Function, default: v => v }) formatValue!: <T>(v: T) => T;
   @Prop({ type: String, default: 'linear' }) easing!: string;
   @Prop({ type: Number, default: 1000 }) duration!: number;
@@ -20,14 +21,18 @@ export default class AnimatedNumber extends Vue {
 
   animatedValue = 0;
 
+  get moneyValue(): MoneyAmount {
+    return { currencyCode: this.value.currencyCode, amount: Number(this.animatedValue) };
+  }
+
   @Watch('value')
-  OnValuechange(value) {
-    this.animateValue(value);
+  OnValuechange(value: MoneyAmount) {
+    this.animateValue(value.amount);
   }
   mounted() {
-    this.animateValue(this.value);
+    this.animateValue(this.value.amount);
   }
-  animateValue(value) {
+  animateValue(value: number) {
     const { begin, easing, duration, complete, update, run, delay, round } = this;
     anime({
       targets: this,

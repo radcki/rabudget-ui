@@ -37,6 +37,17 @@ Vue.use(signalrPlugin);
 Vue.component('icon-button', IconButton);
 Vue.component('inline-field', InlineField);
 
+Vue.filter('percentage', (value, decimals) => {
+  if (!value) {
+    value = 0;
+  }
+  if (!decimals) {
+    decimals = 0;
+  }
+  value = value * 100;
+  return Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals) + '%';
+});
+
 const app = new Vue({
   store,
   vuetify,

@@ -8,6 +8,7 @@ import { account } from './account.module';
 import { transactions } from './transactions.module';
 import { dictionaries } from './dictionaries.module';
 import api from '@/api/ApiService';
+import signalrPlugin from '@/plugins/signalr';
 
 Vue.use(Vuex);
 // tslint:disable-next-line: no-empty-interface
@@ -37,6 +38,7 @@ const store: StoreOptions<RootState> = {
         userLoaded: user => {
           console.log('OIDC user is loaded:', user);
           api.setInterceptor(user);
+          signalrPlugin.setToken(user.access_token);
         },
         userUnloaded: () => console.log('OIDC user is unloaded'),
         accessTokenExpiring: () => console.log('Access token will expire'),

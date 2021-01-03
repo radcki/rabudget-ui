@@ -5,4 +5,12 @@ export interface Query {
   budgetId: string;
 }
 
-export interface Response extends SingleResponse<MoneyAmount> {}
+export interface BudgetBalanceDto {
+  totalBalance: MoneyAmount;
+  unassignedFunds: MoneyAmount;
+  spendingTotal: MoneyAmount;
+  incomeTotal: MoneyAmount;
+  savingTotal: MoneyAmount;
+}
+
+export interface Response extends SingleResponse<BudgetBalanceDto> {}
