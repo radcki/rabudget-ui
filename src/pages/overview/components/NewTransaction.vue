@@ -31,6 +31,13 @@
           :category-type="eBudgetCategoryType.Saving"
         ></transaction-edit-form>
       </template>
+      <template v-if="tab == eTab.Allocation">
+        <allocation-edit-form
+          key="formAllocation"
+          v-model="newAllocation"
+          :category-type="eBudgetCategoryType.Spending"
+        ></allocation-edit-form>
+      </template>
     </v-card-text>
     <v-card-actions>
       <v-spacer></v-spacer>
@@ -58,6 +65,14 @@
         @click="createTransaction(newSaving)"
         >{{ $t('newTransaction.createSaving') }}</v-btn
       >
+      <v-btn
+        v-if="tab == eTab.Allocation"
+        :loading="allocationIsSaving"
+        text
+        color="saving"
+        @click="createAllocation(newAllocation)"
+        >{{ $t('newTransaction.createAllocation') }}</v-btn
+      >
       <v-btn text @click="resetForm">
         {{ $t('general.reset') }}
       </v-btn>
@@ -70,9 +85,12 @@ import { Vue, Component, Watch } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import { Budget } from '@/typings/api/budget/GetBudgetList';
 import TransactionEditForm from '@/components/TransactionEditForm.vue';
+import AllocationEditForm from '@/components/AllocationEditForm.vue';
 import * as CreateTransaction from '@/typings/api/transactions/CreateTransaction';
+import * as CreateAllocation from '@/typings/api/allocations/CreateAllocation';
 import { eBudgetCategoryType } from '@/typings/enums/eBudgetCategoryType';
 import TransactionsApi from '@/api/TransactionsApi';
+import AllocationsApi from '@/api/AllocationsApi';
 
 const budgetsStore = namespace('budgets');
 
@@ -86,6 +104,7 @@ enum eTab {
 @Component({
   components: {
     TransactionEditForm,
+    AllocationEditForm,
   },
 })
 export default class NewTransaction extends Vue {
@@ -102,33 +121,10 @@ export default class NewTransaction extends Vue {
   eTab = eTab;
   eBudgetCategoryType = eBudgetCategoryType;
 
-  newSpending: CreateTransaction.Command = {
-    budgetCategoryId: '',
-    amount: {
-      currencyCode: this.activeBudget?.currency.currencyCode,
-      amount: 0,
-    },
-    description: '',
-    transactionDate: new Date(),
-  };
-  newSaving: CreateTransaction.Command = {
-    budgetCategoryId: '',
-    amount: {
-      currencyCode: this.activeBudget?.currency.currencyCode,
-      amount: 0,
-    },
-    description: '',
-    transactionDate: new Date(),
-  };
-  newIncome: CreateTransaction.Command = {
-    budgetCategoryId: '',
-    amount: {
-      currencyCode: this.activeBudget?.currency.currencyCode,
-      amount: 0,
-    },
-    description: '',
-    transactionDate: new Date(),
-  };
+  newSpending: CreateTransaction.Command = this.generateEmptyTransaction();
+  newSaving: CreateTransaction.Command = this.generateEmptyTransaction();
+  newIncome: CreateTransaction.Command = this.generateEmptyTransaction();
+  newAllocation: CreateAllocation.Command = this.generateEmptyAllocation();
 
   get tabColor() {
     return this.color[this.tab];
@@ -143,12 +139,15 @@ export default class NewTransaction extends Vue {
   get savingIsSaving() {
     return this.$wait.start(`saving.transection_${eTab.Saving}`);
   }
+  get allocationIsSaving() {
+    return this.$wait.start(`saving.allocation_${eTab.Allocation}`);
+  }
 
   generateEmptyTransaction() {
     return {
       budgetCategoryId: '',
       amount: {
-        currencyCode: this.activeBudget.currency.currencyCode,
+        currencyCode: this.activeBudget ? this.activeBudget.currency.currencyCode : 0,
         amount: 0,
       },
       description: '',
@@ -156,10 +155,24 @@ export default class NewTransaction extends Vue {
     };
   }
 
+  generateEmptyAllocation() {
+    return {
+      sourceBudgetCategoryId: '',
+      targetBudgetCategoryId: '',
+      amount: {
+        currencyCode: this.activeBudget ? this.activeBudget.currency.currencyCode : 0,
+        amount: 0,
+      },
+      description: '',
+      allocationDate: new Date(),
+    };
+  }
+
   resetForm() {
     this.newSpending = Object.assign({}, this.generateEmptyTransaction());
     this.newIncome = Object.assign({}, this.generateEmptyTransaction());
     this.newSaving = Object.assign({}, this.generateEmptyTransaction());
+    this.newAllocation = Object.assign({}, this.generateEmptyAllocation());
   }
 
   async createTransaction(transaction: CreateTransaction.Command) {
@@ -185,6 +198,31 @@ export default class NewTransaction extends Vue {
       this.$msgBox.apiError(error);
     } finally {
       this.$wait.end(`saving.transection_${this.tab}`);
+    }
+  }
+
+  async createAllocation(allocation: CreateAllocation.Command) {
+    this.$wait.start(`saving.allocation_${this.tab}`);
+    const type = this.tab;
+    try {
+      await AllocationsApi.createAllocation(allocation);
+      this.$emit('allocationCreated');
+      switch (type) {
+        case eTab.Spending:
+          this.$emit('spending-created');
+          break;
+        case eTab.Income:
+          this.$emit('income-created');
+          break;
+        case eTab.Saving:
+          this.$emit('saving-created');
+          break;
+      }
+      allocation = Object.assign(allocation, this.generateEmptyAllocation());
+    } catch (error) {
+      this.$msgBox.apiError(error);
+    } finally {
+      this.$wait.end(`saving.allocation_${this.tab}`);
     }
   }
 

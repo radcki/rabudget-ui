@@ -3,26 +3,35 @@
     <v-row dense>
       <v-col>
         <date-field
-          v-model="innerValue.transactionDate"
+          v-model="innerValue.allocationDate"
           filled
-          :label="$t('transaction.transactionDate')"
+          :label="$t('allocation.allocationDate')"
         ></date-field>
       </v-col>
       <v-col>
         <v-text-field
           v-model="innerValue.description"
           filled
-          :label="$t('transaction.description')"
+          :label="$t('allocation.description')"
         ></v-text-field>
       </v-col>
     </v-row>
     <v-row dense>
       <v-col>
         <category-select
-          v-model="innerValue.budgetCategoryId"
+          v-model="innerValue.sourceBudgetCategoryId"
           :items="categories"
           :return-object="false"
-          :label="$t('transaction.category')"
+          :label="$t('allocation.sourceBudgetCategory')"
+          filled
+        ></category-select>
+      </v-col>
+      <v-col>
+        <category-select
+          v-model="innerValue.targetBudgetCategoryId"
+          :items="categories"
+          :return-object="false"
+          :label="$t('allocation.targetBudgetCategory')"
           filled
         ></category-select>
       </v-col>
@@ -32,7 +41,7 @@
         <money-field
           v-model="innerValue.amount"
           filled
-          :label="$t('transaction.amount')"
+          :label="$t('allocation.amount')"
         ></money-field>
       </v-col>
     </v-row>
@@ -45,7 +54,7 @@ import { namespace } from 'vuex-class';
 import { Budget } from '@/typings/api/budget/GetBudgetList';
 import MoneyField from '@/components/MoneyField.vue';
 import DateField from '@/components/DateField.vue';
-import * as CreateTransaction from '@/typings/api/transactions/CreateTransaction';
+import * as CreateAllocation from '@/typings/api/allocations/CreateAllocation';
 import { BudgetCategoryDto } from '@/typings/api/budgetCategories/GetBudgetCategoriesList';
 import { eCurrencyCode } from '@/typings/enums/eCurrencyCode';
 import { eBudgetCategoryType } from '@/typings/enums/eBudgetCategoryType';
@@ -60,11 +69,11 @@ const budgetsStore = namespace('budgets');
     CategorySelect,
   },
 })
-export default class TransactionEditForm extends Vue {
-  @Prop(Object) value!: CreateTransaction.Command;
+export default class AllocationEditForm extends Vue {
+  @Prop(Object) value!: CreateAllocation.Command;
   @Prop(Number) categoryType!: eBudgetCategoryType;
 
-  innerValue: CreateTransaction.Command = Object.assign({}, this.value);
+  innerValue: CreateAllocation.Command = Object.assign({}, this.value);
 
   @budgetsStore.Getter('activeBudget') activeBudget!: Budget | null;
 
@@ -109,13 +118,13 @@ export default class TransactionEditForm extends Vue {
 
   @Watch('categoryType')
   onCategoryTypeChange() {
-    this.innerValue.budgetCategoryId = '';
+    this.innerValue.sourceBudgetCategoryId = '';
     this.fetchBudgetCategories();
   }
 
   @Watch('activeBudget')
   onBudgetChange() {
-    this.innerValue.budgetCategoryId = '';
+    this.innerValue.targetBudgetCategoryId = '';
     this.fetchBudgetCategories();
   }
 }

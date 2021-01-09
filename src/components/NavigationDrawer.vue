@@ -136,12 +136,12 @@ export default class App extends Vue {
         to: { name: 'overview' },
         children: [],
       },
-      // {
-      //   name: this.$t('trasnsactionHistory.title').toString(),
-      //   icon: 'mdi-format-list-bulleted',
-      //   to: { name: 'transactionHistory' },
-      //   children: [],
-      // },
+      {
+        name: this.$t('trasnsactionHistory.title').toString(),
+        icon: 'mdi-format-list-bulleted',
+        to: { name: 'transactionsHistory' },
+        children: [],
+      },
       // {
       //   name: this.$t('transactionSchedules.transactionSchedules').toString(),
       //   icon: 'mdi-calendar-c lock',

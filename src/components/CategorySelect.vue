@@ -3,6 +3,7 @@
     v-model="innerValue"
     item-value="budgetCategoryId"
     item-text="name"
+    :multiple="multiple"
     v-bind="$attrs"
   >
     <template #item="{ item, on }">
@@ -30,9 +31,11 @@ const dictionaries = namespace('dictionaries');
 
 @Component
 export default class CategorySelect extends Vue {
-  @Prop({ type: [Object, String] }) value!: BudgetCategoryDto | string;
+  @Prop({ type: [Object, String, Array] }) value!: BudgetCategoryDto | string | BudgetCategoryDto[];
 
-  innerValue: BudgetCategoryDto | string | null = this.value ? this.value : null;
+  innerValue: BudgetCategoryDto | string | null | BudgetCategoryDto[] = this.value
+    ? this.value
+    : null;
 
   @Watch('innerValue')
   onInnerValueChange(newValue) {
@@ -44,6 +47,10 @@ export default class CategorySelect extends Vue {
     if (newValue != this.innerValue) {
       this.innerValue = newValue;
     }
+  }
+
+  get multiple() {
+    return Array.isArray(this.value);
   }
 
   @dictionaries.State('currencies') currencies?: Currency[];

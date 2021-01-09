@@ -120,11 +120,20 @@
     "removeTransanction": "Usuń transakcję",
     "changeTransactionDate": "Zmień datę transakcji",
     "removeConfirmTitle": "Usuwanie transakcji",
-    "removeConfirm": "Transakcja zostanie usunięta. Czy jesteś pewien?"
+    "removeConfirm": "Transakcja zostanie usunięta. Czy jesteś pewien?",
+    "category": "Kategoria"
   },
   "newTransaction": {
     "createSpending": "Dodaj wydatek",
     "createSaving": "Dodaj oszczędność",
-    "createIncome": "Dodaj dochód"
+    "createIncome": "Dodaj dochód",
+    "createAllocation": "Dodaj alokację"
+  },
+  "allocation": {
+    "amount": "Kwota",
+    "description": "Opis",
+    "allocationDate": "Data alokacji",
+    "sourceBudgetCategory": "Kategoria źródłowa",
+    "targetBudgetCategory": "Kategoria docelowa"
   }
 }

@@ -5,7 +5,6 @@ import oidcSettings from '@/auth';
 
 import { budget } from './budget.module';
 import { account } from './account.module';
-import { transactions } from './transactions.module';
 import { dictionaries } from './dictionaries.module';
 import api from '@/api/ApiService';
 import signalrPlugin from '@/plugins/signalr';
@@ -26,7 +25,6 @@ const store: StoreOptions<RootState> = {
   modules: {
     account,
     budgets: budget,
-    transactions,
     dictionaries,
     oidcStore: vuexOidcCreateStoreModule(
       oidcSettings,
