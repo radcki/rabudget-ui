@@ -51,6 +51,7 @@
             <v-flex xs12>
               <v-range-slider
                 v-model="sliderValue"
+                hide-details
                 :max="sliderSteps"
                 :min="0"
                 :step="1"

@@ -29,7 +29,7 @@ class ApiService {
               params.push(`${key}=${this.ToString(value)}`);
             }
           }
-        } else {
+        } else if (query[key]) {
           params.push(`${key}=${this.ToString(query[key])}`);
         }
       }

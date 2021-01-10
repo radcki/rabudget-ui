@@ -54,7 +54,8 @@
     "from": "Od",
     "none": "Brak",
     "noData": "Brak danych",
-    "loadMore": "Wczytaj więcej"
+    "loadMore": "Wczytaj więcej",
+    "allTypes": "Wszystkie typy"
   },
   "account": {
     "logged": "Zalogowany"
@@ -110,7 +111,13 @@
     "unassignedFunds": "Niezagospodarowane środki"
   },
   "trasnsactionHistory": {
-    "title": "Historia transakcji"
+    "title": "Historia transakcji",
+    "filter": {
+      "categoryType": "Typ kategorii",
+      "category": "Kategoria",
+      "transactionDate": "Data transakcji"
+    },
+    "hideFilters": "Ukryj filtry"
   },
   "transaction": {
     "amount": "Kwota",
