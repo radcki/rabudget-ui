@@ -4,6 +4,7 @@ import * as GetTransactionList from '@/typings/api/transactions/GetTransactionLi
 import * as UpdateTransactionDescription from '@/typings/api/transactions/UpdateTransactionDescription';
 import * as UpdateTransactionAmount from '@/typings/api/transactions/UpdateTransactionAmount';
 import * as RemoveTransaction from '@/typings/api/transactions/RemoveTransaction';
+import * as GetTransactionsDatesRange from '@/typings/api/transactions/GetTransactionsDatesRange';
 
 class TransactionsApi {
   private baseUrl = 'transaction/';
@@ -46,6 +47,16 @@ class TransactionsApi {
   async removeTransaction(command: RemoveTransaction.Command): Promise<RemoveTransaction.Result> {
     const url = this.baseUrl + 'remove';
     return (await api.post<RemoveTransaction.Result>(url, command)).data;
+  }
+
+  async getTransactionsDatesRange(
+    query: GetTransactionsDatesRange.Query,
+  ): Promise<GetTransactionsDatesRange.Result> {
+    const url = this.baseUrl + 'get-dates-range';
+    const data = await (await api.get<GetTransactionsDatesRange.Result>(url, query)).data;
+    if (data.data.maxDate) data.data.maxDate = new Date(data.data.maxDate);
+    if (data.data.minDate) data.data.minDate = new Date(data.data.minDate);
+    return data;
   }
 }
 
