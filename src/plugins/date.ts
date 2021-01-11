@@ -17,7 +17,6 @@ export const DatePlugin = {
 
     Vue.filter('shortDate', (v: Date) => format(v, 'yyyy-MM-dd'));
     Vue.filter('dateFormat', (value, formatString, locale: string | null) => {
-      console.log('locale', locale);
       const dateLocale = dateLocales[locale || i18n.locale];
       return !value ? '-' : format(value, formatString || 'yyyy-MM-dd', { locale: dateLocale });
     });

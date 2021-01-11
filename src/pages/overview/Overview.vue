@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid>
+  <v-container>
     <v-row>
       <v-col class="d-flex flex-grow-0" style="width: 480px">
         <new-transaction></new-transaction>
@@ -25,14 +25,14 @@
             ></value-card
           ></v-col>
         </v-row>
-        <v-row>
+        <v-row class="mt-3">
           <v-col>
             <categories-balance :category-type="eBudgetCategoryType.Spending"></categories-balance>
           </v-col>
         </v-row>
       </v-col>
     </v-row>
-    <v-row>
+    <v-row class="mt-3">
       <v-col>
         <mini-transaction-list
           :title="$t('general.spendings')"
