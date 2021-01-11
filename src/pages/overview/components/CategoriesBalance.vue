@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-card-text class="px-4 py-1">
+    <v-card-text class="px-4 pb-1">
       <v-list subheader>
         <v-row v-for="(category, i) in categories" :key="i">
           <v-col :cols="3">

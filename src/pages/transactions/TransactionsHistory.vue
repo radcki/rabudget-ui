@@ -1,5 +1,5 @@
 <template>
-  <v-container fuid>
+  <v-container fluid>
     <v-row>
       <v-col>
         <v-subheader class="headline white--text">{{
@@ -8,7 +8,7 @@
       </v-col>
     </v-row>
     <v-row no>
-      <v-col class="d-flex flex-grow-0" style="min-width: 350px">
+      <v-col v-if="filtersVisible" class="d-flex flex-grow-0" style="min-width: 350px">
         <filter-box v-model="query"></filter-box>
       </v-col>
       <v-col>
@@ -17,9 +17,18 @@
             <v-row>
               <v-col cols="2">
                 <icon-button
+                  v-if="filtersVisible"
                   color="white"
                   icon="mdi-chevron-left"
                   :tooltip="$t('trasnsactionHistory.hideFilters')"
+                  @click="hideFilters()"
+                ></icon-button>
+                <icon-button
+                  v-if="!filtersVisible"
+                  color="white"
+                  icon="mdi-chevron-right"
+                  :tooltip="$t('trasnsactionHistory.hideFilters')"
+                  @click="showFilters()"
                 ></icon-button>
               </v-col>
               <v-spacer></v-spacer>
@@ -59,40 +68,39 @@
                   :loading="$wait.is('loading.*')"
                   :search="search"
                   item-key="transactionId"
-                  class="cardBackground"
-                  must-sort
-                  sort-by
-                  footer-props.items-per-page-options="[15,25,50,{text: $t('general.all'), value: -1}]"
+                  disable-pagination
+                  :server-items-length="totalTransactions"
+                  hide-default-footer
+                  :options.sync="gridOptions"
                 >
-                  <template v-slot:body="{ items }">
-                    <tbody>
-                      <tr v-for="item in items" :key="item.transactionId">
-                        <td>
-                          <v-icon :color="categoryColor(item.budgetCategoryId)" left>
-                            {{ categoryIcon(item.budgetCategoryId) }}
-                          </v-icon>
-                          {{ categoryName(item.budgetCategoryId) }}
-                        </td>
-                        <td>
-                          {{
-                            new Date(item.transactionDate)
-                              | dateFormat('EEEE, d.MM.yyyy', $i18n.locale)
-                          }}
-                        </td>
-                        <td>{{ item.description }}</td>
-                        <td>{{ item.amount | money }}</td>
-                        <td>
-                          <v-btn color="primary" dark icon text>
-                            <v-icon>mdi-pencil</v-icon>
-                          </v-btn>
-                          <v-btn color="red darken-1" dark icon text>
-                            <v-icon @click="deleteTransaction(item.transactionId)"
-                              >mdi-trash-can</v-icon
-                            >
-                          </v-btn>
-                        </td>
-                      </tr>
-                    </tbody>
+                  <template #item.budgetCategoryId="{ item }">
+                    <v-icon :color="categoryColor(item.budgetCategoryId)" left>
+                      {{ categoryIcon(item.budgetCategoryId) }}
+                    </v-icon>
+                    {{ categoryName(item.budgetCategoryId) }}
+                  </template>
+
+                  <template #item.description="{ item }">
+                    {{ item.description }}
+                  </template>
+
+                  <template #item.transactionDate="{ item }">
+                    {{
+                      new Date(item.transactionDate) | dateFormat('EEEE, d.MM.yyyy', $i18n.locale)
+                    }}
+                  </template>
+
+                  <template #item.amount="{ item }">
+                    {{ item.amount | money }}
+                  </template>
+
+                  <template #item.actions="{ item }">
+                    <v-btn color="primary" dark icon text>
+                      <v-icon>mdi-pencil</v-icon>
+                    </v-btn>
+                    <v-btn color="red darken-1" dark icon text>
+                      <v-icon @click="deleteTransaction(item.transactionId)">mdi-trash-can</v-icon>
+                    </v-btn>
                   </template>
                 </v-data-table>
 
@@ -160,7 +168,9 @@ import { Budget } from '@/typings/api/budget/GetBudgetList';
 import * as GetTransactionList from '@/typings/api/transactions/GetTransactionList';
 import { BudgetCategoryDto } from '@/typings/api/budgetCategories/GetBudgetCategoriesList';
 import { TableHeader } from '@/typings/TableHeader';
+import { TableOptions } from '@/typings/TableOptions';
 import TransactionsApi from '@/api/TransactionsApi';
+import { FieldOrderInfo } from '@/typings/api/baseTypes/GridQuery';
 
 const budgetsStore = namespace('budgets');
 
@@ -184,6 +194,8 @@ export default class Transactions extends Vue {
     budgetCategoryType: null,
     search: '',
   };
+
+  filtersVisible = true;
 
   headers: TableHeader<GetTransactionList.TransactionDto>[] = [
     {
@@ -216,7 +228,17 @@ export default class Transactions extends Vue {
   format = format;
   eBudgetCategoryType = eBudgetCategoryType;
   transactions: GetTransactionList.TransactionDto[] = [];
-  pageSize = 10;
+  totalTransactions = 0;
+  gridOptions: TableOptions<GetTransactionList.TransactionDto> = {
+    sortBy: ['transactionDate'],
+    page: 1,
+    itemsPerPage: 20,
+    sortDesc: [true],
+    groupBy: [],
+    groupDesc: [],
+    multiSort: true,
+    mustSort: false,
+  };
 
   get showTransactionsList() {
     return true;
@@ -257,14 +279,24 @@ export default class Transactions extends Vue {
     }
     this.$wait.start(`loading.transactions`);
     try {
+      const orderColumns = this.gridOptions.sortBy.map((v, index) => {
+        const sortDefinition: FieldOrderInfo<GetTransactionList.TransactionDto> = {
+          fieldName: v,
+          descending: this.gridOptions.sortDesc[index] || true,
+        };
+        return sortDefinition;
+      });
+
       const data = await TransactionsApi.getTransactionList(
         Object.assign({}, this.query, {
           budgetId: this.activeBudget.budgetId,
-          pageSize: this.pageSize,
-          dataOrder: [{ fieldName: 'transactionDate', descending: true }],
+          pageSize: this.gridOptions.itemsPerPage,
+          page: this.gridOptions.page,
+          dataOrder: orderColumns,
         }),
       );
       this.transactions = data.data;
+      this.totalTransactions = data.total;
     } catch (error) {
       this.$msgBox.apiError(error);
     } finally {
@@ -320,6 +352,12 @@ export default class Transactions extends Vue {
       this.$wait.end(`removing.transaction.amount${transaction.transactionId}`);
     }
   }
+  showFilters() {
+    this.filtersVisible = true;
+  }
+  hideFilters() {
+    this.filtersVisible = false;
+  }
 
   @Watch('activeBudget')
   async onBudgetChange() {
@@ -333,6 +371,11 @@ export default class Transactions extends Vue {
 
   @Watch('pageSize')
   onPageSizeChange() {
+    this.fetchTransactions();
+  }
+
+  @Watch('gridOptions', { deep: true })
+  onTableOptionsChange() {
     this.fetchTransactions();
   }
 }
