@@ -1,6 +1,10 @@
 <template>
   <v-container>
-    <v-row></v-row>
+    <v-row>
+      <v-col>
+        <v-subheader class="headline white--text">{{ $t('budgetCategories.title') }}</v-subheader>
+      </v-col>
+    </v-row>
     <v-row>
       <v-col>
         <categories-list

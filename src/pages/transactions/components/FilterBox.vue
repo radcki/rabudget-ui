@@ -30,6 +30,8 @@
           v-if="categories"
           v-model="query.budgetCategoryIds"
           multiple
+          filled
+          dense
           :items="selectedTypeCategories"
         ></v-category-select>
       </v-col>
@@ -64,7 +66,7 @@
     </v-row>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn color="primary" @click="resetFilter()">{{ $t('general.reset') }}</v-btn>
+      <v-btn color="primary" @click="resetFilters()">{{ $t('general.reset') }}</v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -79,6 +81,7 @@ import { Budget } from '@/typings/api/budget/GetBudgetList';
 import * as GetTransactionList from '@/typings/api/transactions/GetTransactionList';
 import { BudgetCategoryDto } from '@/typings/api/budgetCategories/GetBudgetCategoriesList';
 import TransactionsApi from '@/api/TransactionsApi';
+import { TransactionNotificationEvents } from '@/plugins/signalr';
 
 const budgetsStore = namespace('budgets');
 
@@ -128,11 +131,30 @@ export default class FilterBox extends Vue {
       this.maxTransactionDateFilter
     );
   }
-  mounted() {
+  async mounted() {
     if (this.activeBudget) {
+      await this.fetchDateFilterRange();
       this.resetFilters();
-      this.fetchDateFilterRange();
     }
+
+    this.$notificationHub.on(
+      TransactionNotificationEvents.TransactionUpdated,
+      this.fetchDateFilterRange,
+    );
+    this.$notificationHub.on(
+      TransactionNotificationEvents.TransactionListChanged,
+      this.fetchDateFilterRange,
+    );
+  }
+  beforeDestroy() {
+    this.$notificationHub.off(
+      TransactionNotificationEvents.TransactionUpdated,
+      this.fetchDateFilterRange,
+    );
+    this.$notificationHub.off(
+      TransactionNotificationEvents.TransactionListChanged,
+      this.fetchDateFilterRange,
+    );
   }
 
   resetFilters() {
@@ -156,28 +178,35 @@ export default class FilterBox extends Vue {
   }
 
   async fetchDateFilterRange() {
-    if (!this.activeBudget) {
-      this.minTransactionDateFilter = null;
-      this.maxTransactionDateFilter = null;
-    }
     this.$wait.start(`loading.transactionDatesRange`);
     try {
       const result = await TransactionsApi.getTransactionsDatesRange({
         budgetId: this.activeBudget.budgetId,
       });
-      this.selectedRange = [result.data.minDate, result.data.maxDate];
       this.minTransactionDateFilter = result.data.minDate;
       this.maxTransactionDateFilter = result.data.maxDate;
     } catch (error) {
       this.$msgBox.apiError(error);
+      this.minTransactionDateFilter = null;
+      this.maxTransactionDateFilter = null;
     } finally {
       this.$wait.end(`loading.transactionDatesRange`);
     }
   }
 
+  setTransactionDatesQuery() {
+    this.query.transactionDateStart = this.selectedRange[0];
+    this.query.transactionDateEnd = this.selectedRange[1];
+  }
+
   @Watch('activeBudget')
   async onBudgetChange() {
     await this.fetchDateFilterRange();
+    this.resetFilters();
+  }
+  @Watch('categories')
+  async onCategoriesChange() {
+    this.resetFilters();
   }
 
   @Watch('query.budgetCategoryType')
@@ -186,12 +215,28 @@ export default class FilterBox extends Vue {
     this.query.budgetCategoryIds = this.query.budgetCategoryIds.filter(v => ids.includes(v));
   }
 
+  @Watch('value', { deep: true })
+  onValueChange(newValue: GetTransactionList.Query) {
+    if (JSON.stringify(newValue) != JSON.stringify(this.query)) {
+      this.query = Object.assign(this.query, newValue);
+    }
+  }
+
   @Watch('query', { deep: true })
   onFiltersChange(newQuery) {
     if (JSON.stringify(newQuery) != JSON.stringify(this.previousQuery)) {
-      this.$emit('input', newQuery);
+      this.$emit('input', Object.assign({}, newQuery));
     }
     this.previousQuery = Object.assign({}, newQuery);
+  }
+
+  @Watch('selectedRange.0')
+  onSelectedRangeStartChange() {
+    this.setTransactionDatesQuery();
+  }
+  @Watch('selectedRange.1')
+  onSelectedRangeEndChange() {
+    this.setTransactionDatesQuery();
   }
 }
 </script>

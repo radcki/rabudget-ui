@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid>
+  <v-container>
     <v-row>
       <v-col>
         <v-subheader class="headline white--text">{{
@@ -9,7 +9,11 @@
     </v-row>
     <v-row no>
       <v-col v-if="filtersVisible" class="d-flex flex-grow-0" style="min-width: 350px">
-        <filter-box v-model="query"></filter-box>
+        <v-row no-gutters>
+          <v-col>
+            <filter-box v-model="query"></filter-box>
+          </v-col>
+        </v-row>
       </v-col>
       <v-col>
         <v-row>
@@ -35,12 +39,14 @@
               <v-col cols="4">
                 <v-text-field
                   v-if="$vuetify.breakpoint.smAndUp"
-                  v-model="search"
+                  v-model="query.search"
                   append-icon="mdi-magnify"
                   :label="$t('general.search')"
                   single-line
                   solo
                   hide-details
+                  @keyup.enter="fetchTransactions()"
+                  @click:append="fetchTransactions()"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -69,9 +75,10 @@
                   :search="search"
                   item-key="transactionId"
                   disable-pagination
-                  :server-items-length="totalTransactions"
                   hide-default-footer
+                  :server-items-length="totalTransactions"
                   :options.sync="gridOptions"
+                  :items-per-page-options="pageSizes"
                 >
                   <template #item.budgetCategoryId="{ item }">
                     <v-icon :color="categoryColor(item.budgetCategoryId)" left>
@@ -81,17 +88,29 @@
                   </template>
 
                   <template #item.description="{ item }">
-                    {{ item.description }}
+                    <inline-field
+                      v-model="item.description"
+                      :loading="$wait.is(`saving.transaction.description${item.transactionId}`)"
+                      @change="updateTransactionDescription(item)"
+                    ></inline-field>
                   </template>
 
                   <template #item.transactionDate="{ item }">
-                    {{
-                      new Date(item.transactionDate) | dateFormat('EEEE, d.MM.yyyy', $i18n.locale)
-                    }}
+                    <inline-field
+                      v-model="item.transactionDate"
+                      type="date"
+                      :loading="$wait.is(`saving.transaction.description${item.transactionId}`)"
+                      @change="updateTransactionDate(item)"
+                    ></inline-field>
                   </template>
 
                   <template #item.amount="{ item }">
-                    {{ item.amount | money }}
+                    <inline-field
+                      v-model="item.amount"
+                      type="money"
+                      :loading="$wait.is(`saving.transaction.amount${item.transactionId}`)"
+                      @change="updateTransactionAmount(item)"
+                    ></inline-field>
                   </template>
 
                   <template #item.actions="{ item }">
@@ -152,6 +171,46 @@
               </v-card-text>
             </v-card>
           </v-col>
+          <v-col :cols="12">
+            <v-row justify="end">
+              <v-col class="d-flex flex-grow-0" style="min-width: 180px">
+                <nobr class="pr-2 white--text">{{ $t('general.itemsPerPage') }}:</nobr>
+                <v-select
+                  v-model="gridOptions.itemsPerPage"
+                  :items="pageSizes"
+                  dense
+                  solo
+                  rounded
+                  hide-details
+                  style="max-width: 110px"
+                ></v-select>
+              </v-col>
+              <v-col class="d-flex flex-grow-0" style="min-width: 320px">
+                <nobr class="pr-2 white--text">{{ $t('general.page') }}:</nobr>
+                <v-sheet
+                  color="white"
+                  class="v-input v-text-field--rounded justify-center py-1 align-center"
+                  style="max-width: 100px"
+                >
+                  <input
+                    v-model="pageInput"
+                    type="number"
+                    class="text-center"
+                    :min="1"
+                    :max="pages"
+                  />
+                </v-sheet>
+
+                <v-pagination
+                  v-model="gridOptions.page"
+                  circle
+                  total-visible="0"
+                  class="my-0 ml-4"
+                  :length="pages"
+                ></v-pagination>
+              </v-col>
+            </v-row>
+          </v-col>
         </v-row>
       </v-col>
     </v-row>
@@ -171,6 +230,7 @@ import { TableHeader } from '@/typings/TableHeader';
 import { TableOptions } from '@/typings/TableOptions';
 import TransactionsApi from '@/api/TransactionsApi';
 import { FieldOrderInfo } from '@/typings/api/baseTypes/GridQuery';
+import InlineField from '@/components/InlineField.vue';
 
 const budgetsStore = namespace('budgets');
 
@@ -179,6 +239,7 @@ const budgetsStore = namespace('budgets');
     'v-category-select': () => import('@/components/CategorySelect.vue'),
     'v-date-range-slider': () => import('@/components/DateRangeSlider.vue'),
     'filter-box': () => import('./components/FilterBox.vue'),
+    InlineField,
   },
 })
 export default class Transactions extends Vue {
@@ -193,6 +254,8 @@ export default class Transactions extends Vue {
     budgetCategoryIds: [],
     budgetCategoryType: null,
     search: '',
+    transactionDateStart: null,
+    transactionDateEnd: null,
   };
 
   filtersVisible = true;
@@ -239,6 +302,23 @@ export default class Transactions extends Vue {
     multiSort: true,
     mustSort: false,
   };
+  queryTimeout: NodeJS.Timeout | null = null;
+
+  pageSizes = [20, 50, 100, 500];
+
+  get pageInput(): string {
+    return this.gridOptions.page.toString();
+  }
+  set pageInput(value: string) {
+    let page = Number(value);
+    if (this.gridOptions.page != page) {
+      this.gridOptions.page = page;
+    }
+  }
+
+  get pages() {
+    return Math.ceil(this.totalTransactions / this.gridOptions.itemsPerPage);
+  }
 
   get showTransactionsList() {
     return true;
@@ -274,6 +354,16 @@ export default class Transactions extends Vue {
   }
 
   async fetchTransactions() {
+    if (this.queryTimeout) {
+      clearTimeout(this.queryTimeout);
+    }
+    this.queryTimeout = setTimeout(() => {
+      this.executeFetchTransactions();
+      this.queryTimeout = null;
+    }, 200);
+  }
+
+  async executeFetchTransactions() {
     if (!this.activeBudget) {
       return;
     }
@@ -333,6 +423,22 @@ export default class Transactions extends Vue {
       this.$wait.end(`saving.transaction.amount${transaction.transactionId}`);
     }
   }
+
+  async updateTransactionDate(transaction: GetTransactionList.TransactionDto) {
+    this.$wait.start(`saving.transaction.transactionDate${transaction.transactionId}`);
+    try {
+      const result = await TransactionsApi.updateTransactionDate({
+        transactionId: transaction.transactionId,
+        transactionDate: transaction.transactionDate,
+      });
+      transaction.transactionDate = result.data;
+    } catch (error) {
+      this.$msgBox.apiError(error);
+    } finally {
+      this.$wait.end(`saving.transaction.transactionDate${transaction.transactionId}`);
+    }
+  }
+
   async removeTransaction(transaction: GetTransactionList.TransactionDto) {
     const confirmed = await this.$msgBox.confirm(
       this.$t('transaction.removeConfirmTitle').toString(),

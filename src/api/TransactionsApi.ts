@@ -3,6 +3,7 @@ import * as CreateTransaction from '@/typings/api/transactions/CreateTransaction
 import * as GetTransactionList from '@/typings/api/transactions/GetTransactionList';
 import * as UpdateTransactionDescription from '@/typings/api/transactions/UpdateTransactionDescription';
 import * as UpdateTransactionAmount from '@/typings/api/transactions/UpdateTransactionAmount';
+import * as UpdateTransactionDate from '@/typings/api/transactions/UpdateTransactionDate';
 import * as RemoveTransaction from '@/typings/api/transactions/RemoveTransaction';
 import * as GetTransactionsDatesRange from '@/typings/api/transactions/GetTransactionsDatesRange';
 
@@ -35,6 +36,15 @@ class TransactionsApi {
   ): Promise<UpdateTransactionDescription.Result> {
     const url = this.baseUrl + 'update/description';
     return (await api.patch<UpdateTransactionDescription.Result>(url, command)).data;
+  }
+
+  async updateTransactionDate(
+    command: UpdateTransactionDate.Command,
+  ): Promise<UpdateTransactionDate.Result> {
+    const url = this.baseUrl + 'update/transaction-date';
+    const response = await api.patch<UpdateTransactionDate.Result>(url, command);
+    response.data.data = new Date(response.data.data);
+    return response.data;
   }
 
   async updateTransactionAmount(

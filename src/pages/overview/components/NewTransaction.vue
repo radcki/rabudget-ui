@@ -9,7 +9,7 @@
         <v-tab class="subheading white--text" ripple>{{ $t('general.allocation') }}</v-tab>
       </v-tabs>
     </v-card-title>
-    <v-card-text class="pt-3">
+    <v-card-text v-if="activeBudget" class="pt-3">
       <template v-if="tab == eTab.Spending">
         <transaction-edit-form
           key="formSpending"
@@ -226,7 +226,11 @@ export default class NewTransaction extends Vue {
     }
   }
 
-  @Watch('activeBudget')
+  mounted() {
+    this.resetForm();
+  }
+
+  @Watch('activeBudget', { deep: true })
   onBudgetChange() {
     this.resetForm();
   }
