@@ -81,7 +81,7 @@
                   small
                   :tooltip="$t('transaction.removeTransanction')"
                   icon="mdi-trash-can-outline"
-                  :loading="$wait.is(`removing.transaction.amount${transaction.transactionId}`)"
+                  :loading="$wait.is(`removing.transaction${transaction.transactionId}`)"
                   @click="removeTransaction(transaction)"
                 ></icon-button>
               </v-list-item-action>

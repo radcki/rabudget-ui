@@ -99,7 +99,7 @@
                     <inline-field
                       v-model="item.transactionDate"
                       type="date"
-                      :loading="$wait.is(`saving.transaction.description${item.transactionId}`)"
+                      :loading="$wait.is(`saving.transaction.transactionDate${item.transactionId}`)"
                       @change="updateTransactionDate(item)"
                     ></inline-field>
                   </template>
@@ -114,12 +114,13 @@
                   </template>
 
                   <template #item.actions="{ item }">
-                    <v-btn color="primary" dark icon text>
-                      <v-icon>mdi-pencil</v-icon>
-                    </v-btn>
-                    <v-btn color="red darken-1" dark icon text>
-                      <v-icon @click="deleteTransaction(item.transactionId)">mdi-trash-can</v-icon>
-                    </v-btn>
+                    <icon-button
+                      :tooltip="$t('transaction.removeTransanction')"
+                      icon="mdi-trash-can"
+                      color="red"
+                      :loading="$wait.is(`removing.transaction${item.transactionId}`)"
+                      @click="removeTransaction(item)"
+                    ></icon-button>
                   </template>
                 </v-data-table>
 
@@ -455,7 +456,7 @@ export default class Transactions extends Vue {
     } catch (error) {
       this.$msgBox.apiError(error);
     } finally {
-      this.$wait.end(`removing.transaction.amount${transaction.transactionId}`);
+      this.$wait.end(`removing.transaction${transaction.transactionId}`);
     }
   }
   showFilters() {
