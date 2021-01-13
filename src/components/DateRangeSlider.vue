@@ -38,6 +38,9 @@
                 v-model="selectedMin"
                 :type="step === 'month' ? 'month' : 'day'"
                 :label="$t('general.toDate')"
+                filled
+                hide-details
+                dense
               ></v-date-field>
             </v-flex>
 
@@ -46,6 +49,9 @@
                 v-model="selectedMax"
                 :type="step === 'month' ? 'month' : 'day'"
                 :label="$t('general.toDate')"
+                filled
+                dense
+                hide-details
               ></v-date-field>
             </v-flex>
             <v-flex xs12>

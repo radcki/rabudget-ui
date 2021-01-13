@@ -1,6 +1,11 @@
 <template>
   <v-container>
     <v-row>
+      <v-col>
+        <v-subheader class="headline white--text">{{ $t('overview.title') }}</v-subheader>
+      </v-col>
+    </v-row>
+    <v-row>
       <v-col class="d-flex flex-grow-0" style="width: 480px">
         <new-transaction></new-transaction>
       </v-col>

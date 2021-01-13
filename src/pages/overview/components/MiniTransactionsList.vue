@@ -190,10 +190,18 @@ export default class MiniTransactionsList extends Vue {
       TransactionNotificationEvents.TransactionListChanged,
       this.fetchTransactions,
     );
+    this.$notificationHub.on(
+      TransactionNotificationEvents.TransactionUpdated,
+      this.fetchTransactions,
+    );
   }
   beforeDestroy() {
     this.$notificationHub.off(
       TransactionNotificationEvents.TransactionListChanged,
+      this.fetchTransactions,
+    );
+    this.$notificationHub.off(
+      TransactionNotificationEvents.TransactionUpdated,
       this.fetchTransactions,
     );
   }

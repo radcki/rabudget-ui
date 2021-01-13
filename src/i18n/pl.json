@@ -55,7 +55,9 @@
     "none": "Brak",
     "noData": "Brak danych",
     "loadMore": "Wczytaj więcej",
-    "allTypes": "Wszystkie typy"
+    "allTypes": "Wszystkie typy",
+    "itemsPerPage": "Pokaż po",
+    "page": "Strona"
   },
   "account": {
     "logged": "Zalogowany"
