@@ -41,11 +41,18 @@
               :key="'tr_' + transaction.transactionId"
               class="pb-1"
             >
-              <v-list-item-avatar :size="24">
-                <v-icon>
-                  {{ categoryIcon(transaction.budgetCategoryId) }}
-                </v-icon>
-              </v-list-item-avatar>
+              <v-list-item-action :size="24" style="width: 24px">
+                <inline-field
+                  v-model="transaction.budgetCategoryId"
+                  type="category"
+                  :hide-category-name="true"
+                  :category-type="categoryType"
+                  :loading="
+                    $wait.is(`saving.transaction.budgetCategory${transaction.transactionId}`)
+                  "
+                  @change="updateTransactionCategory(transaction)"
+                ></inline-field>
+              </v-list-item-action>
 
               <v-list-item-content class="py-0">
                 <v-list-item-title class="font-weight-medium">
@@ -156,11 +163,6 @@ export default class MiniTransactionsList extends Vue {
   get color(): string {
     return eBudgetCategoryType[this.categoryType].toLowerCase();
   }
-  categoryIcon(budgetCategoryId): string {
-    return (
-      this.categories.find(v => v.budgetCategoryId == budgetCategoryId)?.budgetCategoryIconKey || ''
-    );
-  }
 
   async fetchTransactions() {
     if (!this.activeBudget) {
@@ -239,6 +241,22 @@ export default class MiniTransactionsList extends Vue {
       this.$wait.end(`saving.transaction.amount${transaction.transactionId}`);
     }
   }
+
+  async updateTransactionCategory(transaction: GetTransactionList.TransactionDto) {
+    this.$wait.start(`saving.transaction.budgetCategory${transaction.transactionId}`);
+    try {
+      const result = await TransactionsApi.updateTransactionCategory({
+        transactionId: transaction.transactionId,
+        budgetCategoryId: transaction.budgetCategoryId,
+      });
+      transaction.budgetCategoryId = result.data;
+    } catch (error) {
+      this.$msgBox.apiError(error);
+    } finally {
+      this.$wait.end(`saving.transaction.budgetCategory${transaction.transactionId}`);
+    }
+  }
+
   async removeTransaction(transaction: GetTransactionList.TransactionDto) {
     const confirmed = await this.$msgBox.confirm(
       this.$t('transaction.removeConfirmTitle').toString(),

@@ -18,6 +18,18 @@
       <template v-if="type == 'money'">
         <div class="inline-field--display" @click="startEdit()">{{ innerValue | money }}</div>
       </template>
+      <template v-if="type == 'category' && budgetCategory">
+        <div class="inline-field--display" @click="startEdit()">
+          <v-icon
+            :left="!hideCategoryName"
+            :color="categoryColor(budgetCategory.budgetCategoryId)"
+            >{{ budgetCategory.budgetCategoryIconKey }}</v-icon
+          >
+          <span v-if="!hideCategoryName">
+            {{ budgetCategory.name }}
+          </span>
+        </div>
+      </template>
     </template>
     <template v-if="editMode">
       <template v-if="type == 'text'">
@@ -68,6 +80,43 @@
           ></money-field>
         </div>
       </template>
+
+      <template v-if="type == 'category' && budgetCategory">
+        <div class="inline-field--editor" @click="startEdit()">
+          <v-select
+            ref="textEditor"
+            v-model="innerValue"
+            :return-object="false"
+            :items="budgetCategories"
+            item-value="budgetCategoryId"
+            item-name="name"
+            class="px-0 mx-0"
+            :style="hideCategoryName ? 'max-width: 50px' : 'max-width: 150px'"
+            filled
+            hide-details
+            :autofocus="true"
+            @keyup.enter="finishEdit()"
+            @keyup.esc="cancelEdit"
+            @click:append="cancelEdit"
+            @blur="finishEdit()"
+          >
+            <template #selection="{ item }">
+              <v-icon :size="30" :left="!hideCategoryName">
+                {{ item.budgetCategoryIconKey }}
+              </v-icon>
+              <span v-if="!hideCategoryName">
+                {{ item.name }}
+              </span>
+            </template>
+            <template #item="{ item }">
+              <v-icon left>
+                {{ item.budgetCategoryIconKey }}
+              </v-icon>
+              {{ item.name }}
+            </template>
+          </v-select>
+        </div>
+      </template>
     </template>
   </div>
 </template>
@@ -103,9 +152,14 @@
 </style>
 
 <script lang="ts">
+import { BudgetCategoryDto } from '@/typings/api/budgetCategories/GetBudgetCategoriesList';
+import { eBudgetCategoryType } from '@/typings/enums/eBudgetCategoryType';
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
 import DateField from './DateField.vue';
 import MoneyField from './MoneyField.vue';
+
+const budgetsStore = namespace('budgets');
 
 @Component({
   components: {
@@ -117,11 +171,33 @@ export default class InlineField extends Vue {
   @Prop({ type: [String, Date, Number, Object] }) value!: Date | string | number;
   @Prop(Boolean) loading!: boolean;
   @Prop({ type: String, default: 'text' }) type!: string;
+  @Prop({ type: Number, required: false }) categoryType!: eBudgetCategoryType | null;
+  @Prop(Boolean) hideCategoryName!: boolean;
 
   innerValue = this.value;
   initialValue = JSON.parse(JSON.stringify(this.value));
   editMode = false;
   timeout: null | NodeJS.Timeout = null;
+
+  @budgetsStore.Getter('activeBudgetCategories') allBudgetCategories!: BudgetCategoryDto[];
+
+  get budgetCategory() {
+    if (this.type == 'category' && this.innerValue) {
+      return this.getBudgetCategory(this.innerValue.toString());
+    }
+    return null;
+  }
+
+  get budgetCategories() {
+    if (this.categoryType == null) {
+      return [];
+    }
+    return this.allBudgetCategories.filter(v => v.budgetCategoryType == this.categoryType);
+  }
+
+  getBudgetCategory(budgetCategoryId: string) {
+    return this.budgetCategories.find(v => v.budgetCategoryId == budgetCategoryId);
+  }
 
   startEdit() {
     this.editMode = true;
@@ -138,6 +214,11 @@ export default class InlineField extends Vue {
   cancelEdit() {
     this.innerValue = !this.value ? null : this.value;
     this.editMode = false;
+  }
+
+  categoryColor(budgetCategoryId): string {
+    const categoryType = this.getBudgetCategory(budgetCategoryId)?.budgetCategoryType;
+    return categoryType ? eBudgetCategoryType[categoryType].toLowerCase() : '';
   }
 
   async finishEdit() {

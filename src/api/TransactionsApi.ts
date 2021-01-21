@@ -6,6 +6,7 @@ import * as UpdateTransactionAmount from '@/typings/api/transactions/UpdateTrans
 import * as UpdateTransactionDate from '@/typings/api/transactions/UpdateTransactionDate';
 import * as RemoveTransaction from '@/typings/api/transactions/RemoveTransaction';
 import * as GetTransactionsDatesRange from '@/typings/api/transactions/GetTransactionsDatesRange';
+import * as UpdateTransactionCategory from '@/typings/api/transactions/UpdateTransactionCategory';
 
 class TransactionsApi {
   private baseUrl = 'transaction/';
@@ -52,6 +53,13 @@ class TransactionsApi {
   ): Promise<UpdateTransactionAmount.Result> {
     const url = this.baseUrl + 'update/amount';
     return (await api.patch<UpdateTransactionAmount.Result>(url, command)).data;
+  }
+
+  async updateTransactionCategory(
+    command: UpdateTransactionCategory.Command,
+  ): Promise<UpdateTransactionCategory.Result> {
+    const url = this.baseUrl + 'update/budget-category';
+    return (await api.patch<UpdateTransactionCategory.Result>(url, command)).data;
   }
 
   async removeTransaction(command: RemoveTransaction.Command): Promise<RemoveTransaction.Result> {
