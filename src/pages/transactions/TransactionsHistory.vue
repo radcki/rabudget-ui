@@ -7,10 +7,10 @@
         }}</v-subheader>
       </v-col>
     </v-row>
-    <v-row no>
+    <v-row>
       <v-col v-if="filtersVisible" class="d-flex flex-grow-0" style="min-width: 350px">
         <v-row no-gutters>
-          <v-col>
+          <v-col :cols="12">
             <filter-box v-model="query"></filter-box>
           </v-col>
         </v-row>
@@ -81,10 +81,13 @@
                   :items-per-page-options="pageSizes"
                 >
                   <template #item.budgetCategoryId="{ item }">
-                    <v-icon :color="categoryColor(item.budgetCategoryId)" left>
-                      {{ categoryIcon(item.budgetCategoryId) }}
-                    </v-icon>
-                    {{ categoryName(item.budgetCategoryId) }}
+                    <inline-field
+                      v-model="item.budgetCategoryId"
+                      type="category"
+                      :category-type="categoryType(item.budgetCategoryId)"
+                      :loading="$wait.is(`saving.transaction.budgetCategory${item.transactionId}`)"
+                      @change="updateTransactionCategory(item)"
+                    ></inline-field>
                   </template>
 
                   <template #item.description="{ item }">
@@ -347,6 +350,13 @@ export default class Transactions extends Vue {
   categoryName(budgetCategoryId): string {
     return this.categories.find(v => v.budgetCategoryId == budgetCategoryId)?.name || '';
   }
+
+  categoryType(budgetCategoryId): eBudgetCategoryType {
+    const categoryType = this.categories.find(v => v.budgetCategoryId == budgetCategoryId)
+      ?.budgetCategoryType;
+
+    return categoryType;
+  }
   categoryColor(budgetCategoryId): string {
     const categoryType = this.categories.find(v => v.budgetCategoryId == budgetCategoryId)
       ?.budgetCategoryType;
@@ -437,6 +447,21 @@ export default class Transactions extends Vue {
       this.$msgBox.apiError(error);
     } finally {
       this.$wait.end(`saving.transaction.transactionDate${transaction.transactionId}`);
+    }
+  }
+
+  async updateTransactionCategory(transaction: GetTransactionList.TransactionDto) {
+    this.$wait.start(`saving.transaction.budgetCategory${transaction.transactionId}`);
+    try {
+      const result = await TransactionsApi.updateTransactionCategory({
+        transactionId: transaction.transactionId,
+        budgetCategoryId: transaction.budgetCategoryId,
+      });
+      transaction.budgetCategoryId = result.data;
+    } catch (error) {
+      this.$msgBox.apiError(error);
+    } finally {
+      this.$wait.end(`saving.transaction.budgetCategory${transaction.transactionId}`);
     }
   }
 

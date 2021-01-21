@@ -26,6 +26,7 @@
 
       <v-col cols="12" class="pa-5">
         <span class="title">{{ $t('trasnsactionHistory.filter.category') }}</span>
+        <v-spacer class="py-2"></v-spacer>
         <v-category-select
           v-if="categories"
           v-model="query.budgetCategoryIds"
