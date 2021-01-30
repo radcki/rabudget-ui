@@ -6,8 +6,21 @@
           $t('trasnsactionHistory.title')
         }}</v-subheader>
       </v-col>
+      <v-col cols="4" class="pt-4">
+        <v-text-field
+          v-if="$vuetify.breakpoint.smAndUp"
+          v-model="query.search"
+          append-icon="mdi-magnify"
+          :label="$t('general.search')"
+          single-line
+          solo
+          hide-details
+          @keyup.enter="fetchTransactions()"
+          @click:append="fetchTransactions()"
+        ></v-text-field>
+      </v-col>
     </v-row>
-    <v-row>
+    <v-row class="mt-1">
       <v-col v-if="filtersVisible" class="d-flex flex-grow-0" style="min-width: 350px">
         <v-row no-gutters>
           <v-col :cols="12">
@@ -17,40 +30,6 @@
       </v-col>
       <v-col>
         <v-row>
-          <v-col cols="12">
-            <v-row>
-              <v-col cols="2">
-                <icon-button
-                  v-if="filtersVisible"
-                  color="white"
-                  icon="mdi-chevron-left"
-                  :tooltip="$t('trasnsactionHistory.hideFilters')"
-                  @click="hideFilters()"
-                ></icon-button>
-                <icon-button
-                  v-if="!filtersVisible"
-                  color="white"
-                  icon="mdi-chevron-right"
-                  :tooltip="$t('trasnsactionHistory.hideFilters')"
-                  @click="showFilters()"
-                ></icon-button>
-              </v-col>
-              <v-spacer></v-spacer>
-              <v-col cols="4">
-                <v-text-field
-                  v-if="$vuetify.breakpoint.smAndUp"
-                  v-model="query.search"
-                  append-icon="mdi-magnify"
-                  :label="$t('general.search')"
-                  single-line
-                  solo
-                  hide-details
-                  @keyup.enter="fetchTransactions()"
-                  @click:append="fetchTransactions()"
-                ></v-text-field>
-              </v-col>
-            </v-row>
-          </v-col>
           <v-col cols="12">
             <template v-if="isLoading && isMobile" xs12 class="text-xs-center">
               <v-progress-circular
@@ -75,6 +54,7 @@
                   :search="search"
                   item-key="transactionId"
                   disable-pagination
+                  show-expand
                   hide-default-footer
                   :server-items-length="totalTransactions"
                   :options.sync="gridOptions"
@@ -114,6 +94,9 @@
                       :loading="$wait.is(`saving.transaction.amount${item.transactionId}`)"
                       @change="updateTransactionAmount(item)"
                     ></inline-field>
+                    <template v-if="item.subTransactions.length > 0">
+                      <nobr> ({{ item.totalAmount | money }}) </nobr>
+                    </template>
                   </template>
 
                   <template #item.actions="{ item }">
@@ -124,6 +107,94 @@
                       :loading="$wait.is(`removing.transaction${item.transactionId}`)"
                       @click="removeTransaction(item)"
                     ></icon-button>
+                  </template>
+
+                  <template v-slot:expanded-item="{ headers, item }">
+                    <td :colspan="headers.length" class="py-2">
+                      <v-row no-gutters>
+                        <v-col>
+                          <v-subheader>{{
+                            $t('trasnsactionHistory.subtransactions.title')
+                          }}</v-subheader>
+                        </v-col>
+                        <v-col class="d-flex flex-grow-0 mt-2">
+                          <v-btn
+                            color="primary"
+                            small
+                            :loading="$wait.is(`saving.subTransaction${item.transactionId}`)"
+                            @click="createNewSubtransaction(item)"
+                          >
+                            <v-icon left>mdi-plus</v-icon>
+                            {{ $t('trasnsactionHistory.subtransactions.new') }}
+                          </v-btn>
+                        </v-col>
+                      </v-row>
+                      <v-row no-gutters class="mt-0">
+                        <v-col class="text-center pb-2">
+                          <template v-if="item.subTransactions.length > 0">
+                            <v-data-table
+                              disable-filtering
+                              disable-pagination
+                              hide-default-footer
+                              dense
+                              :headers="subtransactionHeaders"
+                              :items="item.subTransactions"
+                            >
+                              <template #item.description="{ item }">
+                                <inline-field
+                                  v-model="item.description"
+                                  :loading="
+                                    $wait.is(
+                                      `saving.subTransaction.description${item.subTransactionId}`,
+                                    )
+                                  "
+                                  @change="updateSubTransactionDescription(item)"
+                                ></inline-field>
+                              </template>
+
+                              <template #item.transactionDate="{ item }">
+                                <inline-field
+                                  v-model="item.transactionDate"
+                                  type="date"
+                                  :loading="
+                                    $wait.is(
+                                      `saving.subTransaction.transactionDate${item.subTransactionId}`,
+                                    )
+                                  "
+                                  @change="updateSubTransactionDate(item)"
+                                ></inline-field>
+                              </template>
+
+                              <template #item.amount="{ item }">
+                                <inline-field
+                                  v-model="item.amount"
+                                  type="money"
+                                  :loading="
+                                    $wait.is(`saving.subTransaction.amount${item.subTransactionId}`)
+                                  "
+                                  @change="updateSubTransactionAmount(item)"
+                                ></inline-field>
+                              </template>
+
+                              <template #item.actions="{ item }">
+                                <icon-button
+                                  :tooltip="$t('transaction.removeTransanction')"
+                                  icon="mdi-trash-can"
+                                  color="red"
+                                  :loading="
+                                    $wait.is(`removing.subTransaction${item.subTransactionId}`)
+                                  "
+                                  @click="removeSubTransaction(item)"
+                                ></icon-button>
+                              </template>
+                            </v-data-table>
+                          </template>
+                          <template v-else>
+                            <span>{{ $t('trasnsactionHistory.subtransactions.noData') }}</span>
+                          </template>
+                        </v-col>
+                      </v-row>
+                    </td>
                   </template>
                 </v-data-table>
 
@@ -235,6 +306,8 @@ import { TableOptions } from '@/typings/TableOptions';
 import TransactionsApi from '@/api/TransactionsApi';
 import { FieldOrderInfo } from '@/typings/api/baseTypes/GridQuery';
 import InlineField from '@/components/InlineField.vue';
+import * as AddSubTransaction from '@/typings/api/transactions/AddSubTransaction';
+import CreateSubtransactionEditor from '@/modals/CreateSubtransactionEditor.vue';
 
 const budgetsStore = namespace('budgets');
 
@@ -270,6 +343,30 @@ export default class Transactions extends Vue {
       sortable: true,
       value: 'budgetCategoryId',
     },
+    {
+      text: this.$t('general.date').toString(),
+      sortable: true,
+      value: 'transactionDate',
+    },
+    {
+      text: this.$t('general.description').toString(),
+      sortable: true,
+      value: 'description',
+    },
+    {
+      text: this.$t('general.amount').toString(),
+      sortable: true,
+      value: 'amount',
+    },
+    {
+      text: this.$t('general.actions').toString(),
+      sortable: false,
+      value: 'actions',
+    },
+    { text: '', value: 'data-table-expand' },
+  ];
+
+  subtransactionHeaders: TableHeader<GetTransactionList.SubTransactionDto>[] = [
     {
       text: this.$t('general.date').toString(),
       sortable: true,
@@ -484,6 +581,103 @@ export default class Transactions extends Vue {
       this.$wait.end(`removing.transaction${transaction.transactionId}`);
     }
   }
+
+  async createNewSubtransaction(transaction: GetTransactionList.TransactionDto) {
+    let command: AddSubTransaction.Command = {
+      transactionId: transaction.transactionId,
+      amount: {
+        currencyCode: transaction.amount.currencyCode,
+        amount: 0,
+      },
+      description: '',
+      transactionDate: new Date(),
+    };
+
+    command = await this.$modal.open(CreateSubtransactionEditor, command, {
+      title: this.$t('transactionHistory.subtransactions.editorTitle').toString(),
+    });
+
+    if (!command) {
+      return;
+    }
+    this.$wait.start(`saving.subTransaction${transaction.transactionId}`);
+    try {
+      await TransactionsApi.addSubTransaction(command);
+      this.fetchTransactions();
+    } catch (error) {
+      this.$msgBox.apiError(error);
+    } finally {
+      this.$wait.end(`saving.subTransaction${transaction.transactionId}`);
+    }
+  }
+
+  async updateSubTransactionDescription(subTransactionId: GetTransactionList.SubTransactionDto) {
+    this.$wait.start(`saving.subTransaction.description${subTransactionId.subTransactionId}`);
+    try {
+      const result = await TransactionsApi.updateSubTransactionDescription({
+        subTransactionId: subTransactionId.subTransactionId,
+        description: subTransactionId.description,
+      });
+      subTransactionId.description = result.data;
+    } catch (error) {
+      this.$msgBox.apiError(error);
+    } finally {
+      this.$wait.end(`saving.subTransaction.description${subTransactionId.subTransactionId}`);
+    }
+  }
+
+  async updateSubTransactionAmount(subTransaction: GetTransactionList.SubTransactionDto) {
+    this.$wait.start(`saving.subTransaction.amount${subTransaction.subTransactionId}`);
+    try {
+      const result = await TransactionsApi.updateSubTransactionAmount({
+        subTransactionId: subTransaction.subTransactionId,
+        amount: subTransaction.amount,
+      });
+      subTransaction.amount = result.data;
+      this.fetchTransactions();
+    } catch (error) {
+      this.$msgBox.apiError(error);
+    } finally {
+      this.$wait.end(`saving.subTransaction.amount${subTransaction.subTransactionId}`);
+    }
+  }
+
+  async updateSubTransactionDate(subTransaction: GetTransactionList.SubTransactionDto) {
+    this.$wait.start(`saving.subTransaction.subTransactionDate${subTransaction.subTransactionId}`);
+    try {
+      const result = await TransactionsApi.updateSubTransactionDate({
+        subTransactionId: subTransaction.subTransactionId,
+        transactionDate: subTransaction.transactionDate,
+      });
+      subTransaction.transactionDate = result.data;
+    } catch (error) {
+      this.$msgBox.apiError(error);
+    } finally {
+      this.$wait.end(`saving.subTransaction.subTransactionDate${subTransaction.subTransactionId}`);
+    }
+  }
+
+  async removeSubTransaction(subTransaction: GetTransactionList.SubTransactionDto) {
+    const confirmed = await this.$msgBox.confirm(
+      this.$t('transactionHistory.subtransactions.removeConfirmTitle').toString(),
+      this.$t('transactionHistory.subtransactions.removeConfirm').toString(),
+    );
+    if (!confirmed) {
+      return;
+    }
+    this.$wait.start(`removing.subTransaction${subTransaction.subTransactionId}`);
+    try {
+      await TransactionsApi.removeSubTransaction({
+        subTransactionId: subTransaction.subTransactionId,
+      });
+      this.fetchTransactions();
+    } catch (error) {
+      this.$msgBox.apiError(error);
+    } finally {
+      this.$wait.end(`removing.subTransaction${subTransaction.subTransactionId}`);
+    }
+  }
+
   showFilters() {
     this.filtersVisible = true;
   }

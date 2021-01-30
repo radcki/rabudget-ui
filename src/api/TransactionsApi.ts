@@ -8,6 +8,12 @@ import * as RemoveTransaction from '@/typings/api/transactions/RemoveTransaction
 import * as GetTransactionsDatesRange from '@/typings/api/transactions/GetTransactionsDatesRange';
 import * as UpdateTransactionCategory from '@/typings/api/transactions/UpdateTransactionCategory';
 
+import * as AddSubTransaction from '@/typings/api/transactions/AddSubTransaction';
+import * as UpdateSubTransactionAmount from '@/typings/api/transactions/UpdateSubTransactionAmount';
+import * as UpdateSubTransactionDate from '@/typings/api/transactions/UpdateSubTransactionDate';
+import * as UpdateSubTransactionDescription from '@/typings/api/transactions/UpdateSubTransactionDescription';
+import * as RemoveSubTransaction from '@/typings/api/transactions/RemoveSubTransaction';
+
 class TransactionsApi {
   private baseUrl = 'transaction/';
   async isAlive() {
@@ -75,6 +81,41 @@ class TransactionsApi {
     if (data.data.maxDate) data.data.maxDate = new Date(data.data.maxDate);
     if (data.data.minDate) data.data.minDate = new Date(data.data.minDate);
     return data;
+  }
+
+  async addSubTransaction(command: AddSubTransaction.Command): Promise<AddSubTransaction.Result> {
+    const url = this.baseUrl + 'sub-transaction/add';
+    return (await api.post<AddSubTransaction.Result>(url, command)).data;
+  }
+
+  async updateSubTransactionDescription(
+    command: UpdateSubTransactionDescription.Command,
+  ): Promise<UpdateSubTransactionDescription.Result> {
+    const url = this.baseUrl + 'sub-transaction/update/description';
+    return (await api.patch<UpdateSubTransactionDescription.Result>(url, command)).data;
+  }
+
+  async updateSubTransactionDate(
+    command: UpdateSubTransactionDate.Command,
+  ): Promise<UpdateSubTransactionDate.Result> {
+    const url = this.baseUrl + 'sub-transaction/update/transaction-date';
+    const response = await api.patch<UpdateSubTransactionDate.Result>(url, command);
+    response.data.data = new Date(response.data.data);
+    return response.data;
+  }
+
+  async updateSubTransactionAmount(
+    command: UpdateSubTransactionAmount.Command,
+  ): Promise<UpdateSubTransactionAmount.Result> {
+    const url = this.baseUrl + 'sub-transaction/update/amount';
+    return (await api.patch<UpdateSubTransactionAmount.Result>(url, command)).data;
+  }
+
+  async removeSubTransaction(
+    command: RemoveSubTransaction.Command,
+  ): Promise<RemoveSubTransaction.Result> {
+    const url = this.baseUrl + 'sub-transaction/remove';
+    return (await api.post<RemoveSubTransaction.Result>(url, command)).data;
   }
 }
 
