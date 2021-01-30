@@ -22,6 +22,7 @@ export interface TransactionDto {
   description: string;
   transactionDate: Date;
   subTransactions: SubTransactionDto[];
+  totalAmount: MoneyAmount;
 }
 
 export interface SubTransactionDto {

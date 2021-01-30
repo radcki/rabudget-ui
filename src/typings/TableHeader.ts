@@ -1,7 +1,7 @@
 import { DataTableCompareFunction, DataTableHeader } from 'vuetify';
 
 export interface TableHeader<T> {
-  value: keyof T | 'actions';
+  value: keyof T | 'actions' | 'data-table-expand';
   text: string;
   align?: 'start' | 'center' | 'end';
   sortable?: boolean;

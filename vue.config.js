@@ -1,3 +1,5 @@
+const fs = require('fs')
+
 module.exports = {
   "transpileDependencies": [
     "vuetify"
@@ -58,6 +60,9 @@ module.exports = {
     // }
   },
   devServer: {
-    host: 'localhost'
+    host: 'localhost',
+    key: fs.readFileSync('./cert/ca.key'),
+    cert: fs.readFileSync('./cert/ca.crt'),
+    ca: fs.readFileSync('./cert/ca.pem'),
   }
 }
