@@ -1,6 +1,10 @@
 <template>
   <v-app>
-    <navigation-drawer />
+    <v-app-bar v-if="isMobile" color="primary" dark fixed app>
+      <v-app-bar-nav-icon @click="navCollapsed = !navCollapsed"></v-app-bar-nav-icon>
+      <v-toolbar-title>raBudget</v-toolbar-title>
+    </v-app-bar>
+    <navigation-drawer :collapsed.sync="navCollapsed" />
 
     <v-main>
       <router-view></router-view>
@@ -31,12 +35,13 @@ export default class App extends Vue {
   loadingOverlay = false;
 
   minNavSelected = true;
+  navCollapsed = false;
   get minNav() {
-    return this.mobile ? false : this.minNavSelected;
+    return this.isMobile ? false : this.minNavSelected;
   }
 
-  get mobile() {
-    return this.$vuetify.breakpoint.mobile;
+  get isMobile() {
+    return !this.$vuetify.breakpoint.smAndUp;
   }
 
   @budgetsStore.State('budgets') budgets!: Budget[];

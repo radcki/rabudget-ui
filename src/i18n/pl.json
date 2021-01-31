@@ -150,7 +150,9 @@
     "description": "Opis",
     "allocationDate": "Data alokacji",
     "sourceBudgetCategory": "Kategoria źródłowa",
-    "targetBudgetCategory": "Kategoria docelowa"
+    "targetBudgetCategory": "Kategoria docelowa",
+    "removeConfirmTitle": "Usuwanie alokacji",
+    "removeConfirm": "Alokacja zostanie usunięta. Czy napewno chcesz kontynuować?"
   },
   "transactionHistory": {
     "subtransactions": {
@@ -158,5 +160,16 @@
       "removeConfirmTitle": "Usuwanie subtransakcji",
       "removeConfirm": "Subtransakcja zostanie usunięta. Czy jesteś pewien?"
     }
+  },
+  "allocationsHistory": {
+    "title": "Historia alokacji"
+  },
+  "allocationHistory": {
+    "filter": {
+      "targetCategory": "Kategoria docelowa",
+      "sourceCategory": "Kategoria źródłowa",
+      "allocationDate": "Data alokacji"
+    },
+    "removeAllocation": "Usuń alokację"
   }
 }

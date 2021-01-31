@@ -1,6 +1,5 @@
 import * as signalR from '@aspnet/signalr';
 import { VueConstructor } from 'vue/types/umd';
-import { CombinedVueInstance } from 'vue/types/vue';
 
 export interface NotificationHub {
   setup: (token: string) => void;
@@ -17,6 +16,10 @@ export const BalanceNotificationEvents = {
 export const TransactionNotificationEvents = {
   TransactionListChanged: 'TRANSACTION_LIST_CHANGED',
   TransactionUpdated: 'TRANSACTION_UPDATED',
+};
+export const AllocationNotificationEvents = {
+  AllocationListChanged: 'ALLOCATION_LIST_CHANGED',
+  AllocationUpdated: 'ALLOCATION_UPDATED',
 };
 
 class SignalrPlugin {

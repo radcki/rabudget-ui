@@ -380,7 +380,10 @@
                         </template>
                       </template>
                     </v-list>
-                    <v-divider :key="`dv_${index}`"></v-divider>
+                    <v-divider
+                      v-if="index < transactions.length - 1"
+                      :key="`dv_${index}`"
+                    ></v-divider>
                   </template>
                 </v-list>
               </v-card-text>
@@ -388,7 +391,7 @@
           </v-col>
           <v-col :cols="12">
             <v-row justify="end">
-              <v-col class="d-flex flex-grow-0" style="min-width: 180px">
+              <v-col class="mr-2 d-flex flex-grow-0" style="min-width: 180px">
                 <nobr class="pr-2 white--text">{{ $t('general.itemsPerPage') }}:</nobr>
                 <v-select
                   v-model="gridOptions.itemsPerPage"
@@ -400,7 +403,7 @@
                   style="max-width: 110px"
                 ></v-select>
               </v-col>
-              <v-col class="d-flex flex-grow-0" style="min-width: 320px">
+              <v-col class="d-flex flex-grow-0 justify-end" style="min-width: 320px">
                 <nobr class="pr-2 white--text">{{ $t('general.page') }}:</nobr>
                 <v-sheet
                   color="white"

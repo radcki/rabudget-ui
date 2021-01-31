@@ -3,9 +3,11 @@ import * as CreateAllocation from '@/typings/api/allocations/CreateAllocation';
 import * as GetAllocationList from '@/typings/api/allocations/GetAllocationList';
 import * as UpdateAllocationDescription from '@/typings/api/allocations/UpdateAllocationDescription';
 import * as UpdateAllocationAmount from '@/typings/api/allocations/UpdateAllocationAmount';
+import * as UpdateAllocationDate from '@/typings/api/allocations/UpdateAllocationDate';
 import * as UpdateAllocationTargetCategory from '@/typings/api/allocations/UpdateAllocationTargetCategory';
 import * as UpdateAllocationSourceCategory from '@/typings/api/allocations/UpdateAllocationSourceCategory';
 import * as RemoveAllocation from '@/typings/api/allocations/RemoveAllocation';
+import * as GetAllocationsDatesRange from '@/typings/api/allocations/GetAllocationsDatesRange';
 
 class AllocationsApi {
   private baseUrl = 'Allocation/';
@@ -41,6 +43,15 @@ class AllocationsApi {
     return (await api.patch<UpdateAllocationAmount.Result>(url, command)).data;
   }
 
+  async updateAllocationDate(
+    command: UpdateAllocationDate.Command,
+  ): Promise<UpdateAllocationDate.Result> {
+    const url = this.baseUrl + 'update/allocation-date';
+    const response = await api.patch<UpdateAllocationDate.Result>(url, command);
+    response.data.data = new Date(response.data.data);
+    return response.data;
+  }
+
   async updateAllocationTargetCategory(
     command: UpdateAllocationTargetCategory.Command,
   ): Promise<UpdateAllocationTargetCategory.Result> {
@@ -58,6 +69,16 @@ class AllocationsApi {
   async removeAllocation(command: RemoveAllocation.Command): Promise<RemoveAllocation.Result> {
     const url = this.baseUrl + 'remove';
     return (await api.post<RemoveAllocation.Result>(url, command)).data;
+  }
+
+  async getAllocationsDatesRange(
+    query: GetAllocationsDatesRange.Query,
+  ): Promise<GetAllocationsDatesRange.Result> {
+    const url = this.baseUrl + 'get-dates-range';
+    const data = await (await api.get<GetAllocationsDatesRange.Result>(url, query)).data;
+    if (data.data.maxDate) data.data.maxDate = new Date(data.data.maxDate);
+    if (data.data.minDate) data.data.minDate = new Date(data.data.minDate);
+    return data;
   }
 }
 
