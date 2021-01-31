@@ -117,7 +117,8 @@
     "filter": {
       "categoryType": "Typ kategorii",
       "category": "Kategoria",
-      "transactionDate": "Data transakcji"
+      "transactionDate": "Data transakcji",
+      "title": "Filtry"
     },
     "hideFilters": "Ukryj filtry",
     "subtransactions": {

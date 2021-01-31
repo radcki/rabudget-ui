@@ -1,6 +1,24 @@
 <template>
-  <v-card color="cardBackground">
+  <v-card color="cardBackground" :min-width="!isMobile && !isCollapsed ? 350 : ''">
     <v-row class="pa-0 ma-0">
+      <v-col>
+        <span class="title">{{ $t('trasnsactionHistory.filter.title') }}</span>
+      </v-col>
+      <v-col v-if="isMobile" class="d-flex flex-grow-0">
+        <icon-button
+          :icon="isCollapsed ? 'mdi-chevron-down' : 'mdi-chevron-up'"
+          @click="isCollapsed = !isCollapsed"
+        ></icon-button>
+      </v-col>
+
+      <v-col v-if="!isMobile" class="d-flex flex-grow-0">
+        <icon-button
+          :icon="isCollapsed ? 'mdi-chevron-right' : 'mdi-chevron-left'"
+          @click="isCollapsed = !isCollapsed"
+        ></icon-button>
+      </v-col>
+    </v-row>
+    <v-row v-show="!isCollapsed" class="pa-0 ma-0">
       <v-col cols="12" class="pa-5">
         <span class="title">{{ $t('trasnsactionHistory.filter.categoryType') }}</span>
         <v-radio-group v-model="query.budgetCategoryType" :mandatory="true" column>
@@ -65,7 +83,7 @@
       </v-col>
       <v-col cols="12" class="pa-0 ma-0"><v-divider /></v-col>
     </v-row>
-    <v-card-actions>
+    <v-card-actions v-show="!isCollapsed">
       <v-spacer></v-spacer>
       <v-btn color="primary" @click="resetFilters()">{{ $t('general.reset') }}</v-btn>
     </v-card-actions>
@@ -101,6 +119,8 @@ export default class FilterBox extends Vue {
 
   minTransactionDateFilter: Date | null = null;
   maxTransactionDateFilter: Date | null = null;
+
+  isCollapsed = false;
 
   format = format;
   eBudgetCategoryType = eBudgetCategoryType;

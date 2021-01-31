@@ -1,14 +1,19 @@
 <template>
-  <v-tooltip top>
-    <template #activator="{ on }">
-      <span v-on="on">
-        <v-btn icon :loading="loading" :small="small" :color="color" v-on="$listeners">
-          <v-icon :size="small ? 20 : undefined">{{ icon }}</v-icon>
-        </v-btn>
-      </span>
-    </template>
-    <span>{{ tooltip }}</span>
-  </v-tooltip>
+  <div>
+    <v-tooltip v-if="tooltip" top>
+      <template #activator="{ on }">
+        <span v-on="on">
+          <v-btn icon :loading="loading" :small="small" :color="color" v-on="$listeners">
+            <v-icon :size="small ? 20 : undefined">{{ icon }}</v-icon>
+          </v-btn>
+        </span>
+      </template>
+      <span>{{ tooltip }}</span>
+    </v-tooltip>
+    <v-btn v-else icon :loading="loading" :small="small" :color="color" v-on="$listeners">
+      <v-icon :size="small ? 20 : undefined">{{ icon }}</v-icon>
+    </v-btn>
+  </div>
 </template>
 
 <script lang="ts">
