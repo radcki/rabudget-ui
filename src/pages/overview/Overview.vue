@@ -5,7 +5,7 @@
         <v-subheader class="headline white--text">{{ $t('overview.title') }}</v-subheader>
       </v-col>
     </v-row>
-    <v-row>
+    <v-row class="mt-1">
       <v-col class="d-flex flex-grow-0" style="width: 480px">
         <new-transaction></new-transaction>
       </v-col>

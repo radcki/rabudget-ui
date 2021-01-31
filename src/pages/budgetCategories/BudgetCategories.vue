@@ -5,7 +5,7 @@
         <v-subheader class="headline white--text">{{ $t('budgetCategories.title') }}</v-subheader>
       </v-col>
     </v-row>
-    <v-row>
+    <v-row class="mt-1">
       <v-col>
         <categories-list
           color="spending"

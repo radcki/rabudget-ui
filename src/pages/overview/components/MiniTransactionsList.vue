@@ -65,12 +65,21 @@
                   ></inline-field>
                 </v-list-item-title>
                 <v-list-item-subtitle class="text--primary">
-                  <inline-field
-                    v-model="transaction.amount"
-                    type="money"
-                    :loading="$wait.is(`saving.transaction.amount${transaction.transactionId}`)"
-                    @change="updateTransactionAmount(transaction)"
-                  ></inline-field>
+                  <v-row no-gutters>
+                    <v-col>
+                      <inline-field
+                        v-model="transaction.amount"
+                        type="money"
+                        :loading="$wait.is(`saving.transaction.amount${transaction.transactionId}`)"
+                        @change="updateTransactionAmount(transaction)"
+                      ></inline-field>
+                    </v-col>
+                    <v-col class="text-right">
+                      <template v-if="transaction.subTransactions.length > 0">
+                        <nobr> ({{ transaction.totalAmount | money }}) </nobr>
+                      </template>
+                    </v-col>
+                  </v-row>
                 </v-list-item-subtitle>
               </v-list-item-content>
               <v-list-item-action class="d-flex flex-row">
