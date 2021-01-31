@@ -145,9 +145,10 @@ export default class BudgetCategoryEditor extends Vue {
       },
     };
     if (this.budgetCategory.budgetedAmounts.length > 0) {
-      newAmount.amount = this.budgetCategory.budgetedAmounts[
-        this.budgetCategory.budgetedAmounts.length - 1
-      ].amount;
+      newAmount.amount = Object.assign(
+        {},
+        this.budgetCategory.budgetedAmounts[this.budgetCategory.budgetedAmounts.length - 1].amount,
+      );
     }
     this.budgetCategory.budgetedAmounts.push(newAmount);
   }

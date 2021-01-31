@@ -2,7 +2,7 @@
   <v-card>
     <v-card-text class="px-4 pb-1">
       <v-list subheader>
-        <v-row v-for="(category, i) in categories" :key="i">
+        <v-row v-for="(category, i) in categories" :key="i" no-gutters>
           <v-col :cols="3">
             <v-avatar :color="color" size="30" class="mr-4">
               <v-icon dark size="20">{{ category.budgetCategoryIconKey }}</v-icon>
@@ -10,14 +10,14 @@
             {{ category.name }}
           </v-col>
           <template v-if="!!category.balance">
-            <v-col>
+            <v-col class="px-1">
               <value-bar
                 :value="category.balance.totalCategoryBalance"
                 :max="category.currentBudgetedAmount"
                 :loading="$wait.is(`loading.budgetCategoryBalance${category.budgetCategoryId}`)"
               ></value-bar>
             </v-col>
-            <v-col>
+            <v-col class="px-1">
               <value-bar
                 :value="category.balance.thisMonthTransactionsTotal"
                 inverse-color
@@ -25,7 +25,7 @@
                 :loading="$wait.is(`loading.budgetCategoryBalance${category.budgetCategoryId}`)"
               ></value-bar>
             </v-col>
-            <v-col>
+            <v-col class="px-1">
               <value-bar
                 :value="category.balance.budgetLeftToEndOfYear"
                 :max="category.currentBudgetedAmount"
