@@ -18,16 +18,19 @@
       <template v-if="type == 'money'">
         <div class="inline-field--display" @click="startEdit()">{{ innerValue | money }}</div>
       </template>
-      <template v-if="type == 'category' && budgetCategory">
-        <div class="inline-field--display" @click="startEdit()">
-          <v-icon
-            :left="!hideCategoryName"
-            :color="categoryColor(budgetCategory.budgetCategoryId)"
-            >{{ budgetCategory.budgetCategoryIconKey }}</v-icon
-          >
-          <span v-if="!hideCategoryName">
-            {{ budgetCategory.name }}
-          </span>
+      <template v-if="type == 'category'">
+        <div class="inline-field--display text-center" @click="startEdit()">
+          <template v-if="budgetCategory">
+            <v-icon
+              :left="!hideCategoryName"
+              :color="categoryColor(budgetCategory.budgetCategoryId)"
+              >{{ budgetCategory.budgetCategoryIconKey }}</v-icon
+            >
+            <span v-if="!hideCategoryName">
+              {{ budgetCategory.name }}
+            </span>
+          </template>
+          <template v-else> - </template>
         </div>
       </template>
     </template>
@@ -81,7 +84,7 @@
         </div>
       </template>
 
-      <template v-if="type == 'category' && budgetCategory">
+      <template v-if="type == 'category'">
         <div class="inline-field--editor" @click="startEdit()">
           <v-select
             ref="textEditor"
@@ -94,6 +97,7 @@
             :style="hideCategoryName ? 'max-width: 50px' : 'max-width: 150px'"
             filled
             hide-details
+            :clearable="clearable"
             :autofocus="true"
             @keyup.enter="finishEdit()"
             @keyup.esc="cancelEdit"
@@ -173,6 +177,7 @@ export default class InlineField extends Vue {
   @Prop({ type: String, default: 'text' }) type!: string;
   @Prop({ type: Number, required: false }) categoryType!: eBudgetCategoryType | null;
   @Prop(Boolean) hideCategoryName!: boolean;
+  @Prop(Boolean) clearable!: boolean;
 
   innerValue = this.value;
   initialValue = JSON.parse(JSON.stringify(this.value));

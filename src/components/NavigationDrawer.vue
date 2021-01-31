@@ -7,7 +7,7 @@
     enable-resize-watcher
     mobile-breakpoint="960"
     class="elevation-2"
-    :floating="!mobile"
+    :floating="!isMobile"
     app
     :mini-variant="minNav"
   >
@@ -28,10 +28,10 @@
             </v-list-item-subtitle>
           </v-list-item-content>
           <v-list-item-action>
-            <v-btn v-if="!mobile" icon dark @click.stop="minNavSelected = !minNavSelected">
+            <v-btn v-if="!isMobile" icon dark @click.stop="minNavSelected = !minNavSelected">
               <v-icon>{{ minNav ? 'mdi-chevron-right' : 'mdi-chevron-left' }}</v-icon>
             </v-btn>
-            <v-btn v-if="mobile" icon dark @click.stop="drawer = !drawer">
+            <v-btn v-if="isMobile" icon dark @click.stop="drawer = !drawer">
               <v-icon>mdi-chevron-left</v-icon>
             </v-btn>
           </v-list-item-action>
@@ -94,7 +94,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator';
+import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import { Budget } from '@/typings/api/budget/GetBudgetList';
 import { MenuItem } from '@/typings/MenuItem';
@@ -110,15 +110,16 @@ const oidcStore = namespace('oidcStore');
   },
 })
 export default class App extends Vue {
-  drawer = true;
+  @Prop(Boolean) collapsed!: boolean;
+  drawer = this.collapsed ? true : false;
 
   minNavSelected = true;
   get minNav() {
-    return this.mobile ? false : this.minNavSelected;
+    return this.isMobile ? false : this.minNavSelected;
   }
 
-  get mobile() {
-    return this.$vuetify.breakpoint.mobile;
+  get isMobile() {
+    return !this.$vuetify.breakpoint.smAndUp;
   }
 
   get activeBudgetText(): string {
@@ -140,6 +141,12 @@ export default class App extends Vue {
         name: this.$t('trasnsactionHistory.title').toString(),
         icon: 'mdi-format-list-bulleted',
         to: { name: 'transactionsHistory' },
+        children: [],
+      },
+      {
+        name: this.$t('allocationsHistory.title').toString(),
+        icon: 'mdi-subdirectory-arrow-right',
+        to: { name: 'allocationsHistory' },
         children: [],
       },
       // {
@@ -182,6 +189,15 @@ export default class App extends Vue {
       width: 900,
       title: this.$t('budgetsManager.title').toString(),
     });
+  }
+
+  @Watch('drawer')
+  onDrawerVisibilityChange(newValue) {
+    this.$emit('update:collapsed', newValue);
+  }
+  @Watch('collapsed')
+  onCollapsedChange(newValue) {
+    this.drawer = newValue;
   }
 }
 </script>
