@@ -20,16 +20,21 @@
       <v-list subheader>
         <v-list-item v-for="(category, i) in categories" :key="i" :data="category">
           <v-list-item-action class="pa-0 ma-0" style="width: 36px">
-            <v-row no-gutters>
-              <v-col :cols="12">
-                <v-icon v-show="i != 0" @click="moveCategoryUp(category)">mdi-chevron-up</v-icon>
-              </v-col>
-              <v-col :cols="12">
-                <v-icon v-show="i != categories.length - 1" @click="moveCategoryDown(category)">
-                  mdi-chevron-down
-                </v-icon>
-              </v-col>
-            </v-row>
+            <template v-if="$wait.is(`saving.budgetCategoryOrder${category.budgetCategoryId}`)">
+              <v-progress-circular></v-progress-circular>
+            </template>
+            <template v-else>
+              <v-row no-gutters>
+                <v-col :cols="12">
+                  <v-icon v-show="i != 0" @click="moveCategoryUp(category)">mdi-chevron-up</v-icon>
+                </v-col>
+                <v-col :cols="12">
+                  <v-icon v-show="i != categories.length - 1" @click="moveCategoryDown(category)">
+                    mdi-chevron-down
+                  </v-icon>
+                </v-col>
+              </v-row>
+            </template>
           </v-list-item-action>
           <v-list-item-avatar :color="color" size="40" class="mr-4">
             <v-progress-circular
@@ -144,14 +149,28 @@ export default class CategoriesList extends Vue {
     return this.$wait.is(`saving.newBudgetCategory`);
   }
 
-  moveCategoryUp(category: BudgetCategoryDto) {
-    //todo
-    console.log(category);
+  async moveCategoryUp(category: BudgetCategoryDto) {
+    this.$wait.start(`saving.budgetCategoryOrder${category.budgetCategoryId}`);
+    try {
+      await BudgetCategoriesApi.moveBudgetCategoryUp(category);
+      this.fetchBudgetCategories();
+    } catch (error) {
+      this.$msgBox.apiError(error);
+    } finally {
+      this.$wait.end(`saving.budgetCategoryOrder${category.budgetCategoryId}`);
+    }
   }
 
-  moveCategoryDown(category: BudgetCategoryDto) {
-    //todo
-    console.log(category);
+  async moveCategoryDown(category: BudgetCategoryDto) {
+    this.$wait.start(`saving.budgetCategoryOrder${category.budgetCategoryId}`);
+    try {
+      await BudgetCategoriesApi.moveBudgetCategoryDown(category);
+      this.fetchBudgetCategories();
+    } catch (error) {
+      this.$msgBox.apiError(error);
+    } finally {
+      this.$wait.end(`saving.budgetCategoryOrder${category.budgetCategoryId}`);
+    }
   }
 
   emitSave(payload) {

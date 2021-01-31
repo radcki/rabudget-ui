@@ -7,10 +7,14 @@
     </v-row>
     <v-row class="mt-1">
       <v-col class="d-flex flex-grow-0" style="width: 480px">
-        <new-transaction></new-transaction>
+        <v-row>
+          <v-col cols="12">
+            <new-transaction></new-transaction>
+          </v-col>
+        </v-row>
       </v-col>
       <v-col>
-        <v-row>
+        <v-row dense>
           <v-col>
             <value-card
               v-if="budgetBalance"
@@ -30,14 +34,14 @@
             ></value-card
           ></v-col>
         </v-row>
-        <v-row class="mt-3">
+        <v-row dense class="mt-1">
           <v-col>
             <categories-balance :category-type="eBudgetCategoryType.Spending"></categories-balance>
           </v-col>
         </v-row>
       </v-col>
     </v-row>
-    <v-row class="mt-3">
+    <v-row class="mt-1" dense>
       <v-col>
         <mini-transaction-list
           :title="$t('general.spendings')"

@@ -2,6 +2,8 @@ import api from './ApiService';
 import * as GetBudgetCategoriesList from '@/typings/api/budgetCategories/GetBudgetCategoriesList';
 import * as GetBudgetCategoryBalance from '@/typings/api/budgetCategories/GetBudgetCategoryBalance';
 import * as CreateBudgetCategory from '@/typings/api/budgetCategories/CreateBudgetCategory';
+import * as MoveBudgetCategoryDown from '@/typings/api/budgetCategories/MoveBudgetCategoryDown';
+import * as MoveBudgetCategoryUp from '@/typings/api/budgetCategories/MoveBudgetCategoryUp';
 
 class BudgetCategoriesApi {
   private baseUrl = 'budget-categories/';
@@ -39,6 +41,22 @@ class BudgetCategoriesApi {
     const data = await (await api.get<GetBudgetCategoryBalance.Result>(url, query)).data;
 
     return data;
+  }
+
+  async moveBudgetCategoryUp(
+    command: MoveBudgetCategoryUp.Command,
+  ): Promise<MoveBudgetCategoryUp.Result> {
+    const url = this.baseUrl + 'move-up';
+
+    return await (await api.patch<MoveBudgetCategoryUp.Result>(url, command)).data;
+  }
+
+  async moveBudgetCategoryDown(
+    command: MoveBudgetCategoryDown.Command,
+  ): Promise<MoveBudgetCategoryDown.Result> {
+    const url = this.baseUrl + 'move-down';
+
+    return await (await api.patch<MoveBudgetCategoryDown.Result>(url, command)).data;
   }
 }
 
