@@ -21,7 +21,11 @@
       </v-col>
     </v-row>
     <v-row class="mt-1">
-      <v-col v-if="filtersVisible" class="d-flex flex-grow-0" style="min-width: 350px">
+      <v-col
+        v-if="filtersVisible"
+        :class="!isMobile ? 'd-flex flex-grow-0' : ''"
+        style="min-width: 350px"
+      >
         <v-row no-gutters>
           <v-col :cols="12">
             <filter-box v-model="query"></filter-box>
@@ -198,51 +202,179 @@
                   </template>
                 </v-data-table>
 
-                <!-- <v-list v-if="!$vuetify.breakpoint.smAndUp" dense subheader class="cardBackground">
-            <template v-for="(transaction, index) in transactions">
-              <v-list-item :key="`i_${transaction.transactionId}_${index}`" class="pb-1">
-                <v-list-item-avatar>
-                  <v-icon>{{
-                    $categoryIcons[getCategoryById(transaction.budgetCategoryId).icon]
-                  }}</v-icon>
-                </v-list-item-avatar>
+                <v-list v-if="isMobile" dense subheader>
+                  <template v-for="(item, index) in transactions">
+                    <v-list-item :key="`i_${item.transactionId}_${index}`" class="px-0 py-0">
+                      <v-list-item-avatar class="my-0">
+                        <inline-field
+                          v-model="item.budgetCategoryId"
+                          type="category"
+                          hide-category-name
+                          :category-type="categoryType(item.budgetCategoryId)"
+                          :loading="
+                            $wait.is(`saving.transaction.budgetCategory${item.transactionId}`)
+                          "
+                          @change="updateTransactionCategory(item)"
+                        ></inline-field>
+                      </v-list-item-avatar>
 
-                <v-list-item-content>
-                  <v-list-item-title class="font-weight-medium">
-                    {{ transaction.description }}
-                    <span class="grey--text text--lighten-1 caption">
-                      -
-                      {{
-                        transaction.transactionDate
-                          | dateFormat('EEEE, d.MM.yyyy', $dateLocales[$locale])
-                      }}
-                    </span>
-                  </v-list-item-title>
+                      <v-list-item-content class="py-1">
+                        <v-list-item-title class="font-weight-medium">
+                          <inline-field
+                            v-model="item.description"
+                            :loading="
+                              $wait.is(`saving.transaction.description${item.transactionId}`)
+                            "
+                            @change="updatTransactionDescription(item)"
+                          ></inline-field>
+                        </v-list-item-title>
 
-                  <v-list-item-subtitle class="text--primary">{{
-                    transaction.amount | currency($currencyConfig(budget))
-                  }}</v-list-item-subtitle>
-                </v-list-item-content>
+                        <v-list-item-subtitle class="text--primary">
+                          <v-row no-gutters>
+                            <v-col>
+                              <inline-field
+                                v-model="item.amount"
+                                type="money"
+                                :loading="
+                                  $wait.is(`saving.transaction.amount${item.transactionId}`)
+                                "
+                                @change="updateTransactionAmount(item)"
+                              ></inline-field>
+                            </v-col>
+                            <v-col style="padding-top: 2px">
+                              <template v-if="item.subTransactions.length > 0">
+                                <nobr> ({{ item.totalAmount | money }}) </nobr>
+                              </template>
+                            </v-col>
+                            <v-col>
+                              <inline-field
+                                v-model="item.transactionDate"
+                                type="date"
+                                :loading="
+                                  $wait.is(
+                                    `saving.transaction.transactionDate${item.transactionId}`,
+                                  )
+                                "
+                                @change="updateSubTransactionDate(item)"
+                              ></inline-field>
+                            </v-col>
+                          </v-row>
+                        </v-list-item-subtitle>
+                      </v-list-item-content>
 
-                <v-list-item-action :key="`a1_${transaction.transactionId}_${index}`">
-                  <v-transaction-editor
-                    :value="transaction"
-                    :data-budget="budget"
-                    @save="updateTransaction"
-                  >
-                    <template v-slot:activator="{ on }">
-                      <v-icon v-on="on">{{ mdiPencil }}</v-icon>
-                    </template>
-                  </v-transaction-editor>
-                </v-list-item-action>
-                <v-list-item-action :key="`a2_${transaction.transactionId}_${index}`">
-                  <v-icon @click="deleteTransaction(transaction.transactionId)">{{
-                    mdiTrashCan
-                  }}</v-icon>
-                </v-list-item-action>
-              </v-list-item>
-            </template>
-          </v-list> -->
+                      <v-list-item-action :key="`a1_${item.transactionId}_${index}`" class="my-0">
+                        <icon-button
+                          :tooltip="$t('transaction.removeTransanction')"
+                          icon="mdi-trash-can"
+                          color="red"
+                          :loading="$wait.is(`removing.subTransaction${item.transactionId}`)"
+                          @click="removeTransaction(item)"
+                        ></icon-button>
+                      </v-list-item-action>
+                      <v-list-item-action
+                        :key="`a2_${item.transactionId}_${index}`"
+                        class="my-0 mx-0"
+                      >
+                        <icon-button
+                          :icon="
+                            subTransactionsVisible(item) ? 'mdi-chevron-up' : 'mdi-chevron-down'
+                          "
+                          @click="toggleShowSubTransactions(item)"
+                        ></icon-button>
+                      </v-list-item-action>
+                    </v-list-item>
+                    <v-list v-if="subTransactionsVisible(item)" :key="`sbt_${index}`">
+                      <v-row no-gutters>
+                        <v-col>
+                          <v-subheader>{{
+                            $t('trasnsactionHistory.subtransactions.title')
+                          }}</v-subheader>
+                        </v-col>
+                        <v-col class="d-flex flex-grow-0 mt-2">
+                          <v-btn
+                            color="primary"
+                            small
+                            :loading="$wait.is(`saving.subTransaction${item.transactionId}`)"
+                            @click="createNewSubtransaction(item)"
+                          >
+                            <v-icon left>mdi-plus</v-icon>
+                            {{ $t('trasnsactionHistory.subtransactions.new') }}
+                          </v-btn>
+                        </v-col>
+                      </v-row>
+                      <template v-if="item.subTransactions.length > 0">
+                        <template
+                          v-for="(subTransaction, subTransactionIndex) in item.subTransactions"
+                        >
+                          <v-list-item
+                            :key="`i_${subTransaction.subTransactionId}_${subTransactionIndex}`"
+                            class="pl-5 pr-0 py-0"
+                          >
+                            <v-list-item-content class="py-1">
+                              <v-list-item-title class="font-weight-medium">
+                                <inline-field
+                                  v-model="subTransaction.description"
+                                  :loading="
+                                    $wait.is(
+                                      `saving.subTransaction.description${subTransaction.subTransactionId}`,
+                                    )
+                                  "
+                                  @change="updateSubTransactionDescription(subTransaction)"
+                                ></inline-field>
+                              </v-list-item-title>
+
+                              <v-list-item-subtitle class="text--primary">
+                                <v-row no-gutters>
+                                  <v-col>
+                                    <inline-field
+                                      v-model="subTransaction.amount"
+                                      type="money"
+                                      :loading="
+                                        $wait.is(
+                                          `saving.subTransaction.amount${subTransaction.subTransactionId}`,
+                                        )
+                                      "
+                                      @change="updateSubTransactionAmount(subTransaction)"
+                                    ></inline-field>
+                                  </v-col>
+                                  <v-col>
+                                    <inline-field
+                                      v-model="subTransaction.transactionDate"
+                                      type="date"
+                                      :loading="
+                                        $wait.is(
+                                          `saving.subTransaction.transactionDate${subTransaction.subTransactionId}`,
+                                        )
+                                      "
+                                      @change="updateSubTransactionDate(item)"
+                                    ></inline-field>
+                                  </v-col>
+                                </v-row>
+                              </v-list-item-subtitle>
+                            </v-list-item-content>
+
+                            <v-list-item-action
+                              :key="`a1_${subTransaction.subTransactionId}_${subTransactionIndex}`"
+                              class="my-0"
+                            >
+                              <icon-button
+                                icon="mdi-trash-can"
+                                color="red"
+                                :loading="
+                                  $wait.is(
+                                    `removing.subTransaction${subTransaction.subTransactionId}`,
+                                  )
+                                "
+                                @click="removeSubTransaction(subTransaction)"
+                              ></icon-button>
+                            </v-list-item-action>
+                          </v-list-item>
+                        </template>
+                      </template>
+                    </v-list>
+                    <v-divider :key="`dv_${index}`"></v-divider>
+                  </template>
+                </v-list>
               </v-card-text>
             </v-card>
           </v-col>
@@ -406,6 +538,8 @@ export default class Transactions extends Vue {
   queryTimeout: NodeJS.Timeout | null = null;
 
   pageSizes = [20, 50, 100, 500];
+
+  expandedTransactionIds: string[] = [];
 
   get pageInput(): string {
     return this.gridOptions.page.toString();
@@ -675,6 +809,20 @@ export default class Transactions extends Vue {
       this.$msgBox.apiError(error);
     } finally {
       this.$wait.end(`removing.subTransaction${subTransaction.subTransactionId}`);
+    }
+  }
+
+  subTransactionsVisible(transaction: GetTransactionList.TransactionDto) {
+    return this.expandedTransactionIds.includes(transaction.transactionId);
+  }
+  toggleShowSubTransactions(transaction: GetTransactionList.TransactionDto) {
+    if (this.subTransactionsVisible(transaction)) {
+      this.expandedTransactionIds.splice(
+        this.expandedTransactionIds.indexOf(transaction.transactionId),
+        1,
+      );
+    } else {
+      this.expandedTransactionIds.push(transaction.transactionId);
     }
   }
 
