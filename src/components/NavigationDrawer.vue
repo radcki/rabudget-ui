@@ -1,6 +1,6 @@
 <template>
   <v-navigation-drawer
-    v-model="drawer"
+    :value="drawerVisible"
     width="260"
     dark
     color="teal darken-4"
@@ -111,9 +111,18 @@ const oidcStore = namespace('oidcStore');
 })
 export default class App extends Vue {
   @Prop(Boolean) collapsed!: boolean;
+
   drawer = this.collapsed ? true : false;
 
   minNavSelected = true;
+
+  get drawerVisible() {
+    if (!this.isMobile) {
+      return true;
+    }
+    return this.drawer;
+  }
+
   get minNav() {
     return this.isMobile ? false : this.minNavSelected;
   }
