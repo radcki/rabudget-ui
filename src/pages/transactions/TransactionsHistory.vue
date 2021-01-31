@@ -6,9 +6,8 @@
           $t('trasnsactionHistory.title')
         }}</v-subheader>
       </v-col>
-      <v-col cols="4" class="pt-4">
+      <v-col v-if="!isMobile" cols="4" class="pt-4">
         <v-text-field
-          v-if="$vuetify.breakpoint.smAndUp"
           v-model="query.search"
           append-icon="mdi-magnify"
           :label="$t('general.search')"
@@ -21,11 +20,7 @@
       </v-col>
     </v-row>
     <v-row class="mt-1">
-      <v-col
-        v-if="filtersVisible"
-        :class="!isMobile ? 'd-flex flex-grow-0' : ''"
-        style="min-width: 350px"
-      >
+      <v-col v-if="filtersVisible" :class="!isMobile ? 'd-flex flex-grow-0' : ''">
         <v-row no-gutters>
           <v-col :cols="12">
             <filter-box v-model="query"></filter-box>
@@ -34,6 +29,19 @@
       </v-col>
       <v-col>
         <v-row>
+          <v-col v-if="isMobile" cols="12" class="pt-4">
+            <v-text-field
+              v-model="query.search"
+              append-icon="mdi-magnify"
+              :label="$t('general.search')"
+              single-line
+              solo
+              hide-details
+              @keyup.enter="fetchTransactions()"
+              @click:append="fetchTransactions()"
+            ></v-text-field>
+          </v-col>
+
           <v-col cols="12">
             <template v-if="isLoading && isMobile" xs12 class="text-xs-center">
               <v-progress-circular
