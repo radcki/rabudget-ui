@@ -45,11 +45,23 @@
               color="white"
               indeterminate
             ></v-progress-circular>
-            <v-icon v-else dark size="24">{{ category.budgetCategoryIconKey }}</v-icon>
+            <inline-field
+              v-model="category.budgetCategoryIconId"
+              type="category-icon"
+              :loading="$wait.is(`saving.category.icon${category.budgetCategoryId}`)"
+              @change="updateCategoryIcon(category)"
+            ></inline-field>
+            <!-- <v-icon v-else dark size="24">{{ category.budgetCategoryIconKey }}</v-icon> -->
           </v-list-item-avatar>
 
           <v-list-item-content>
-            <v-list-item-title>{{ category.name }}</v-list-item-title>
+            <v-list-item-title>
+              <inline-field
+                v-model="category.name"
+                :loading="$wait.is(`saving.category.name${category.budgetCategoryId}`)"
+                @change="updateCategoryName(category)"
+              ></inline-field>
+            </v-list-item-title>
             <v-list-item-subtitle>{{
               category.currentBudgetedAmount | money
             }}</v-list-item-subtitle>
@@ -207,6 +219,37 @@ export default class CategoriesList extends Vue {
       this.$msgBox.apiError(error);
     } finally {
       this.$wait.end(`saving.newBudgetCategory`);
+    }
+  }
+
+  async updateCategoryName(category: BudgetCategoryDto) {
+    this.$wait.start(`saving.category.name${category.budgetCategoryId}`);
+    try {
+      const response = await BudgetCategoriesApi.updateBudgetCategoryName({
+        budgetCategoryId: category.budgetCategoryId,
+        name: category.name,
+      });
+      category.name = response.data;
+    } catch (error) {
+      this.$msgBox.apiError(error);
+    } finally {
+      this.$wait.end(`saving.category.name${category.budgetCategoryId}`);
+    }
+  }
+
+  async updateCategoryIcon(category: BudgetCategoryDto) {
+    this.$wait.start(`saving.category.icon${category.budgetCategoryId}`);
+    try {
+      const response = await BudgetCategoriesApi.updateBudgetCategoryIcon({
+        budgetCategoryId: category.budgetCategoryId,
+        budgetCategoryIconId: category.budgetCategoryIconId,
+      });
+      category.budgetCategoryIconId = response.data.iconId;
+      category.budgetCategoryIconKey = response.data.iconKey;
+    } catch (error) {
+      this.$msgBox.apiError(error);
+    } finally {
+      this.$wait.end(`saving.category.icon${category.budgetCategoryId}`);
     }
   }
 

@@ -180,7 +180,7 @@ export default class FilterBox extends Vue {
 
   resetFilters() {
     this.query.budgetCategoryType = null;
-    this.query.budgetCategoryIds = this.selectedTypeCategories.map(v => v.budgetCategoryId);
+    this.query.budgetCategoryIds = [];
     this.selectedRange = [this.minTransactionDateFilter, this.maxTransactionDateFilter];
   }
   categoryIcon(budgetCategoryId): string {
