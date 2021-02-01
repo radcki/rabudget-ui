@@ -1,6 +1,6 @@
 <template>
   <div class="inline-field">
-    <template v-if="loading">
+    <template v-if="loading && type != 'category-icon'">
       <v-progress-circular
         size="10"
         class="mr-1 mt-1"
@@ -12,12 +12,15 @@
       <template v-if="type == 'text'">
         <div class="inline-field--display" @click="startEdit()">{{ innerValue }}</div>
       </template>
+
       <template v-if="type == 'date'">
         <div class="inline-field--display" @click="startEdit()">{{ innerValue | shortDate }}</div>
       </template>
+
       <template v-if="type == 'money'">
         <div class="inline-field--display" @click="startEdit()">{{ innerValue | money }}</div>
       </template>
+
       <template v-if="type == 'category'">
         <div class="inline-field--display text-center" @click="startEdit()">
           <template v-if="budgetCategory">
@@ -32,6 +35,35 @@
           </template>
           <template v-else> - </template>
         </div>
+      </template>
+
+      <template v-if="type == 'category-icon'">
+        <template v-if="loading && type == 'category-icon'">
+          <v-progress-circular
+            size="24"
+            color="white"
+            class="mr-1 mt-1"
+            width="4"
+            indeterminate
+          ></v-progress-circular>
+        </template>
+        <v-menu v-else max-height="300" bottom close-on-click>
+          <template v-slot:activator="{ on }">
+            <div class="inline-select--display text-center" v-on="on">
+              <v-icon v-if="innerValue" color="white">{{ iconKey }}</v-icon>
+              <div v-else class="d-block" style="min-width: 20px; min-height: 20px">&nbsp;</div>
+            </div>
+          </template>
+          <v-list>
+            <v-list-item
+              v-for="(icon, index) in budgetCategoryIcons"
+              :key="index"
+              @click="setIcon(icon.budgetCategoryIconId)"
+            >
+              <v-icon>{{ icon.iconKey }}</v-icon>
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </template>
     </template>
     <template v-if="editMode">
@@ -139,6 +171,15 @@
 .inline-field--display:hover {
   background-color: #f5f5f5;
 }
+.inline-select--display {
+  cursor: pointer;
+  flex-grow: 1;
+  min-height: 10px;
+  padding: 2px;
+}
+.inline-select--display:hover {
+  background-color: #00000013;
+}
 .inline-field--editor,
 .inline-field--editor .v-text-field__slot {
   flex-grow: 1;
@@ -157,24 +198,33 @@
 
 <script lang="ts">
 import { BudgetCategoryDto } from '@/typings/api/budgetCategories/GetBudgetCategoriesList';
+import { BudgetCategoryIconDto } from '@/typings/api/dictionaries/GetBudgetCategoryIcons';
 import { eBudgetCategoryType } from '@/typings/enums/eBudgetCategoryType';
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import DateField from './DateField.vue';
 import MoneyField from './MoneyField.vue';
+import CategoryIconSelect from './CategoryIconSelect.vue';
 
 const budgetsStore = namespace('budgets');
+const dictionaries = namespace('dictionaries');
 
 @Component({
   components: {
     DateField,
     MoneyField,
+    CategoryIconSelect,
   },
 })
 export default class InlineField extends Vue {
   @Prop({ type: [String, Date, Number, Object] }) value!: Date | string | number;
   @Prop(Boolean) loading!: boolean;
-  @Prop({ type: String, default: 'text' }) type!: string;
+  @Prop({ type: String, default: 'text' }) type!:
+    | 'text'
+    | 'category'
+    | 'date'
+    | 'money'
+    | 'category-icon';
   @Prop({ type: Number, required: false }) categoryType!: eBudgetCategoryType | null;
   @Prop(Boolean) hideCategoryName!: boolean;
   @Prop(Boolean) clearable!: boolean;
@@ -184,6 +234,7 @@ export default class InlineField extends Vue {
   editMode = false;
   timeout: null | NodeJS.Timeout = null;
 
+  @dictionaries.State('budgetCategoryIcons') budgetCategoryIcons?: BudgetCategoryIconDto[];
   @budgetsStore.Getter('activeBudgetCategories') allBudgetCategories!: BudgetCategoryDto[];
 
   get budgetCategory() {
@@ -224,6 +275,15 @@ export default class InlineField extends Vue {
   categoryColor(budgetCategoryId): string {
     const categoryType = this.getBudgetCategory(budgetCategoryId)?.budgetCategoryType;
     return categoryType ? eBudgetCategoryType[categoryType].toLowerCase() : '';
+  }
+
+  get iconKey() {
+    return this.budgetCategoryIcons.find(v => v.budgetCategoryIconId == this.innerValue)?.iconKey;
+  }
+
+  async setIcon(budgetCategoryIconId) {
+    this.innerValue = budgetCategoryIconId;
+    this.finishEdit();
   }
 
   async finishEdit() {

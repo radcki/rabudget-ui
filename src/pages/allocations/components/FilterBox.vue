@@ -177,13 +177,9 @@ export default class FilterBox extends Vue {
 
   resetFilters() {
     this.query.sourceBudgetCategoryType = null;
-    this.query.sourceBudgetCategoryIds = this.selectedTypeSourceCategories.map(
-      v => v.budgetCategoryId,
-    );
+    this.query.sourceBudgetCategoryIds = [];
     this.query.targetBudgetCategoryType = null;
-    this.query.targetBudgetCategoryIds = this.selectedTypeTargetCategories.map(
-      v => v.budgetCategoryId,
-    );
+    this.query.targetBudgetCategoryIds = [];
     this.selectedRange = [this.minAllocationDateFilter, this.maxAllocationDateFilter];
   }
   categoryIcon(budgetCategoryId): string {

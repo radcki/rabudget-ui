@@ -18,8 +18,8 @@ class AllocationsApi {
   async getAllocationList(query: GetAllocationList.Query): Promise<GetAllocationList.Result> {
     const url = this.baseUrl + 'get-list';
     const data = await (await api.get<GetAllocationList.Result>(url, query)).data;
-    for (const Allocation of data.data) {
-      Allocation.allocationDate = new Date(Allocation.allocationDate);
+    for (const allocation of data.data) {
+      allocation.allocationDate = new Date(allocation.allocationDate);
     }
     return data;
   }

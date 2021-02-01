@@ -4,6 +4,8 @@ import * as GetBudgetCategoryBalance from '@/typings/api/budgetCategories/GetBud
 import * as CreateBudgetCategory from '@/typings/api/budgetCategories/CreateBudgetCategory';
 import * as MoveBudgetCategoryDown from '@/typings/api/budgetCategories/MoveBudgetCategoryDown';
 import * as MoveBudgetCategoryUp from '@/typings/api/budgetCategories/MoveBudgetCategoryUp';
+import * as UpdateBudgetCategoryName from '@/typings/api/budgetCategories/UpdateBudgetCategoryName';
+import * as UpdateBudgetCategoryIcon from '@/typings/api/budgetCategories/UpdateBudgetCategoryIcon';
 
 class BudgetCategoriesApi {
   private baseUrl = 'budget-categories/';
@@ -57,6 +59,22 @@ class BudgetCategoriesApi {
     const url = this.baseUrl + 'move-down';
 
     return await (await api.patch<MoveBudgetCategoryDown.Result>(url, command)).data;
+  }
+
+  async updateBudgetCategoryName(
+    command: UpdateBudgetCategoryName.Command,
+  ): Promise<UpdateBudgetCategoryName.Result> {
+    const url = this.baseUrl + 'update/name';
+
+    return await (await api.patch<UpdateBudgetCategoryName.Result>(url, command)).data;
+  }
+
+  async updateBudgetCategoryIcon(
+    command: UpdateBudgetCategoryIcon.Command,
+  ): Promise<UpdateBudgetCategoryIcon.Result> {
+    const url = this.baseUrl + 'update/icon';
+
+    return await (await api.patch<UpdateBudgetCategoryIcon.Result>(url, command)).data;
   }
 }
 

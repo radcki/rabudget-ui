@@ -19,15 +19,16 @@ class ApiService {
       const params: string[] = [];
       for (const key in query) {
         if (Array.isArray(query[key])) {
-          for (const value of query[key]) {
-            if (key == 'dataOrder') {
+          if (key == 'dataOrder') {
+            for (const value of query[key]) {
               const dataOrderValue = value as FieldOrderInfo<string>;
               params.push(
                 `${key}=${dataOrderValue.descending ? '-' : '+'}${dataOrderValue.fieldName}`,
               );
-            } else {
-              params.push(`${key}=${this.ToString(value)}`);
             }
+          } else {
+            const valueList = query[key].join(',');
+            params.push(`${key}=${this.ToString(valueList)}`);
           }
         } else if (query[key]) {
           params.push(`${key}=${this.ToString(query[key])}`);
