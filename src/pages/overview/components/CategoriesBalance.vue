@@ -9,27 +9,39 @@
             </v-avatar>
             {{ category.name }}
           </v-col>
-          <template v-if="!!category.balance">
+          <template>
             <v-col class="px-1">
+              <v-skeleton-loader
+                v-if="balanceIsLoading(category)"
+                type="text@2"
+              ></v-skeleton-loader>
               <value-bar
+                v-else
                 :value="category.balance.totalCategoryBalance"
                 :max="category.currentBudgetedAmount"
-                :loading="$wait.is(`loading.budgetCategoryBalance${category.budgetCategoryId}`)"
               ></value-bar>
             </v-col>
             <v-col class="px-1">
+              <v-skeleton-loader
+                v-if="balanceIsLoading(category)"
+                type="text@2"
+              ></v-skeleton-loader>
               <value-bar
+                v-else
                 :value="category.balance.thisMonthTransactionsTotal"
                 inverse-color
                 :max="category.currentBudgetedAmount"
-                :loading="$wait.is(`loading.budgetCategoryBalance${category.budgetCategoryId}`)"
               ></value-bar>
             </v-col>
             <v-col class="px-1">
+              <v-skeleton-loader
+                v-if="balanceIsLoading(category)"
+                type="text@2"
+              ></v-skeleton-loader>
               <value-bar
+                v-else
                 :value="category.balance.budgetLeftToEndOfYear"
                 :max="category.currentBudgetedAmount"
-                :loading="$wait.is(`loading.budgetCategoryBalance${category.budgetCategoryId}`)"
               ></value-bar>
             </v-col>
           </template>
@@ -110,6 +122,10 @@ export default class CategoriesBalance extends Vue {
     } finally {
       this.$wait.end(`loading.budgetCategoryBalance${budgetCategoryId}`);
     }
+  }
+
+  balanceIsLoading(category: BudgetCategoryDto) {
+    return this.$wait.is(`loading.budgetCategoryBalance${category.budgetCategoryId}`);
   }
 
   mounted() {

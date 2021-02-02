@@ -13,8 +13,6 @@
           :height="subValue > 0 ? 9 : 15"
           :value="100 * percent"
           :color="conditionalColor(100 * percent)"
-          :stream="loading"
-          :buffer-value="!loading ? undefined : 0"
           v-on="on"
         ></v-progress-linear>
       </template>
@@ -30,8 +28,6 @@
       class="ma-0"
       :height="6"
       :value="100 * subPercent"
-      :stream="loading"
-      :buffer-value="!loading ? undefined : 0"
       :color="conditionalColor(100 * (1 - subPercent))"
     ></v-progress-linear>
   </div>
@@ -50,7 +46,6 @@ export default class ValueBar extends Vue {
   @Prop({ type: Object }) subValue!: MoneyAmount;
   @Prop({ type: Object }) max!: MoneyAmount;
   @Prop(Boolean) inverseColor?: boolean;
-  @Prop(Boolean) loading?: boolean;
 
   formatAmount(value: MoneyAmount) {
     return this.$options.filters ? this.$options.filters.money(value) : value;

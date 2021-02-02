@@ -102,21 +102,25 @@
                   </template>
 
                   <template #item.allocationDate="{ item }">
-                    <inline-field
-                      v-model="item.allocationDate"
-                      type="date"
-                      :loading="$wait.is(`saving.allocation.allocationDate${item.allocationId}`)"
-                      @change="updateAllocationDate(item)"
-                    ></inline-field>
+                    <nobr>
+                      <inline-field
+                        v-model="item.allocationDate"
+                        type="date"
+                        :loading="$wait.is(`saving.allocation.allocationDate${item.allocationId}`)"
+                        @change="updateAllocationDate(item)"
+                      ></inline-field>
+                    </nobr>
                   </template>
 
                   <template #item.amount="{ item }">
-                    <inline-field
-                      v-model="item.amount"
-                      type="money"
-                      :loading="$wait.is(`saving.allocation.amount${item.allocationId}`)"
-                      @change="updateAllocationAmount(item)"
-                    ></inline-field>
+                    <nobr>
+                      <inline-field
+                        v-model="item.amount"
+                        type="money"
+                        :loading="$wait.is(`saving.allocation.amount${item.allocationId}`)"
+                        @change="updateAllocationAmount(item)"
+                      ></inline-field>
+                    </nobr>
                   </template>
 
                   <template #item.actions="{ item }">

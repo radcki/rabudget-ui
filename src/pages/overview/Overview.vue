@@ -6,16 +6,16 @@
       </v-col>
     </v-row>
     <v-row class="mt-1">
-      <v-col class="d-flex flex-grow-0" style="width: 480px">
+      <v-col xs="12" sm="12" md="12" lg="6" xl="4" class="d-flex flex-grow-0" style="width: 480px">
         <v-row>
           <v-col cols="12">
             <new-transaction></new-transaction>
           </v-col>
         </v-row>
       </v-col>
-      <v-col>
-        <v-row dense>
-          <v-col>
+      <v-col xs="12" sm="12" md="12" lg="6" xl="8" class="pl-2">
+        <v-row>
+          <v-col class="pr-2">
             <value-card
               v-if="budgetBalance"
               :value="budgetBalance.totalBalance"
@@ -24,7 +24,7 @@
               :loading="$wait.is('loading.budgetBalance*')"
             ></value-card>
           </v-col>
-          <v-col>
+          <v-col class="pl-2">
             <value-card
               v-if="budgetBalance"
               :value="budgetBalance.unassignedFunds"
@@ -34,27 +34,27 @@
             ></value-card
           ></v-col>
         </v-row>
-        <v-row dense class="mt-1">
+        <v-row class="mt-1">
           <v-col>
             <categories-balance :category-type="eBudgetCategoryType.Spending"></categories-balance>
           </v-col>
         </v-row>
       </v-col>
     </v-row>
-    <v-row class="mt-1" dense>
-      <v-col>
+    <v-row class="mt-1">
+      <v-col class="pr-2">
         <mini-transaction-list
           :title="$t('general.spendings')"
           :category-type="eBudgetCategoryType.Spending"
         ></mini-transaction-list>
       </v-col>
-      <v-col>
+      <v-col class="px-2">
         <mini-transaction-list
           :title="$t('general.incomes')"
           :category-type="eBudgetCategoryType.Income"
         ></mini-transaction-list
       ></v-col>
-      <v-col>
+      <v-col class="pl-2">
         <mini-transaction-list
           :title="$t('general.savings')"
           :category-type="eBudgetCategoryType.Saving"

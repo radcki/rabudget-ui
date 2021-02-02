@@ -18,91 +18,15 @@
     </v-card-title>
     <v-card-text class="px-0 py-1">
       <v-list subheader>
-        <v-list-item v-for="(category, i) in categories" :key="i" :data="category">
-          <v-list-item-action class="pa-0 ma-0" style="width: 36px">
-            <template v-if="$wait.is(`saving.budgetCategoryOrder${category.budgetCategoryId}`)">
-              <v-progress-circular></v-progress-circular>
-            </template>
-            <template v-else>
-              <v-row no-gutters>
-                <v-col :cols="12">
-                  <v-icon v-show="i != 0" @click="moveCategoryUp(category)">mdi-chevron-up</v-icon>
-                </v-col>
-                <v-col :cols="12">
-                  <v-icon v-show="i != categories.length - 1" @click="moveCategoryDown(category)">
-                    mdi-chevron-down
-                  </v-icon>
-                </v-col>
-              </v-row>
-            </template>
-          </v-list-item-action>
-          <v-list-item-avatar :color="color" size="40" class="mr-4">
-            <v-progress-circular
-              v-if="
-                $wait.is(`saving.category${category.budgetCategoryId}`) ||
-                $wait.is(`loading.budget`)
-              "
-              color="white"
-              indeterminate
-            ></v-progress-circular>
-            <inline-field
-              v-model="category.budgetCategoryIconId"
-              type="category-icon"
-              :loading="$wait.is(`saving.category.icon${category.budgetCategoryId}`)"
-              @change="updateCategoryIcon(category)"
-            ></inline-field>
-            <!-- <v-icon v-else dark size="24">{{ category.budgetCategoryIconKey }}</v-icon> -->
-          </v-list-item-avatar>
-
-          <v-list-item-content>
-            <v-list-item-title>
-              <inline-field
-                v-model="category.name"
-                :loading="$wait.is(`saving.category.name${category.budgetCategoryId}`)"
-                @change="updateCategoryName(category)"
-              ></inline-field>
-            </v-list-item-title>
-            <v-list-item-subtitle>{{
-              category.currentBudgetedAmount | money
-            }}</v-list-item-subtitle>
-          </v-list-item-content>
-
-          <v-list-item-action v-if="!hideActions">
-            <v-menu ref="menu" :left="!$vuetify.breakpoint.smAndUp" nudge-bottom="42">
-              <template v-slot:activator="{ on }">
-                <v-btn icon v-on="on">
-                  <v-icon>mdi-dots-vertical</v-icon>
-                </v-btn>
-              </template>
-              <v-list light dense single-line>
-                <v-list-item @click="editCategory(category)">
-                  <v-list-item-action class="mr-0 pr-5">
-                    <v-icon color="primary">mdi-pencil</v-icon>
-                  </v-list-item-action>
-                  <v-list-item-title>
-                    {{ $t('budgetCategories.edit') }}
-                  </v-list-item-title>
-                </v-list-item>
-
-                <v-list-item @click="$emit('transfer', category)">
-                  <v-list-item-action class="mr-0 pr-5">
-                    <v-icon color="purple">mdi-reply-all</v-icon>
-                  </v-list-item-action>
-                  <v-list-item-title>{{
-                    $t('budgetCategories.transactionsTransfer')
-                  }}</v-list-item-title>
-                </v-list-item>
-
-                <v-list-item @click="$emit('delete', category)">
-                  <v-list-item-action class="mr-0 pr-5">
-                    <v-icon color="red">mdi-trash-can</v-icon>
-                  </v-list-item-action>
-                  <v-list-item-title>{{ $t('budgetCategories.remove') }}</v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
-          </v-list-item-action>
-        </v-list-item>
+        <template v-for="(category, i) in categories">
+          <categories-list-item
+            :key="`ctg${i}`"
+            :color="color"
+            :category="category"
+            :show-move-down="i != categories.length - 1"
+            :show-move-up="i != 0"
+          ></categories-list-item>
+        </template>
       </v-list>
       <div v-if="showNoData" class="text-center pa-3 pb-5">
         <h3>{{ $t('budgetCategories.noCategories') }}</h3>
@@ -130,6 +54,7 @@ const budgetsStore = namespace('budgets');
 @Component({
   components: {
     IconButton,
+    'categories-list-item': () => import('./CategoriesListItem.vue'),
   },
 })
 export default class CategoriesList extends Vue {

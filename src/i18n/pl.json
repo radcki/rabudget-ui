@@ -105,7 +105,12 @@
     "saving": "Oszczędności",
     "income": "Wpływy",
     "noCategories": "Brak kategorii",
-    "title": "Kategorie budżetowe"
+    "title": "Kategorie budżetowe",
+    "showBudgetedAmounts": "Pokaż zabudżetowane miesięczne kwoty",
+    "hideBudgetedAmounts": "Ukryj zabudżetowane miesięczne kwoty",
+    "newBudgetedAmount": "Nowa kwota",
+    "budgetedAmountDeleteTitle": "Usuwanie zabudżetowanej kwoty",
+    "budgetedAmountDeleteMessage": "Zabudżetowana kwota zostanie bezpowrotnie usunięta. Czy chcesz kontynuować?"
   },
   "overview": {
     "title": "Przegląd",
