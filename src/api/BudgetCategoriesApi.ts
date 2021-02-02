@@ -7,6 +7,11 @@ import * as MoveBudgetCategoryUp from '@/typings/api/budgetCategories/MoveBudget
 import * as UpdateBudgetCategoryName from '@/typings/api/budgetCategories/UpdateBudgetCategoryName';
 import * as UpdateBudgetCategoryIcon from '@/typings/api/budgetCategories/UpdateBudgetCategoryIcon';
 
+import * as UpdateBudgetedAmountAmount from '@/typings/api/budgetCategories/UpdateBudgetedAmountAmount';
+import * as UpdateBudgetedAmountValidFrom from '@/typings/api/budgetCategories/UpdateBudgetedAmountValidFrom';
+import * as RemoveBudgetedAmount from '@/typings/api/budgetCategories/RemoveBudgetedAmount';
+import * as AddBudgetedAmount from '@/typings/api/budgetCategories/AddBudgetedAmount';
+
 class BudgetCategoriesApi {
   private baseUrl = 'budget-categories/';
   async isAlive() {
@@ -75,6 +80,40 @@ class BudgetCategoriesApi {
     const url = this.baseUrl + 'update/icon';
 
     return await (await api.patch<UpdateBudgetCategoryIcon.Result>(url, command)).data;
+  }
+
+  async updateBudgetedAmountAmount(
+    command: UpdateBudgetedAmountAmount.Command,
+  ): Promise<UpdateBudgetedAmountAmount.Result> {
+    const url = this.baseUrl + 'budgeted-amount/update/amount';
+
+    return await (await api.patch<UpdateBudgetedAmountAmount.Result>(url, command)).data;
+  }
+
+  async updateBudgetedAmountValidFrom(
+    command: UpdateBudgetedAmountValidFrom.Command,
+  ): Promise<UpdateBudgetedAmountValidFrom.Result> {
+    const url = this.baseUrl + 'budgeted-amount/update/valid-from';
+    const response = await (await api.patch<UpdateBudgetedAmountValidFrom.Result>(url, command))
+      .data;
+    response.data = new Date(response.data);
+    return response;
+  }
+
+  async removeBudgetedAmount(
+    command: RemoveBudgetedAmount.Command,
+  ): Promise<RemoveBudgetedAmount.Result> {
+    const url = this.baseUrl + 'budgeted-amount/remove';
+
+    return await (await api.post<RemoveBudgetedAmount.Result>(url, command)).data;
+  }
+
+  async addBudgetedAmount(command: AddBudgetedAmount.Command): Promise<AddBudgetedAmount.Result> {
+    const url = this.baseUrl + 'budgeted-amount/add';
+    const response = await (await api.post<AddBudgetedAmount.Result>(url, command)).data;
+    response.data.validFrom = new Date(response.data.validFrom);
+    if (response.data.validTo) response.data.validTo = new Date(response.data.validTo);
+    return;
   }
 }
 

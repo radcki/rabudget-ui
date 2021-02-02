@@ -91,21 +91,27 @@
                   </template>
 
                   <template #item.transactionDate="{ item }">
-                    <inline-field
-                      v-model="item.transactionDate"
-                      type="date"
-                      :loading="$wait.is(`saving.transaction.transactionDate${item.transactionId}`)"
-                      @change="updateTransactionDate(item)"
-                    ></inline-field>
+                    <nobr>
+                      <inline-field
+                        v-model="item.transactionDate"
+                        type="date"
+                        :loading="
+                          $wait.is(`saving.transaction.transactionDate${item.transactionId}`)
+                        "
+                        @change="updateTransactionDate(item)"
+                      ></inline-field>
+                    </nobr>
                   </template>
 
                   <template #item.amount="{ item }">
-                    <inline-field
-                      v-model="item.amount"
-                      type="money"
-                      :loading="$wait.is(`saving.transaction.amount${item.transactionId}`)"
-                      @change="updateTransactionAmount(item)"
-                    ></inline-field>
+                    <nobr>
+                      <inline-field
+                        v-model="item.amount"
+                        type="money"
+                        :loading="$wait.is(`saving.transaction.amount${item.transactionId}`)"
+                        @change="updateTransactionAmount(item)"
+                      ></inline-field>
+                    </nobr>
                     <template v-if="item.subTransactions.length > 0">
                       <nobr> ({{ item.totalAmount | money }}) </nobr>
                     </template>

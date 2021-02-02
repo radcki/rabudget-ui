@@ -22,7 +22,7 @@
       </template>
 
       <template v-if="type == 'category'">
-        <div class="inline-field--display text-center" @click="startEdit()">
+        <div class="inline-field--display text-left" @click="startEdit()">
           <template v-if="budgetCategory">
             <v-icon
               :left="!hideCategoryName"
@@ -179,6 +179,7 @@
 }
 .inline-select--display:hover {
   background-color: #00000013;
+  border-radius: 100%;
 }
 .inline-field--editor,
 .inline-field--editor .v-text-field__slot {
