@@ -6,7 +6,16 @@
       </v-col>
     </v-row>
     <v-row class="mt-1">
-      <v-col xs="12" sm="12" md="12" lg="6" xl="4" class="d-flex flex-grow-0" style="width: 480px">
+      <v-col
+        v-if="!isMobile"
+        xs="12"
+        sm="12"
+        md="8"
+        lg="6"
+        xl="4"
+        class="d-flex flex-grow-0"
+        style="width: 480px"
+      >
         <v-row>
           <v-col cols="12">
             <new-transaction></new-transaction>
@@ -15,7 +24,7 @@
       </v-col>
       <v-col xs="12" sm="12" md="12" lg="6" xl="8" class="pl-2">
         <v-row>
-          <v-col class="pr-2">
+          <v-col class="pr-2" :cols="isMobile ? 12 : 6">
             <value-card
               v-if="budgetBalance"
               :value="budgetBalance.totalBalance"
@@ -24,7 +33,7 @@
               :loading="$wait.is('loading.budgetBalance*')"
             ></value-card>
           </v-col>
-          <v-col class="pl-2">
+          <v-col class="pl-2" :cols="isMobile ? 12 : 6">
             <value-card
               v-if="budgetBalance"
               :value="budgetBalance.unassignedFunds"
@@ -91,6 +100,9 @@ export default class Overview extends Vue {
   budgetBalance: null | BudgetBalanceDto = null;
   unassignedFunds: null | MoneyAmount = null;
 
+  get isMobile() {
+    return !this.$vuetify.breakpoint.smAndUp;
+  }
   mounted() {
     if (this.activeBudget) {
       this.fetchBudgetBalance();

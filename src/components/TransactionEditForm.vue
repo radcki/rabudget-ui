@@ -26,8 +26,6 @@
           filled
         ></category-select>
       </v-col>
-    </v-row>
-    <v-row dense>
       <v-col>
         <money-field
           v-model="innerValue.amount"

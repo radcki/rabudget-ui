@@ -1,10 +1,10 @@
 <template>
   <v-app>
-    <v-app-bar v-if="isMobile" color="primary" dark fixed app>
+    <v-app-bar v-if="isMobile && isAuthenticated" color="primary" dark fixed app>
       <v-app-bar-nav-icon @click="navCollapsed = !navCollapsed"></v-app-bar-nav-icon>
       <v-toolbar-title>raBudget</v-toolbar-title>
     </v-app-bar>
-    <navigation-drawer :collapsed.sync="navCollapsed" />
+    <navigation-drawer v-if="isAuthenticated" :collapsed.sync="navCollapsed" />
 
     <v-main>
       <router-view></router-view>
