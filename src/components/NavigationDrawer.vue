@@ -1,13 +1,12 @@
 <template>
   <v-navigation-drawer
-    :value="drawerVisible"
+    v-model="drawerVisible"
     width="260"
     dark
     color="teal darken-4"
-    enable-resize-watcher
-    mobile-breakpoint="960"
     class="elevation-2"
     :floating="!isMobile"
+    mobile-breakpoint="600"
     app
     :mini-variant="minNav"
   >
@@ -57,7 +56,7 @@
           <v-list-item two-line>
             <v-list-item-content>
               <v-list-item-subtitle> {{ $t('account.logged') }}: </v-list-item-subtitle>
-              <v-list-item-title class="py-3"> test </v-list-item-title>
+              <v-list-item-title class="py-3">{{ user.name }}</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
           <v-row no-gutters>
@@ -80,10 +79,12 @@
                 <v-icon>mdi-weather-night</v-icon>
               </v-btn>
             </v-col>
-            <v-col v-if="isAuthenticated" class="text-left" @click="logout">
-              <v-btn icon>
-                <v-icon>mdi-logout</v-icon>
-              </v-btn>
+            <v-col v-if="isAuthenticated" class="text-left">
+              <icon-button
+                icon="mdi-logout"
+                :tooltip="$t('account.logOut')"
+                @click="logout()"
+              ></icon-button>
             </v-col>
           </v-row>
         </div>
@@ -109,10 +110,10 @@ const oidcStore = namespace('oidcStore');
     'menu-item': MenuItemComponent,
   },
 })
-export default class App extends Vue {
+export default class NavigationDrawer extends Vue {
   @Prop(Boolean) collapsed!: boolean;
 
-  drawer = this.collapsed ? true : false;
+  drawer = true;
 
   minNavSelected = true;
 
@@ -121,6 +122,9 @@ export default class App extends Vue {
       return true;
     }
     return this.drawer;
+  }
+  set drawerVisible(value: boolean) {
+    this.drawer = value;
   }
 
   get minNav() {

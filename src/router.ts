@@ -66,6 +66,14 @@ const router = new Router({
       },
     },
     {
+      path: '/signed-out',
+      name: 'signedOut',
+      component: () => import('@/pages/error/SignedOut.vue'),
+      meta: {
+        isPublic: true,
+      },
+    },
+    {
       path: '*',
       redirect: '/',
     },

@@ -111,11 +111,11 @@ export default class CategoriesBalance extends Vue {
     this.$wait.start(`loading.budgetCategoryBalance${budgetCategoryId}`);
     try {
       const data = await BudgetCategoriesApi.getBudgetCategoryBalance({
-        budgetCategoryId: budgetCategoryId,
+        budgetCategoryIds: [budgetCategoryId],
       });
       const category = this.categories.find(v => v.budgetCategoryId == budgetCategoryId);
       if (category) {
-        category.balance = data.data;
+        category.balance = data.data[0];
       }
     } catch (error) {
       this.$msgBox.apiError(error);
@@ -124,8 +124,27 @@ export default class CategoriesBalance extends Vue {
     }
   }
 
+  async fetchBudgetCategoriesBalance() {
+    this.$wait.start(`loading.budgetCategoriesBalance`);
+    try {
+      const data = await BudgetCategoriesApi.getBudgetCategoryBalance({
+        budgetCategoryIds: this.categories.map(v => v.budgetCategoryId),
+      });
+      for (const category of this.categories) {
+        category.balance = data.data.find(v => v.budgetCategoryId == category.budgetCategoryId);
+      }
+    } catch (error) {
+      this.$msgBox.apiError(error);
+    } finally {
+      this.$wait.end(`loading.budgetCategoriesBalance`);
+    }
+  }
+
   balanceIsLoading(category: BudgetCategoryDto) {
-    return this.$wait.is(`loading.budgetCategoryBalance${category.budgetCategoryId}`);
+    return (
+      this.$wait.is(`loading.budgetCategoriesBalance`) ||
+      this.$wait.is(`loading.budgetCategoryBalance${category.budgetCategoryId}`)
+    );
   }
 
   mounted() {
@@ -149,10 +168,8 @@ export default class CategoriesBalance extends Vue {
   }
 
   @Watch('categories')
-  onCategoryListChange(categories: BudgetCategoryDto[]) {
-    for (const category of categories) {
-      this.fetchBudgetCategoryBalance(category.budgetCategoryId);
-    }
+  onCategoryListChange() {
+    this.fetchBudgetCategoriesBalance();
   }
 
   @Watch('activeBudget')

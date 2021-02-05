@@ -1,11 +1,11 @@
 import { MoneyAmount } from '@/typings/MoneyAmount';
-import { SingleResponse } from '../baseTypes/SingleResponse';
+import { CollectionResponse } from '../baseTypes/CollectionResponse';
 
 export interface Query {
-  budgetCategoryId: string;
+  budgetCategoryIds: string[];
 }
 
-export interface Result extends SingleResponse<BudgetCategoryBalanceDto> {}
+export interface Result extends CollectionResponse<BudgetCategoryBalanceDto> {}
 
 export interface BudgetCategoryBalanceDto {
   budgetCategoryId: string;

@@ -57,10 +57,13 @@
     "loadMore": "Wczytaj więcej",
     "allTypes": "Wszystkie typy",
     "itemsPerPage": "Pokaż po",
-    "page": "Strona"
+    "page": "Strona",
+    "goTomePage": "Przejdź do strony głównej"
   },
   "account": {
-    "logged": "Zalogowany"
+    "logged": "Zalogowany",
+    "logOut": "Wyloguj",
+    "signedOut": "Zostałeś wylogowany"
   },
   "forms": {
     "requiredField": "Pole jest wymagane.",
