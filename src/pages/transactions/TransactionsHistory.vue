@@ -726,6 +726,7 @@ export default class Transactions extends Vue {
       await TransactionsApi.removeTransaction({
         transactionId: transaction.transactionId,
       });
+      this.fetchTransactions();
     } catch (error) {
       this.$msgBox.apiError(error);
     } finally {

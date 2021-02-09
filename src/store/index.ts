@@ -20,6 +20,7 @@ const store: StoreOptions<RootState> = {
       dispatch('dictionaries/loadCurrencies');
       dispatch('dictionaries/loadCategoryIcons');
       dispatch('budgets/loadBudgets');
+      dispatch('account/init');
     },
   },
   modules: {

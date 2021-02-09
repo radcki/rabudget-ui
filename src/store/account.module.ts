@@ -1,22 +1,40 @@
 import { Module, ActionTree, MutationTree, GetterTree } from 'vuex';
-import Vue from 'vue';
 import { RootState } from '.';
-import router from '@/router';
+import { vuexOidcCreateUserManager } from 'vuex-oidc';
+import oidcSettings from '@/auth';
+const userManager = vuexOidcCreateUserManager(oidcSettings);
 
-export interface UserState {}
+export interface UserState {
+  accountManagementUrl: string;
+}
 
-const userState: UserState = {};
+const userState: UserState = {
+  accountManagementUrl: '',
+};
 
 const actions: ActionTree<UserState, RootState> = {
   async logout({ dispatch }) {
-    await dispatch('oidcStore/signOutOidcSilent', {}, { root: true });
-    router.push({ name: 'signedOut' });
+    await dispatch('oidcStore/signOutOidc', {}, { root: true });
+  },
+
+  async init({ commit }) {
+    const metadataService = userManager.metadataService;
+    const metadata = await metadataService.getMetadata();
+    commit('setAccountManagementUrl', metadata['account_management_endpoint']);
   },
 };
 
-const getters: GetterTree<UserState, RootState> = {};
+const getters: GetterTree<UserState, RootState> = {
+  accountManagementUrl(state): string {
+    return state.accountManagementUrl;
+  },
+};
 
-const mutations: MutationTree<UserState> = {};
+const mutations: MutationTree<UserState> = {
+  setAccountManagementUrl(state, payload: string) {
+    state.accountManagementUrl = payload;
+  },
+};
 
 export const account: Module<UserState, RootState> = {
   namespaced: true,

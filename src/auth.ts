@@ -7,6 +7,7 @@ const oidcSettings = {
   clientId: 'rabudget',
   redirectUri: 'https://localhost:8080/auth/signinwin/main',
   popupRedirectUri: 'https://localhost:8080/auth/signinpop/main',
+  postLogoutRedirectUri: 'https://localhost:8080/signed-out',
   responseType: 'code',
   scope: 'openid profile email rabudget',
   automaticSilentRenew: true,
