@@ -69,10 +69,11 @@
                 </template>
               </v-menu>
             </v-col>
-            <v-col v-if="isAuthenticated" class="text-center">
-              <v-btn icon to="/profile">
-                <v-icon>mdi-account-box-outline</v-icon>
-              </v-btn>
+            <v-col v-if="isAuthenticated && accountManagementUrl" class="text-center">
+              <icon-button
+                icon="mdi-account-box-outline"
+                @click="openAccountManagement()"
+              ></icon-button>
             </v-col>
             <v-col class="text-center">
               <v-btn icon @click="$vuetify.theme.dark = !$vuetify.theme.dark">
@@ -192,6 +193,7 @@ export default class NavigationDrawer extends Vue {
   @budgetsStore.State('budgets') budgets!: Budget[];
   @budgetsStore.Getter('activeBudget') activeBudget!: Budget;
   @accountStore.Action('logout') logout!: () => Promise<void>;
+  @accountStore.Getter('accountManagementUrl') accountManagementUrl!: string;
   @oidcStore.Getter('oidcIsAuthenticated') isAuthenticated!: boolean;
   @oidcStore.Getter('oidcUser') user!: any;
 
@@ -202,6 +204,10 @@ export default class NavigationDrawer extends Vue {
       width: 900,
       title: this.$t('budgetsManager.title').toString(),
     });
+  }
+
+  openAccountManagement() {
+    window.open(this.accountManagementUrl, '_blank');
   }
 
   @Watch('drawer')
