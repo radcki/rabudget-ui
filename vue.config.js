@@ -8,10 +8,12 @@ module.exports = {
     if (process.env.NODE_ENV === 'production') {
       //
     } else {
-      config.devServer.host = 'localhost';
-      config.devServer.key = fs.readFileSync('./.ssl/ca.key');
-      config.devServer.cert = fs.readFileSync('./.ssl/ca.crt');
-      config.devServer.ca = fs.readFileSync('./.ssl/ca.pem');
+      config.devServer = {
+        host: 'localhost',
+        key: fs.readFileSync('./.ssl/ca.key'),
+        cert: fs.readFileSync('./.ssl/ca.crt'),
+        ca: fs.readFileSync('./.ssl/ca.pem')
+      }
     }
   },
 }

@@ -27,11 +27,15 @@ export interface ModalComponent extends VueConstructor<Vue> {
 }
 
 export default Vue.extend({
-  name: 'r-dialog',
+  name: 'RDialog',
   data() {
     return {
       modalList: [],
     };
+  },
+
+  mounted() {
+    modalService.init(this);
   },
 
   methods: {
@@ -73,11 +77,7 @@ export default Vue.extend({
     },
   },
 
-  mounted() {
-    modalService.init(this);
-  },
-
-  render(h, c: any): VNode {
+  render(h): VNode {
     const close = this.closeModal;
     return h(
       'div',

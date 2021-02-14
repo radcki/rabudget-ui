@@ -1,4 +1,4 @@
-import { DataTableCompareFunction, DataTableHeader } from 'vuetify';
+import { DataTableCompareFunction } from 'vuetify';
 
 export interface TableHeader<T> {
   value: keyof T | 'actions' | 'data-table-expand';

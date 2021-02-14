@@ -11,14 +11,14 @@ class DictionariesApi {
 
   async getCurrencies(query: GetCurrencies.Query): Promise<GetCurrencies.Result> {
     const url = this.baseUrl + 'currencies';
-    return await (await api.get<GetCurrencies.Result>(url)).data;
+    return await (await api.get<GetCurrencies.Result>(url, query)).data;
   }
 
   async getBudgetCategoryIcons(
     query: GetBudgetCategoryIcons.Query,
   ): Promise<GetBudgetCategoryIcons.Result> {
     const url = this.baseUrl + 'category-icons';
-    return await (await api.get<GetBudgetCategoryIcons.Result>(url)).data;
+    return await (await api.get<GetBudgetCategoryIcons.Result>(url, query)).data;
   }
 }
 
