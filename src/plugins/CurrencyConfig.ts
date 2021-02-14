@@ -1,4 +1,3 @@
-import { format } from 'date-fns';
 import { VueConstructor } from 'vue';
 import Store from '@/store';
 import { MoneyAmount } from '@/typings/MoneyAmount';

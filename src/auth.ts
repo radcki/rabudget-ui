@@ -1,5 +1,5 @@
-const loco = window.location;
-const appRootUrl = `${loco.protocol}//${loco.host}${process.env.BASE_URL}`;
+//const loco = window.location;
+//const appRootUrl = `${loco.protocol}//${loco.host}${process.env.BASE_URL}`;
 
 const authority = process.env.VUE_APP_AUTH_AUTHORITY;
 const redirectUri = process.env.VUE_APP_AUTH_REDIRECT_URI;
