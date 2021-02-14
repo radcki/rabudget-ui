@@ -1,18 +1,24 @@
 const loco = window.location;
 const appRootUrl = `${loco.protocol}//${loco.host}${process.env.BASE_URL}`;
 
+const authority = process.env.VUE_APP_AUTH_AUTHORITY;
+const redirectUri = process.env.VUE_APP_AUTH_REDIRECT_URI;
+const popupRedirectUri = process.env.VUE_APP_AUTH_POPUP_REDIRECT_URI;
+const postLogoutRedirectUri = process.env.VUE_APP_AUTH_POST_LOGOUT_REDIRECT_URI;
+const silentRedirectUri = process.env.VUE_APP_AUTH_SILENT_REDIRECT_URI;
+
 const oidcSettings = {
-  authority: 'https://auth.rabt.pl',
+  authority: authority,
   //authority: 'https://localhost:44396',
   clientId: 'rabudget',
-  redirectUri: 'https://localhost:8080/auth/signinwin/main',
-  popupRedirectUri: 'https://localhost:8080/auth/signinpop/main',
-  postLogoutRedirectUri: 'https://localhost:8080/signed-out',
+  redirectUri: redirectUri,
+  popupRedirectUri: popupRedirectUri,
+  postLogoutRedirectUri: postLogoutRedirectUri,
   responseType: 'code',
   scope: 'openid profile email rabudget',
   automaticSilentRenew: true,
   automaticSilentSignin: false,
-  silentRedirectUri: 'http://localhost:8080/silent-renew-oidc.html',
+  silentRedirectUri: silentRedirectUri,
 };
 
 export default oidcSettings;
