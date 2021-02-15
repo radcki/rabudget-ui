@@ -19,6 +19,6 @@ jobs:
           VUE_APP_AUTH_SILENT_REDIRECT_URI: ${{ secrets.VUE_APP_AUTH_SILENT_REDIRECT_URI }}
         with:
           name: radekadamczewski/rabudget-ui
-
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+          buildargs: VUE_APP_AUTH_AUTHORITY,VUE_APP_AUTH_REDIRECT_URI,VUE_APP_AUTH_POPUP_REDIRECT_URI,VUE_APP_AUTH_POST_LOGOUT_REDIRECT_URI,VUE_APP_AUTH_SILENT_REDIRECT_URI
