@@ -9,14 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - uses: actions/setup-node@v1
-        with:
-          node-version: '10.x'
-      - run: npm install
-      - run: npm run lint
-
       - name: Publish to Registry
-        uses: HurricanKai/Publish-Docker-Github-Action@master
+        uses: elgohr/Publish-Docker-Github-Action@master
         env:
           VUE_APP_AUTH_AUTHORITY: ${{ secrets.VUE_APP_AUTH_AUTHORITY }}
           VUE_APP_AUTH_REDIRECT_URI: ${{ secrets.VUE_APP_AUTH_REDIRECT_URI }}
