@@ -5,20 +5,16 @@
         <v-subheader class="headline white--text">{{ $t('overview.title') }}</v-subheader>
       </v-col>
     </v-row>
-    <v-row class="mt-1">
-      <v-col
-        v-if="!isMobile"
-        xs="12"
-        sm="12"
-        md="8"
-        lg="6"
-        xl="4"
-        class="d-flex flex-grow-0"
-        style="width: 480px"
-      >
+    <v-row class="mt-1 align-start">
+      <v-col xs="12" sm="12" md="8" lg="6" xl="4" class="d-flex flex-grow-0" style="width: 480px">
         <v-row>
-          <v-col cols="12">
+          <v-col v-if="!isMobile" cols="12">
             <new-transaction></new-transaction>
+          </v-col>
+          <v-col cols="12">
+            <mini-categories-summary
+              :category-type="eBudgetCategoryType.Saving"
+            ></mini-categories-summary>
           </v-col>
         </v-row>
       </v-col>
@@ -91,6 +87,7 @@ const budgetsStore = namespace('budgets');
     'mini-transaction-list': () => import('./components/MiniTransactionsList.vue'),
     'categories-balance': () => import('./components/CategoriesBalance.vue'),
     'value-card': () => import('./components/ValueCard.vue'),
+    'mini-categories-summary': () => import('./components/MiniCategoriesSummary.vue'),
   },
 })
 export default class Overview extends Vue {
