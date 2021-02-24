@@ -26,7 +26,7 @@
           <v-col xs4>
             <v-chip class="amber darken-2 elevation-3 white--text text-body-2" small>
               <v-animated-number
-                :value="category.balance.thisMonthBudgetedAmount"
+                :value="category.balance.thisMonthBudgetedAmountLeft"
                 :format-value="formatAmount"
                 :duration="300"
               />
