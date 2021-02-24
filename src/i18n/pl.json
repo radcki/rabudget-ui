@@ -113,7 +113,9 @@
     "hideBudgetedAmounts": "Ukryj zabudżetowane miesięczne kwoty",
     "newBudgetedAmount": "Nowa kwota",
     "budgetedAmountDeleteTitle": "Usuwanie zabudżetowanej kwoty",
-    "budgetedAmountDeleteMessage": "Zabudżetowana kwota zostanie bezpowrotnie usunięta. Czy chcesz kontynuować?"
+    "budgetedAmountDeleteMessage": "Zabudżetowana kwota zostanie bezpowrotnie usunięta. Czy chcesz kontynuować?",
+    "totalAmount": "Suma kategorii",
+    "monthPlanLeft": "Pozostała planowa kwota"
   },
   "overview": {
     "title": "Przegląd",
