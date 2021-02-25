@@ -8,6 +8,20 @@
 
     <v-main>
       <router-view></router-view>
+      <v-fab-transition>
+        <v-btn
+          v-show="isMobile"
+          color="red"
+          fab
+          right
+          bottom
+          fixed
+          dark
+          @click="createTransaction()"
+        >
+          <v-icon>mdi-plus</v-icon>
+        </v-btn>
+      </v-fab-transition>
     </v-main>
     <!--
     <modal-dialog></modal-dialog> -->
@@ -52,6 +66,10 @@ export default class App extends Vue {
 
   switchLocale(locale: string) {
     console.log(locale);
+    //todo
+  }
+
+  createTransaction() {
     //todo
   }
 
