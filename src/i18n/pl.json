@@ -115,7 +115,10 @@
     "budgetedAmountDeleteTitle": "Usuwanie zabudżetowanej kwoty",
     "budgetedAmountDeleteMessage": "Zabudżetowana kwota zostanie bezpowrotnie usunięta. Czy chcesz kontynuować?",
     "totalAmount": "Suma kategorii",
-    "monthPlanLeft": "Pozostała planowa kwota"
+    "monthPlanLeft": "Pozostała planowa kwota",
+    "currentBalance": "Środki w budżecie",
+    "spendingThisMonth": "Wydatki w tym miesiącu",
+    "yearBalance": "Pozostałe środki w roku"
   },
   "overview": {
     "title": "Przegląd",

@@ -15,7 +15,16 @@
             {{ category.name }}
           </v-col>
           <v-col xs4>
-            <v-chip class="amber darken-2 elevation-3 white--text text-body-2" small>
+            <v-skeleton-loader
+              v-if="balanceIsLoading(category)"
+              type="text"
+              class="mx-2"
+            ></v-skeleton-loader>
+            <v-chip
+              v-else-if="category.balance"
+              class="amber darken-2 elevation-3 white--text text-body-2"
+              small
+            >
               <v-animated-number
                 :value="category.balance.totalTransactionsBalance"
                 :format-value="formatAmount"
@@ -24,7 +33,16 @@
             </v-chip>
           </v-col>
           <v-col xs4>
-            <v-chip class="amber darken-2 elevation-3 white--text text-body-2" small>
+            <v-skeleton-loader
+              v-if="balanceIsLoading(category)"
+              type="text"
+              class="mx-2"
+            ></v-skeleton-loader>
+            <v-chip
+              v-else-if="category.balance"
+              class="amber darken-2 elevation-3 white--text text-body-2"
+              small
+            >
               <v-animated-number
                 :value="category.balance.thisMonthBudgetedAmountLeft"
                 :format-value="formatAmount"
