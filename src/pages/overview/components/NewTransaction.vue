@@ -131,16 +131,16 @@ export default class NewTransaction extends Vue {
   }
 
   get spendingIsSaving() {
-    return this.$wait.start(`saving.transection_${eTab.Spending}`);
+    return this.$wait.is(`saving.transection_${eTab.Spending}`);
   }
   get incomeIsSaving() {
-    return this.$wait.start(`saving.transection_${eTab.Income}`);
+    return this.$wait.is(`saving.transection_${eTab.Income}`);
   }
   get savingIsSaving() {
-    return this.$wait.start(`saving.transection_${eTab.Saving}`);
+    return this.$wait.is(`saving.transection_${eTab.Saving}`);
   }
   get allocationIsSaving() {
-    return this.$wait.start(`saving.allocation_${eTab.Allocation}`);
+    return this.$wait.is(`saving.allocation_${eTab.Allocation}`);
   }
 
   generateEmptyTransaction() {
