@@ -8,20 +8,7 @@
 
     <v-main>
       <router-view></router-view>
-      <v-fab-transition>
-        <v-btn
-          v-show="isMobile"
-          color="red"
-          fab
-          right
-          bottom
-          fixed
-          dark
-          @click="createTransaction()"
-        >
-          <v-icon>mdi-plus</v-icon>
-        </v-btn>
-      </v-fab-transition>
+      <mobile-new-transaction v-if="isMobile"></mobile-new-transaction>
     </v-main>
     <!--
     <modal-dialog></modal-dialog> -->
@@ -42,6 +29,7 @@ const oidcStore = namespace('oidcStore');
 @Component({
   components: {
     NavigationDrawer,
+    'mobile-new-transaction': () => import('@/components/MobileNewTransaction.vue'),
   },
 })
 export default class App extends Vue {
@@ -66,10 +54,6 @@ export default class App extends Vue {
 
   switchLocale(locale: string) {
     console.log(locale);
-    //todo
-  }
-
-  createTransaction() {
     //todo
   }
 

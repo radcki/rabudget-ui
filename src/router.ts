@@ -81,13 +81,14 @@ const router = new Router({
 });
 
 router.beforeEach(vuexOidcCreateRouterMiddleware(store, 'oidcStore'));
-// router.beforeEach((to, from, next) => {
-//   if (router.app.$wait && router.app.$wait.is('dialog')) {
-//     router.app.$root.$emit('closeDialogs');
-//     return next(false);
-//   }
-//   next();
-// });
+
+router.beforeEach((to, from, next) => {
+  if (router.app.$wait && router.app.$wait.is('dialog')) {
+    router.app.$root.$emit('closeDialogs');
+    return next(false);
+  }
+  next();
+});
 
 //Vue.prototype.$oidc.useRouter(router);
 export default router;

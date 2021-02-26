@@ -1,14 +1,14 @@
 <template>
   <div>
     <v-row dense>
-      <v-col>
+      <v-col cols="12" sm="6">
         <date-field
           v-model="innerValue.transactionDate"
           filled
           :label="$t('transaction.transactionDate')"
         ></date-field>
       </v-col>
-      <v-col>
+      <v-col cols="12" sm="6">
         <v-text-field
           v-model="innerValue.description"
           filled
@@ -17,7 +17,7 @@
       </v-col>
     </v-row>
     <v-row dense>
-      <v-col>
+      <v-col cols="12" sm="6">
         <category-select
           v-model="innerValue.budgetCategoryId"
           :items="categories"
@@ -26,7 +26,7 @@
           filled
         ></category-select>
       </v-col>
-      <v-col>
+      <v-col cols="12" sm="6">
         <money-field
           v-model="innerValue.amount"
           filled

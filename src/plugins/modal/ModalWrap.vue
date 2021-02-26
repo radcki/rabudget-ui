@@ -56,10 +56,21 @@ export default class ModalWrap extends Vue {
     this.payloadInternal = data;
   }
 
+  created() {
+    this.$root.$on('closeDialogs', this.cancel);
+  }
+
+  beforeDestroy() {
+    this.$root.$off('closeDialogs', this.cancel);
+  }
+
   @Watch('dialogOpen')
   onDialogOpenChange(isOpen) {
     if (!isOpen) {
       this.cancel();
+      this.$wait.end('dialog');
+    } else {
+      this.$wait.start('dialog');
     }
   }
 }

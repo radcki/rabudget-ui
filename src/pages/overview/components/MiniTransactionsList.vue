@@ -87,12 +87,27 @@
                   small
                   :tooltip="$t('transaction.addSubtransanction')"
                   icon="mdi-plus"
+                  :loading="$wait.is(`saving.subTransaction${transaction.transactionId}`)"
+                  @click="createNewSubtransaction(transaction)"
                 ></icon-button>
-                <icon-button
-                  small
-                  :tooltip="$t('transaction.changeTransactionDate')"
-                  icon="mdi-calendar"
-                ></icon-button>
+                <v-menu>
+                  <template #activator="{ on }">
+                    <icon-button
+                      small
+                      :tooltip="$t('transaction.changeTransactionDate')"
+                      icon="mdi-calendar"
+                      :loading="
+                        $wait.is(`saving.transaction.transactionDate${transaction.transactionId}`)
+                      "
+                      v-on="on"
+                    ></icon-button>
+                  </template>
+
+                  <date-picker
+                    v-model="transaction.transactionDate"
+                    @input="updateTransactionDate(transaction)"
+                  ></date-picker>
+                </v-menu>
                 <icon-button
                   small
                   :tooltip="$t('transaction.removeTransanction')"
@@ -133,12 +148,15 @@ import { eBudgetCategoryType } from '@/typings/enums/eBudgetCategoryType';
 import InlineField from '@/components/InlineField.vue';
 import TransactionsApi from '@/api/TransactionsApi';
 import { TransactionNotificationEvents } from '@/plugins/signalr';
+import * as AddSubTransaction from '@/typings/api/transactions/AddSubTransaction';
+import CreateSubtransactionEditor from '@/modals/CreateSubtransactionEditor.vue';
 
 const budgetsStore = namespace('budgets');
 
 @Component({
   components: {
     InlineField,
+    'date-picker': () => import('@/components/DatePicker.vue'),
   },
 })
 export default class MiniTransactionsList extends Vue {
@@ -221,6 +239,35 @@ export default class MiniTransactionsList extends Vue {
     this.pageSize += 5;
   }
 
+  async createNewSubtransaction(transaction: GetTransactionList.TransactionDto) {
+    let command: AddSubTransaction.Command = {
+      transactionId: transaction.transactionId,
+      amount: {
+        currencyCode: transaction.amount.currencyCode,
+        amount: 0,
+      },
+      description: '',
+      transactionDate: new Date(),
+    };
+
+    command = await this.$modal.open(CreateSubtransactionEditor, command, {
+      title: this.$t('transactionHistory.subtransactions.editorTitle').toString(),
+    });
+
+    if (!command) {
+      return;
+    }
+    this.$wait.start(`saving.subTransaction${transaction.transactionId}`);
+    try {
+      await TransactionsApi.addSubTransaction(command);
+      this.fetchTransactions();
+    } catch (error) {
+      this.$msgBox.apiError(error);
+    } finally {
+      this.$wait.end(`saving.subTransaction${transaction.transactionId}`);
+    }
+  }
+
   async updateTransactionDescription(transaction: GetTransactionList.TransactionDto) {
     this.$wait.start(`saving.transaction.description${transaction.transactionId}`);
     try {
@@ -263,6 +310,22 @@ export default class MiniTransactionsList extends Vue {
       this.$msgBox.apiError(error);
     } finally {
       this.$wait.end(`saving.transaction.budgetCategory${transaction.transactionId}`);
+    }
+  }
+
+  async updateTransactionDate(transaction: GetTransactionList.TransactionDto) {
+    console.log('updateTransactionDate');
+    this.$wait.start(`saving.transaction.transactionDate${transaction.transactionId}`);
+    try {
+      const result = await TransactionsApi.updateTransactionDate({
+        transactionId: transaction.transactionId,
+        transactionDate: transaction.transactionDate,
+      });
+      transaction.transactionDate = result.data;
+    } catch (error) {
+      this.$msgBox.apiError(error);
+    } finally {
+      this.$wait.end(`saving.transaction.transactionDate${transaction.transactionId}`);
     }
   }
 
