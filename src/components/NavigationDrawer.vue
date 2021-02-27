@@ -115,7 +115,6 @@ export default class NavigationDrawer extends Vue {
   @Prop(Boolean) collapsed!: boolean;
 
   drawer = true;
-
   minNavSelected = true;
 
   get drawerVisible() {
