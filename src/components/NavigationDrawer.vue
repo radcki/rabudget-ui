@@ -3,7 +3,7 @@
     v-model="drawerVisible"
     width="260"
     dark
-    color="teal darken-4"
+    :color="drawerColor"
     class="elevation-2"
     :floating="!isMobile"
     mobile-breakpoint="600"
@@ -11,7 +11,7 @@
     :mini-variant="minNav"
   >
     <v-expand-transition>
-      <v-list class="py-0" color="secondary">
+      <v-list class="py-0" :color="drawerTopColor">
         <v-list-item>
           <v-list-item-content v-if="!minNav" class="pb-1">
             <v-list-item-title>
@@ -134,6 +134,14 @@ export default class NavigationDrawer extends Vue {
 
   get isMobile() {
     return !this.$vuetify.breakpoint.smAndUp;
+  }
+
+  get drawerColor() {
+    return this.$vuetify.theme.dark ? '#1e1e1e' : 'teal darken-4';
+  }
+
+  get drawerTopColor() {
+    return this.$vuetify.theme.dark ? 'teal darken-4' : 'secondary';
   }
 
   get activeBudgetText(): string {
