@@ -2,6 +2,7 @@ import api from './ApiService';
 import * as GetBudgetCategoriesList from '@/typings/api/budgetCategories/GetBudgetCategoriesList';
 import * as GetBudgetCategoryBalance from '@/typings/api/budgetCategories/GetBudgetCategoryBalance';
 import * as GetCurrentBudgetCategorySummary from '@/typings/api/budgetCategories/GetCurrentBudgetCategorySummary';
+import * as GetBudgetedAmountsSummary from '@/typings/api/budgetCategories/GetBudgetedAmountsSummary';
 import * as CreateBudgetCategory from '@/typings/api/budgetCategories/CreateBudgetCategory';
 import * as MoveBudgetCategoryDown from '@/typings/api/budgetCategories/MoveBudgetCategoryDown';
 import * as MoveBudgetCategoryUp from '@/typings/api/budgetCategories/MoveBudgetCategoryUp';
@@ -47,6 +48,15 @@ class BudgetCategoriesApi {
   ): Promise<GetBudgetCategoryBalance.Result> {
     const url = this.baseUrl + 'balance';
     const data = await (await api.get<GetBudgetCategoryBalance.Result>(url, query)).data;
+
+    return data;
+  }
+
+  async getBudgetedAmountsSummary(
+    query: GetBudgetedAmountsSummary.Query,
+  ): Promise<GetBudgetedAmountsSummary.Result> {
+    const url = this.baseUrl + 'get-budgeted-amounts-summary';
+    const data = await (await api.get<GetBudgetedAmountsSummary.Result>(url, query)).data;
 
     return data;
   }
@@ -123,7 +133,7 @@ class BudgetCategoriesApi {
     const response = await (await api.post<AddBudgetedAmount.Result>(url, command)).data;
     response.data.validFrom = new Date(response.data.validFrom);
     if (response.data.validTo) response.data.validTo = new Date(response.data.validTo);
-    return;
+    return response;
   }
 }
 

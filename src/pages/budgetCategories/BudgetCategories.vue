@@ -7,6 +7,11 @@
     </v-row>
     <v-row class="mt-1">
       <v-col>
+        <budgeted-amounts-summary />
+      </v-col>
+    </v-row>
+    <v-row class="mt-1">
+      <v-col>
         <categories-list
           color="spending"
           :title="$t('budgetCategories.spending')"
@@ -36,6 +41,7 @@ import { Vue, Component } from 'vue-property-decorator';
 import { Currency } from '@/typings/Currency';
 import { namespace } from 'vuex-class';
 import CategoriesList from './components/CategoriesList.vue';
+import BudgetedAmountsSummary from './components/BudgetedAmountsSummary.vue';
 import { eBudgetCategoryType } from '@/typings/enums/eBudgetCategoryType';
 
 const dictionaries = namespace('dictionaries');
@@ -44,6 +50,7 @@ const budgetsStore = namespace('budgets');
 @Component({
   components: {
     CategoriesList,
+    BudgetedAmountsSummary,
   },
 })
 export default class BudgetCategories extends Vue {

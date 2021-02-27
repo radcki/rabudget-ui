@@ -58,7 +58,8 @@
     "allTypes": "Wszystkie typy",
     "itemsPerPage": "Pokaż po",
     "page": "Strona",
-    "goTomePage": "Przejdź do strony głównej"
+    "goTomePage": "Przejdź do strony głównej",
+    "balance": "Bilans"
   },
   "account": {
     "logged": "Zalogowany",
