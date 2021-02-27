@@ -11,7 +11,7 @@ export default class AnimatedNumber extends Vue {
   @Prop({ type: Object, required: true }) value!: MoneyAmount;
   @Prop({ type: Function, default: v => v }) formatValue!: <T>(v: T) => T;
   @Prop({ type: String, default: 'linear' }) easing!: string;
-  @Prop({ type: Number, default: 1000 }) duration!: number;
+  @Prop({ type: Number, default: 800 }) duration!: number;
   @Prop(Function) update!: () => void;
   @Prop(Function) begin!: () => void;
   @Prop(Function) complete!: () => void;
