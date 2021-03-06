@@ -346,7 +346,7 @@ const budgetsStore = namespace('budgets');
     'v-category-select': () => import('@/components/CategorySelect.vue'),
     'v-date-range-slider': () => import('@/components/DateRangeSlider.vue'),
     'filter-box': () => import('./components/FilterBox.vue'),
-    'subtransactions-list': () => import('./components/SubtransactionsList.vue'),
+    'subtransactions-list': () => import('@/components/SubtransactionsList.vue'),
     InlineField,
   },
 })
