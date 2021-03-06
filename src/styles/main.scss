@@ -14,3 +14,8 @@
   left: 50%;
   transform: translate(-50%, -50%);
 }
+
+.inset-shadow {
+  box-shadow: inset 0px 4px 8px -5px rgb(50 50 50 / 75%),
+    inset 0px -4px 8px -5px rgb(50 50 50 / 75%);
+}

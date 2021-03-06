@@ -151,7 +151,8 @@
     "changeTransactionDate": "Zmień datę transakcji",
     "removeConfirmTitle": "Usuwanie transakcji",
     "removeConfirm": "Transakcja zostanie usunięta. Czy jesteś pewien?",
-    "category": "Kategoria"
+    "category": "Kategoria",
+    "subtransanctions": "Subtransakcje"
   },
   "newTransaction": {
     "createSpending": "Dodaj wydatek",
