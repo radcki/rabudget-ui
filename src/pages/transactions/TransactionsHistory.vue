@@ -118,13 +118,26 @@
                   </template>
 
                   <template #item.actions="{ item }">
-                    <icon-button
-                      :tooltip="$t('transaction.removeTransanction')"
-                      icon="mdi-trash-can"
-                      color="red"
-                      :loading="$wait.is(`removing.transaction${item.transactionId}`)"
-                      @click="removeTransaction(item)"
-                    ></icon-button>
+                    <v-row no-gutters>
+                      <v-col>
+                        <icon-button
+                          :tooltip="$t('transaction.removeTransanction')"
+                          icon="mdi-trash-can"
+                          color="red"
+                          :loading="$wait.is(`removing.transaction${item.transactionId}`)"
+                          @click="removeTransaction(item)"
+                        ></icon-button>
+                      </v-col>
+                      <v-col>
+                        <icon-button
+                          :tooltip="$t('transaction.createTemplateFromTransaction')"
+                          icon="mdi-content-save-outline"
+                          color="blue"
+                          :loading="$wait.is(`saving.transactionTemplate${item.transactionId}`)"
+                          @click="createTransactionTemplate(item)"
+                        ></icon-button>
+                      </v-col>
+                    </v-row>
                   </template>
 
                   <template v-slot:expanded-item="{ headers, item }">
@@ -338,6 +351,7 @@ import { FieldOrderInfo } from '@/typings/api/baseTypes/GridQuery';
 import InlineField from '@/components/InlineField.vue';
 import * as AddSubTransaction from '@/typings/api/transactions/AddSubTransaction';
 import CreateSubtransactionEditor from '@/modals/CreateSubtransactionEditor.vue';
+import TransactionTemplatesApi from '@/api/TransactionTemplatesApi';
 
 const budgetsStore = namespace('budgets');
 
@@ -619,6 +633,25 @@ export default class Transactions extends Vue {
       this.$msgBox.apiError(error);
     } finally {
       this.$wait.end(`saving.subTransaction${transaction.transactionId}`);
+    }
+  }
+
+  async createTransactionTemplate(transaction: GetTransactionList.TransactionDto) {
+    this.$wait.start(`saving.transectionTemplate${transaction.transactionId}`);
+    try {
+      await TransactionTemplatesApi.createTransactionTemplate({
+        budgetCategoryId: transaction.budgetCategoryId,
+        amount: transaction.amount,
+        description: transaction.description,
+      });
+      this.$msgBox.success(
+        this.$t('general.success').toString(),
+        this.$t('transaction.transactionTemplateCreated').toString(),
+      );
+    } catch (error) {
+      this.$msgBox.apiError(error);
+    } finally {
+      this.$wait.end(`saving.transectionTemplate${transaction.transactionId}`);
     }
   }
 

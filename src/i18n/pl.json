@@ -59,7 +59,8 @@
     "itemsPerPage": "Pokaż po",
     "page": "Strona",
     "goTomePage": "Przejdź do strony głównej",
-    "balance": "Bilans"
+    "balance": "Bilans",
+    "success": "Powodzenie"
   },
   "account": {
     "logged": "Zalogowany",
@@ -152,13 +153,22 @@
     "removeConfirmTitle": "Usuwanie transakcji",
     "removeConfirm": "Transakcja zostanie usunięta. Czy jesteś pewien?",
     "category": "Kategoria",
-    "subtransanctions": "Subtransakcje"
+    "subtransanctions": "Subtransakcje",
+    "transactionTemplates": "Szablony",
+    "removeTemplate": "Usuń szablon transakcji",
+    "applyTemplate": "Wczytaj szablon transakcji",
+    "templateRemoveConfirmTitle": "Usunięcie szablonu transakcji",
+    "templateRemoveConfirmMessage": "Szablon transakcji zostanie bezpowrotnie usunięty bez wpływu na transakcji utworzone na jego podstawie. Czy chcesz kontynuować?",
+    "noTemplates": "Brak zapisanych szablonów",
+    "transactionTemplateCreated": "Szablon transakcji został utworzony",
+    "createTemplateFromTransaction": "Utwórz szablon z transakcji"
   },
   "newTransaction": {
     "createSpending": "Dodaj wydatek",
     "createSaving": "Dodaj oszczędność",
     "createIncome": "Dodaj dochód",
-    "createAllocation": "Dodaj alokację"
+    "createAllocation": "Dodaj alokację",
+    "createTransactionTemplate": "Utwórz szablon"
   },
   "allocation": {
     "amount": "Kwota",

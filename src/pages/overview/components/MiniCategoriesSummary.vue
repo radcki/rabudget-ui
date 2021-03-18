@@ -10,7 +10,7 @@
       </v-row>
 
       <template v-for="(category, index) in categories">
-        <v-row :key="`ct_${index}`" no-gutters>
+        <v-row :key="`ct_${index}`" no-gutters class="mt-2">
           <v-col s4 align-center class="subtitle-2">
             {{ category.name }}
           </v-col>

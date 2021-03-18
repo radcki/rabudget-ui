@@ -80,7 +80,6 @@ const mutations: MutationTree<BudgetState> = {
     state.budgets = payload;
   },
   setActive(state, payload: Budget) {
-    console.log('setActive', payload);
     state.activeBudgetId = payload ? payload.budgetId : null;
   },
   setActiveBudgetCategories(state, payload: BudgetCategoryDto[]) {

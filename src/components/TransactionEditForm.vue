@@ -46,9 +46,8 @@ import DateField from '@/components/DateField.vue';
 import * as CreateTransaction from '@/typings/api/transactions/CreateTransaction';
 import { BudgetCategoryDto } from '@/typings/api/budgetCategories/GetBudgetCategoriesList';
 import { eCurrencyCode } from '@/typings/enums/eCurrencyCode';
-import { eBudgetCategoryType } from '@/typings/enums/eBudgetCategoryType';
 import CategorySelect from '@/components/CategorySelect.vue';
-import BudgetCategoriesApi from '@/api/BudgetCategoriesApi';
+import { eBudgetCategoryType } from '@/typings/enums/eBudgetCategoryType';
 const budgetsStore = namespace('budgets');
 
 @Component({
@@ -65,34 +64,14 @@ export default class TransactionEditForm extends Vue {
   innerValue: CreateTransaction.Command = Object.assign({}, this.value);
 
   @budgetsStore.Getter('activeBudget') activeBudget!: Budget | null;
+  @budgetsStore.Getter('activeBudgetCategories') activeBudgetCategories!: BudgetCategoryDto[];
 
-  categories: BudgetCategoryDto[] = [];
+  get categories() {
+    return this.activeBudgetCategories.filter(v => v.budgetCategoryType == this.categoryType);
+  }
 
   get currencyCode(): eCurrencyCode {
     return this.activeBudget ? this.activeBudget.currency.currencyCode : 0;
-  }
-
-  async fetchBudgetCategories() {
-    if (!this.activeBudget) {
-      this.categories = [];
-      return;
-    }
-    this.$wait.start(`loading.budgetCategories`);
-    try {
-      const data = await BudgetCategoriesApi.getBudgetsCategoriesList({
-        budgetId: this.activeBudget.budgetId,
-        budgetCategoryTypes: [this.categoryType],
-      });
-      this.categories = data.data;
-    } catch (error) {
-      this.$msgBox.apiError(error);
-    } finally {
-      this.$wait.end(`loading.budgetCategories`);
-    }
-  }
-
-  mounted() {
-    this.fetchBudgetCategories();
   }
 
   @Watch('innerValue', { deep: true })
@@ -108,13 +87,11 @@ export default class TransactionEditForm extends Vue {
   @Watch('categoryType')
   onCategoryTypeChange() {
     this.innerValue.budgetCategoryId = '';
-    this.fetchBudgetCategories();
   }
 
   @Watch('activeBudget')
   onBudgetChange() {
     this.innerValue.budgetCategoryId = '';
-    this.fetchBudgetCategories();
   }
 }
 </script>

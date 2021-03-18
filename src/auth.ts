@@ -20,6 +20,5 @@ const oidcSettings = {
   automaticSilentSignin: false,
   silentRedirectUri: silentRedirectUri,
 };
-console.log(oidcSettings);
 
 export default oidcSettings;

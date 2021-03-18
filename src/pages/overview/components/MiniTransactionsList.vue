@@ -364,7 +364,6 @@ export default class MiniTransactionsList extends Vue {
   }
 
   async updateTransactionDate(transaction: GetTransactionList.TransactionDto) {
-    console.log('updateTransactionDate');
     this.$wait.start(`saving.transaction.transactionDate${transaction.transactionId}`);
     try {
       const result = await TransactionsApi.updateTransactionDate({
