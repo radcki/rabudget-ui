@@ -140,7 +140,6 @@ export default class BudgetedAmountsSummary extends Vue {
   }
 
   async fetchBudgetAmountsSummary() {
-    console.log('fetchBudgetAmountsSummary');
     this.$wait.start(`loading.budgetedAmountSummary`);
     try {
       const data = await BudgetCategoriesApi.getBudgetedAmountsSummary({

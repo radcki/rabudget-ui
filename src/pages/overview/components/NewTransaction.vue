@@ -10,6 +10,55 @@
       </v-tabs>
     </v-card-title>
     <v-card-text v-if="activeBudget" class="pt-3">
+      <v-row dense>
+        <v-col class="text-right">
+          <v-menu
+            v-model="transactionTemplatesMenu"
+            min-width="300"
+            offset-y
+            :close-on-content-click="false"
+          >
+            <template #activator="{ on }">
+              <v-btn text :loading="templatesAreLoading" v-on="on">
+                {{ $t('transaction.transactionTemplates') }}
+                <v-icon>mdi-chevron-down</v-icon>
+              </v-btn>
+            </template>
+            <v-list dense>
+              <template v-for="(templateGroup, templateGroupIndex) in groupedTemplates">
+                <v-subheader :key="`tg_${templateGroupIndex}`">{{
+                  templateGroup.category.name
+                }}</v-subheader>
+                <template
+                  v-for="(
+                    transactionTemplate, transactionTemaplateIndex
+                  ) in templateGroup.templates"
+                >
+                  <transaction-template-list-item
+                    :key="`tt_${templateGroupIndex}_${transactionTemaplateIndex}`"
+                    :value="transactionTemplate"
+                    :category-type="categoryType"
+                    @removed="fetchTransactionTemplates()"
+                    @load-template="loadTransactionTemplate(transactionTemplate)"
+                  >
+                  </transaction-template-list-item>
+                </template>
+              </template>
+
+              <template v-if="transactionTemplates.length == 0">
+                <v-list-item>
+                  <v-list-item-content>
+                    <v-list-item-title>
+                      {{ $t('transaction.noTemplates') }}
+                    </v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </template>
+            </v-list>
+          </v-menu>
+        </v-col>
+      </v-row>
+
       <template v-if="tab == eTab.Spending">
         <transaction-edit-form
           key="formSpending"
@@ -41,6 +90,28 @@
     </v-card-text>
     <v-card-actions>
       <v-spacer></v-spacer>
+      <v-btn
+        v-if="tab == eTab.Spending"
+        text
+        :loading="spendingIsSaving"
+        @click="createTransactionTemplate(newSpending)"
+        >{{ $t('newTransaction.createTransactionTemplate') }}</v-btn
+      >
+      <v-btn
+        v-if="tab == eTab.Income"
+        text
+        :loading="spendingIsSaving"
+        @click="createTransactionTemplate(newIncome)"
+        >{{ $t('newTransaction.createTransactionTemplate') }}</v-btn
+      >
+      <v-btn
+        v-if="tab == eTab.Saving"
+        text
+        :loading="spendingIsSaving"
+        @click="createTransactionTemplate(newSaving)"
+        >{{ $t('newTransaction.createTransactionTemplate') }}</v-btn
+      >
+
       <v-btn
         v-if="tab == eTab.Spending"
         text
@@ -85,12 +156,15 @@ import { Vue, Component, Watch } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import { Budget } from '@/typings/api/budget/GetBudgetList';
 import TransactionEditForm from '@/components/TransactionEditForm.vue';
-import AllocationEditForm from '@/components/AllocationEditForm.vue';
 import * as CreateTransaction from '@/typings/api/transactions/CreateTransaction';
+import * as CreateTransactionTemplate from '@/typings/api/transactionTemplates/CreateTransactionTemplate';
 import * as CreateAllocation from '@/typings/api/allocations/CreateAllocation';
 import { eBudgetCategoryType } from '@/typings/enums/eBudgetCategoryType';
 import TransactionsApi from '@/api/TransactionsApi';
 import AllocationsApi from '@/api/AllocationsApi';
+import TransactionTemplatesApi from '@/api/TransactionTemplatesApi';
+import { TransactionTemplateDto } from '@/typings/api/transactionTemplates/GetTransactionTemplateList';
+import { BudgetCategoryDto } from '@/typings/api/budgetCategories/GetBudgetCategoriesList';
 
 const budgetsStore = namespace('budgets');
 
@@ -104,11 +178,13 @@ enum eTab {
 @Component({
   components: {
     TransactionEditForm,
-    AllocationEditForm,
+    AllocationEditForm: () => import('@/components/AllocationEditForm.vue'),
+    TransactionTemplateListItem: () => import('@/components/TransactionTemplateListItem.vue'),
   },
 })
 export default class NewTransaction extends Vue {
   @budgetsStore.Getter('activeBudget') activeBudget!: Budget;
+  @budgetsStore.Getter('activeBudgetCategories') budgetCategories!: BudgetCategoryDto[];
 
   color = {
     [eTab.Spending]: 'spending',
@@ -126,8 +202,34 @@ export default class NewTransaction extends Vue {
   newIncome: CreateTransaction.Command = this.generateEmptyTransaction();
   newAllocation: CreateAllocation.Command = this.generateEmptyAllocation();
 
+  transactionTemplates: TransactionTemplateDto[] = [];
+  transactionTemplatesMenu = false;
+
   get tabColor() {
     return this.color[this.tab];
+  }
+
+  get categoryType(): eBudgetCategoryType | null {
+    switch (this.tab) {
+      case eTab.Spending:
+        return eBudgetCategoryType.Spending;
+      case eTab.Saving:
+        return eBudgetCategoryType.Saving;
+      case eTab.Income:
+        return eBudgetCategoryType.Income;
+      default:
+        return null;
+    }
+  }
+
+  get groupedTemplates() {
+    return [...new Set(this.transactionTemplates.map(v => v.budgetCategoryId))].map(v => {
+      const category = this.budgetCategories.find(c => c.budgetCategoryId == v);
+      return {
+        category,
+        templates: this.transactionTemplates.filter(t => t.budgetCategoryId == v),
+      };
+    });
   }
 
   get spendingIsSaving() {
@@ -141,6 +243,10 @@ export default class NewTransaction extends Vue {
   }
   get allocationIsSaving() {
     return this.$wait.is(`saving.allocation_${eTab.Allocation}`);
+  }
+
+  get templatesAreLoading() {
+    return this.$wait.is(`loading.transactionTemplates`);
   }
 
   generateEmptyTransaction() {
@@ -176,7 +282,6 @@ export default class NewTransaction extends Vue {
   }
 
   async createTransaction(transaction: CreateTransaction.Command) {
-    console.log('transaction', transaction);
     this.$wait.start(`saving.transection_${this.tab}`);
     const type = this.tab;
     try {
@@ -198,6 +303,21 @@ export default class NewTransaction extends Vue {
       this.$msgBox.apiError(error);
     } finally {
       this.$wait.end(`saving.transection_${this.tab}`);
+    }
+  }
+
+  async createTransactionTemplate(transactionTemplate: CreateTransactionTemplate.Command) {
+    this.$wait.start(`saving.transectionTemplate`);
+    try {
+      await TransactionTemplatesApi.createTransactionTemplate(transactionTemplate);
+      this.$emit('transactionTemplateCreated');
+
+      transactionTemplate = Object.assign(transactionTemplate, this.generateEmptyTransaction());
+      this.fetchTransactionTemplates();
+    } catch (error) {
+      this.$msgBox.apiError(error);
+    } finally {
+      this.$wait.end(`saving.transectionTemplate`);
     }
   }
 
@@ -226,13 +346,64 @@ export default class NewTransaction extends Vue {
     }
   }
 
+  async fetchTransactionTemplates() {
+    if (!this.activeBudget || !this.categoryType) {
+      this.transactionTemplates = [];
+      return;
+    }
+    this.$wait.start(`loading.transactionTemplates`);
+    try {
+      const categoryType = this.categoryType;
+      const data = await TransactionTemplatesApi.getTransactionTemplateList({
+        budgetId: this.activeBudget.budgetId,
+        budgetCategoryType: categoryType,
+      });
+      if (categoryType == this.categoryType) {
+        this.transactionTemplates = data.data;
+      }
+    } catch (error) {
+      this.$msgBox.apiError(error);
+    } finally {
+      this.$wait.end(`loading.transactionTemplates`);
+    }
+  }
+
+  loadTransactionTemplate(transactionTemplate: TransactionTemplateDto) {
+    switch (this.categoryType) {
+      case eBudgetCategoryType.Spending:
+        this.newSpending.amount = transactionTemplate.amount;
+        this.newSpending.description = transactionTemplate.description;
+        this.newSpending.budgetCategoryId = transactionTemplate.budgetCategoryId;
+        break;
+      case eBudgetCategoryType.Income:
+        this.newIncome.amount = transactionTemplate.amount;
+        this.newIncome.description = transactionTemplate.description;
+        this.newIncome.budgetCategoryId = transactionTemplate.budgetCategoryId;
+        break;
+      case eBudgetCategoryType.Saving:
+        this.newSaving.amount = transactionTemplate.amount;
+        this.newSaving.description = transactionTemplate.description;
+        this.newSaving.budgetCategoryId = transactionTemplate.budgetCategoryId;
+        break;
+    }
+
+    this.transactionTemplatesMenu = false;
+  }
+
   mounted() {
     this.resetForm();
+    this.fetchTransactionTemplates();
   }
 
   @Watch('activeBudget', { deep: true })
   onBudgetChange() {
     this.resetForm();
+    this.fetchTransactionTemplates();
+  }
+
+  @Watch('categoryType')
+  onCategoryTypeChange() {
+    this.fetchTransactionTemplates();
   }
 }
 </script>

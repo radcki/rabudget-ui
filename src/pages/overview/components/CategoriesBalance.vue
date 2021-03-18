@@ -14,7 +14,7 @@
             {{ $t('budgetCategories.yearBalance') }}
           </v-col>
         </v-row>
-        <v-row v-for="(category, i) in categories" :key="i" no-gutters>
+        <v-row v-for="(category, i) in categories" :key="i" no-gutters class="mt-2">
           <v-col :cols="3">
             <v-avatar :color="color" size="30" class="mr-4">
               <v-icon dark size="20">{{ category.budgetCategoryIconKey }}</v-icon>

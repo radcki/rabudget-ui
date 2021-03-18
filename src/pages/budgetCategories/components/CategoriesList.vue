@@ -185,7 +185,6 @@ export default class CategoriesList extends Vue {
     if (!category) {
       return;
     }
-    console.log(category);
   }
 
   async fetchBudgetCategories() {

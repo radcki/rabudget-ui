@@ -16,7 +16,6 @@ export interface RootState {}
 const store: StoreOptions<RootState> = {
   actions: {
     init({ dispatch }) {
-      console.log('StoreInit');
       dispatch('dictionaries/loadCurrencies');
       dispatch('dictionaries/loadCategoryIcons');
       dispatch('budgets/loadBudgets');
@@ -35,7 +34,7 @@ const store: StoreOptions<RootState> = {
       },
       {
         userLoaded: user => {
-          console.log('OIDC user is loaded:', user);
+          // console.log('OIDC user is loaded:', user);
           api.setInterceptor(user);
           signalrPlugin.setToken(user.access_token);
         },

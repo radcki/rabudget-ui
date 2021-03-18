@@ -205,7 +205,6 @@ export default class MobileNewTransactiopn extends Vue {
   }
 
   async createTransaction(transaction: CreateTransaction.Command) {
-    console.log('transaction', transaction);
     const inputType = this.inputType;
     this.$wait.start(`saving.transection_${inputType}`);
     const type = this.inputType;

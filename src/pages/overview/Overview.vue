@@ -55,19 +55,19 @@
       </v-col>
     </v-row>
     <v-row class="mt-1">
-      <v-col class="pr-2">
+      <v-col class="pr-2" cols="12" md="4">
         <mini-transaction-list
           :title="$t('general.spendings')"
           :category-type="eBudgetCategoryType.Spending"
         ></mini-transaction-list>
       </v-col>
-      <v-col class="px-2">
+      <v-col class="px-2" cols="12" md="4">
         <mini-transaction-list
           :title="$t('general.incomes')"
           :category-type="eBudgetCategoryType.Income"
         ></mini-transaction-list
       ></v-col>
-      <v-col class="pl-2">
+      <v-col class="pl-2" cols="12" md="4">
         <mini-transaction-list
           :title="$t('general.savings')"
           :category-type="eBudgetCategoryType.Saving"

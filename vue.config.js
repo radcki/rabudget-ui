@@ -8,6 +8,7 @@ module.exports = {
     if (process.env.NODE_ENV === 'production') {
       //
     } else {
+      config.devtool = 'source-map';
       config.devServer = {
         host: 'localhost',
         key: fs.readFileSync('./.ssl/ca.key'),
