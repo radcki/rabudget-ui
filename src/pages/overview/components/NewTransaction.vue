@@ -93,21 +93,21 @@
       <v-btn
         v-if="tab == eTab.Spending"
         text
-        :loading="spendingIsSaving"
+        :loading="templateIsSaving"
         @click="createTransactionTemplate(newSpending)"
         >{{ $t('newTransaction.createTransactionTemplate') }}</v-btn
       >
       <v-btn
         v-if="tab == eTab.Income"
         text
-        :loading="spendingIsSaving"
+        :loading="templateIsSaving"
         @click="createTransactionTemplate(newIncome)"
         >{{ $t('newTransaction.createTransactionTemplate') }}</v-btn
       >
       <v-btn
         v-if="tab == eTab.Saving"
         text
-        :loading="spendingIsSaving"
+        :loading="templateIsSaving"
         @click="createTransactionTemplate(newSaving)"
         >{{ $t('newTransaction.createTransactionTemplate') }}</v-btn
       >
@@ -247,6 +247,10 @@ export default class NewTransaction extends Vue {
 
   get templatesAreLoading() {
     return this.$wait.is(`loading.transactionTemplates`);
+  }
+
+  get templateIsSaving() {
+    return this.$wait.is(`saving.transectionTemplate`);
   }
 
   generateEmptyTransaction() {
