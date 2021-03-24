@@ -2,7 +2,8 @@
   <v-card class="text-sm-center" :color="color" dark>
     <v-card-title class="subtitle-2">{{ label }}</v-card-title>
     <v-card-text class="display-1 pb-1">
-      <animated-number v-if="value" :value="value" :duration="300" />
+      <span v-if="value">{{ value | money }}</span>
+      <!-- <animated-number v-if="value" :value="value" :duration="300" /> -->
       <span v-else>-</span>
     </v-card-text>
     <v-card-actions style="min-height: 7px" class="pa-0 ma-0">

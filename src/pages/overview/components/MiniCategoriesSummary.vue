@@ -25,11 +25,12 @@
               class="amber darken-2 elevation-3 white--text text-body-2"
               small
             >
-              <v-animated-number
+              {{ category.balance.totalTransactionsBalance | money }}
+              <!-- <v-animated-number
                 :value="category.balance.totalTransactionsBalance"
                 :format-value="formatAmount"
                 :duration="300"
-              />
+              /> -->
             </v-chip>
           </v-col>
           <v-col xs4>
@@ -43,11 +44,12 @@
               class="amber darken-2 elevation-3 white--text text-body-2"
               small
             >
-              <v-animated-number
+              {{ category.balance.thisMonthBudgetedAmountLeft | money }}
+              <!-- <v-animated-number
                 :value="category.balance.thisMonthBudgetedAmountLeft"
                 :format-value="formatAmount"
                 :duration="300"
-              />
+              /> -->
             </v-chip>
           </v-col>
         </v-row>

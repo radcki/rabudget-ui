@@ -74,6 +74,14 @@ const router = new Router({
       },
     },
     {
+      path: '/silent-renew-oidc',
+      name: 'silent-renew-oidc',
+      component: () => import('@/pages/auth/SilentRenew.vue'),
+      meta: {
+        isPublic: true,
+      },
+    },
+    {
       path: '*',
       redirect: '/',
     },

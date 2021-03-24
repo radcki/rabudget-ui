@@ -1,9 +1,11 @@
 <template>
   <div>
     <div class="text-xs-center caption">
-      <animated-number :value="value" :format-value="formatAmount" :duration="300" />
+      {{ value | money }}
+      <!-- <animated-number :value="value" :format-value="formatAmount" :duration="300" /> -->
       <span v-if="subValue && subValue > 0" class="grey--text font-italic">
-        (<animated-number :value="subValue" :format-value="formatAmount" :duration="300" />)
+        ({{ subValue | money }})
+        <!-- (<animated-number :value="subValue" :format-value="formatAmount" :duration="300" />) -->
       </span>
     </div>
     <v-tooltip bottom>

@@ -30,8 +30,7 @@
         <v-row>
           <v-col class="pr-2" :cols="isMobile ? 12 : 6">
             <value-card
-              v-if="budgetBalance"
-              :value="budgetBalance.totalBalance"
+              :value="budgetBalance ? budgetBalance.totalBalance : null"
               :label="$t('overview.totalBalance')"
               color="income"
               :loading="$wait.is('loading.budgetBalance*')"
@@ -39,8 +38,7 @@
           </v-col>
           <v-col class="pl-2" :cols="isMobile ? 12 : 6">
             <value-card
-              v-if="budgetBalance"
-              :value="budgetBalance.unassignedFunds"
+              :value="budgetBalance ? budgetBalance.unassignedFunds : null"
               :label="$t('overview.unassignedFunds')"
               color="blue-grey darken-1"
               :loading="$wait.is('loading.budgetBalance*')"
