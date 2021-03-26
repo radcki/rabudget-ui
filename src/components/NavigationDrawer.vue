@@ -13,18 +13,20 @@
     <v-expand-transition>
       <v-list class="py-0" :color="drawerTopColor">
         <v-list-item>
+          <v-list-item-action v-if="!minNav" class="mr-4">
+            <a href="/">
+              <v-img src="/rb.svg" max-height="50" max-width="30" :contain="true"></v-img>
+            </a>
+          </v-list-item-action>
           <v-list-item-content v-if="!minNav" class="pb-1">
             <v-list-item-title>
-              <span class="title white--text" style="font-size: 1.5em !important">raBudget</span>
-            </v-list-item-title>
-            <v-list-item-subtitle class="mt-2">
-              <span class="title white--text px-3" style="font-size: 1.2em !important">{{
-                activeBudgetText
-              }}</span>
+              <span class="title white--text px-3" style="font-size: 1.2em !important">
+                {{ activeBudgetText }}
+              </span>
               <v-btn icon small @click="openBudgetsDialog()">
                 <v-icon>mdi-chevron-down</v-icon>
               </v-btn>
-            </v-list-item-subtitle>
+            </v-list-item-title>
           </v-list-item-content>
           <v-list-item-action>
             <v-btn v-if="!isMobile" icon dark @click.stop="minNavSelected = !minNavSelected">
