@@ -137,18 +137,43 @@
                 <v-list v-if="isMobile" dense subheader>
                   <template v-for="(item, index) in allocations">
                     <v-list-item :key="`i_${item.allocationId}_${index}`" class="px-0 py-0">
-                      <v-list-item-avatar class="my-0">
-                        <inline-field
-                          v-model="item.budgetCategoryId"
-                          type="category"
-                          hide-category-name
-                          :category-type="categoryType(item.budgetCategoryId)"
-                          :loading="
-                            $wait.is(`saving.allocation.budgetCategory${item.allocationId}`)
-                          "
-                          @change="updateAllocationCategory(item)"
-                        ></inline-field>
-                      </v-list-item-avatar>
+                      <v-list-item-action class="my-0">
+                        <v-row dense>
+                          <v-col>
+                            <inline-field
+                              v-model="item.sourceBudgetCategoryId"
+                              type="category"
+                              style="min-width: 32px"
+                              hide-category-name
+                              :category-type="categoryType(item.sourceBudgetCategoryId)"
+                              :loading="
+                                $wait.is(
+                                  `saving.allocation.sourceBudgetCategory${item.allocationId}`,
+                                )
+                              "
+                              @change="updateAllocationSourceCategory(item)"
+                            ></inline-field>
+                          </v-col>
+                          <v-col>
+                            <v-icon>mdi-chevron-right</v-icon>
+                          </v-col>
+                          <v-col>
+                            <inline-field
+                              v-model="item.targetBudgetCategoryId"
+                              style="min-width: 32px"
+                              type="category"
+                              hide-category-name
+                              :category-type="categoryType(item.targetBudgetCategoryId)"
+                              :loading="
+                                $wait.is(
+                                  `saving.allocation.targetBudgetCategory${item.allocationId}`,
+                                )
+                              "
+                              @change="updateAllocationTargetCategory(item)"
+                            ></inline-field>
+                          </v-col>
+                        </v-row>
+                      </v-list-item-action>
 
                       <v-list-item-content class="py-1">
                         <v-list-item-title class="font-weight-medium">

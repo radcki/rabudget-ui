@@ -37,7 +37,7 @@
         <v-spacer class="py-2"></v-spacer>
         <v-category-select
           v-if="categories"
-          v-model="query.targetBudgetCategoryIds"
+          v-model="query.sourceBudgetCategoryIds"
           multiple
           filled
           dense
