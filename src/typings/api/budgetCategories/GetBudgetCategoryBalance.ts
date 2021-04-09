@@ -12,4 +12,5 @@ export interface BudgetCategoryBalanceDto {
   totalCategoryBalance: MoneyAmount;
   thisMonthTransactionsTotal: MoneyAmount;
   budgetLeftToEndOfYear: MoneyAmount;
+  thisYearBudgetedAmount: MoneyAmount;
 }

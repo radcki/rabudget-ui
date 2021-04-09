@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>You are offline</title>
+
+  <style>
+    body {
+      font-family: helvetica, arial, sans-serif;
+      margin: 2em;
+      background-color: #0b5a4d;
+    }
+
+    p {
+      margin-block: 1rem;
+      margin-bottom: 20px;
+    }
+
+    button {
+      display: block;
+      border-radius: 10px;
+      padding: 10px;
+      background-color: #0b5a4d;
+      border: 0;
+      color: #fff;
+      font-weight: 700;
+      align-items: center;
+      border-radius: 4px;
+      display: inline-flex;
+      flex: 0 0 auto;
+      font-weight: 500;
+      letter-spacing: 0.0892857143em;
+      justify-content: center;
+      outline: 0;
+      position: relative;
+      text-decoration: none;
+      text-indent: 0.0892857143em;
+      text-transform: uppercase;
+      transition-duration: 0.28s;
+      transition-property: box-shadow, transform, opacity;
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    .card {
+      background-color: #fff;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <h1>Offline</h1>
+
+    <p>Click the button below to try reloading.</p>
+    <button type="button">Reload</button>
+  </div>
+
+
+  <script>
+    document.querySelector("button").addEventListener("click", () => {
+      window.location.reload();
+    });
+
+    window.addEventListener('online', () => {
+      window.location.reload();
+    });
+
+    async function checkNetworkAndReload() {
+      try {
+        const response = await fetch('.');
+        if (response.status >= 200 && response.status < 500) {
+          window.location.reload();
+          return;
+        }
+      } catch {
+      }
+      window.setTimeout(checkNetworkAndReload, 2500);
+    }
+
+    checkNetworkAndReload();
+  </script>
+</body>
+
+</html>

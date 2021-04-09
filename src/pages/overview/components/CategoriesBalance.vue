@@ -53,7 +53,7 @@
               <value-bar
                 v-else-if="category.balance"
                 :value="category.balance.budgetLeftToEndOfYear"
-                :max="category.currentBudgetedAmount"
+                :max="category.balance.thisYearBudgetedAmount"
               ></value-bar>
             </v-col>
           </template>
