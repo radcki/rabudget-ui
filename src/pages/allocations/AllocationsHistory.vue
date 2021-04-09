@@ -210,7 +210,6 @@
 
                       <v-list-item-action :key="`a1_${item.allocationId}_${index}`" class="my-0">
                         <icon-button
-                          :tooltip="$t('allocation.removeTransanction')"
                           icon="mdi-trash-can"
                           color="red"
                           :loading="$wait.is(`removing.subAllocation${item.allocationId}`)"

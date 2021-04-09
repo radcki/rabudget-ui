@@ -19,6 +19,7 @@ import InlineField from '@/components/InlineField.vue';
 import Modal from '@/plugins/modal';
 import { CurrencyConfig } from '@/plugins/CurrencyConfig';
 import { MoneyAmount } from './typings/MoneyAmount';
+import './registerServiceWorker';
 
 Vue.use(Modal);
 Vue.use(Copy);

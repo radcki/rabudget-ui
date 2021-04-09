@@ -4,6 +4,17 @@ module.exports = {
   "transpileDependencies": [
     "vuetify"
   ],
+  pwa: {
+    name: 'raBudget',
+    themeColor: '#002419',
+    msTileColor: '#000000',
+    appleMobileWebAppCapable: 'yes',
+    appleMobileWebAppStatusBarStyle: 'black',
+    workboxPluginMode: 'InjectManifest',
+    workboxOptions: {
+      swSrc: 'src/sw.js',
+    }
+  },
   configureWebpack: config => {
     if (process.env.NODE_ENV === 'production') {
       //
