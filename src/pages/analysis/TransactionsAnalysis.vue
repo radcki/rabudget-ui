@@ -81,12 +81,16 @@
                   <th v-for="(header, i) in headers" :key="`th_${i}`">
                     {{ header.replaceAll(' 00:00:00', '') }}
                   </th>
+                  <th>Suma</th>
                 </tr>
               </thead>
               <tbody>
                 <template v-for="(budgetCategory, categoryIndex) in tableCategories">
                   <tr :key="`trc_${categoryIndex}`">
                     <td>
+                      <v-icon :color="color" left dark size="20">{{
+                        budgetCategory.budgetCategoryIconKey
+                      }}</v-icon>
                       {{ budgetCategory.name }}
                     </td>
                     <template v-if="displayMode == eDisplayMode.Table">
@@ -96,6 +100,11 @@
                       >
                         <nobr>
                           {{ value | money }}
+                        </nobr>
+                      </td>
+                      <td class="grey lighten-5">
+                        <nobr>
+                          {{ getTableRowSum(budgetCategory.budgetCategoryId) | money }}
                         </nobr>
                       </td>
                     </template>
@@ -124,6 +133,43 @@
                   </tr>
                 </template>
               </tbody>
+              <tfoot>
+                <tr class="grey lighten-4">
+                  <th>Suma</th>
+
+                  <template v-if="displayMode == eDisplayMode.Table">
+                    <th
+                      v-for="(value, columnIndex) in getTableFooter()"
+                      :key="`trfc_${categoryIndex}-${columnIndex}`"
+                    >
+                      <nobr>
+                        {{ value | money }}
+                      </nobr>
+                    </th>
+                    <th>
+                      {{ getTableFooterSum() | money }}
+                    </th>
+                  </template>
+                  <template v-if="displayMode == eDisplayMode.Sparkline">
+                    <th :colspan="headers.length">
+                      <v-sparkline
+                        :value="getTableFooter().map(v => v.amount)"
+                        :min="0"
+                        height="40"
+                        line-width="1"
+                        smooth
+                        padding="10"
+                        label-size="4"
+                        :radius="4"
+                      >
+                        <template v-slot:label="item">
+                          {{ getTableFooter().find(v => v.amount == item.value) | money }}
+                        </template>
+                      </v-sparkline>
+                    </th>
+                  </template>
+                </tr>
+              </tfoot>
             </v-simple-table>
           </v-card-text>
         </v-card>
@@ -225,6 +271,10 @@ export default class TransactionsAnalysis extends Vue {
     };
   }
 
+  get color(): string {
+    return eBudgetCategoryType[this.selectedBudgetCategoryType].toLowerCase();
+  }
+
   async fetchData() {
     if (!this.query) {
       return;
@@ -294,11 +344,79 @@ export default class TransactionsAnalysis extends Vue {
     }
   }
 
-  getTableRow(budgetCategoryId: string) {
+  getTableFooterValue(key: string) {
     if (!this.data) {
       return null;
     }
+    const dateRange = this.data.dateRanges.find(v => v.key == key);
+    const data = dateRange.total;
+    if (!data) {
+      return null;
+    }
+    switch (this.displayDataType) {
+      case eDisplayDataType.Total:
+        return data.amountTotal;
+      case eDisplayDataType.PerDay:
+        return data.amountPerDay;
+      case eDisplayDataType.PerWeek:
+        return data.amountPerWeek;
+      case eDisplayDataType.PerMonth:
+        return data.amountPerMonth;
+    }
+  }
+
+  getTableRow(budgetCategoryId: string) {
+    if (!this.data) {
+      return [];
+    }
     return this.headers.map(key => this.getTableCellValue(key, budgetCategoryId));
+  }
+  getTableRowSum(budgetCategoryId: string) {
+    if (!this.data) {
+      return null;
+    }
+    const brandData = this.data.budgetCategoryTotals.find(
+      v => v.budgetCategoryId == budgetCategoryId,
+    );
+    if (!brandData) {
+      return null;
+    }
+    switch (this.displayDataType) {
+      case eDisplayDataType.Total:
+        return brandData.amountTotal;
+      case eDisplayDataType.PerDay:
+        return brandData.amountPerDay;
+      case eDisplayDataType.PerWeek:
+        return brandData.amountPerWeek;
+      case eDisplayDataType.PerMonth:
+        return brandData.amountPerMonth;
+    }
+  }
+
+  getTableFooter() {
+    if (!this.data) {
+      return [];
+    }
+    return this.headers.map(key => this.getTableFooterValue(key));
+  }
+  getTableFooterSum() {
+    if (!this.data) {
+      return null;
+    }
+    const data = this.data.total;
+    if (!data) {
+      return null;
+    }
+    switch (this.displayDataType) {
+      case eDisplayDataType.Total:
+        return data.amountTotal;
+      case eDisplayDataType.PerDay:
+        return data.amountPerDay;
+      case eDisplayDataType.PerWeek:
+        return data.amountPerWeek;
+      case eDisplayDataType.PerMonth:
+        return data.amountPerMonth;
+    }
   }
 
   @Watch('query')
