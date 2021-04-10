@@ -13,6 +13,40 @@
           <v-card-text>
             <v-row>
               <v-col>
+                <span class="title">{{ $t('trasnsactionHistory.filter.categoryType') }}</span>
+                <v-radio-group v-model="selectedBudgetCategoryType" :mandatory="true" column>
+                  <v-radio
+                    color="primary"
+                    :label="$t('general.spendings')"
+                    :value="eBudgetCategoryType.Spending"
+                  ></v-radio>
+                  <v-radio
+                    color="primary"
+                    :label="$t('general.incomes')"
+                    :value="eBudgetCategoryType.Income"
+                  ></v-radio>
+                  <v-radio
+                    color="primary"
+                    :label="$t('general.savings')"
+                    :value="eBudgetCategoryType.Saving"
+                  ></v-radio>
+                </v-radio-group>
+              </v-col>
+              <v-col>
+                <span class="title">{{ $t('transactionsAnalysis.displayMode') }}</span>
+                <v-radio-group v-model="displayMode" :mandatory="true" column>
+                  <template v-for="(mode, modeIndex) in displayModes">
+                    <v-radio
+                      :key="`dm_${modeIndex}`"
+                      color="primary"
+                      :label="mode.name"
+                      :value="mode.value"
+                    ></v-radio>
+                  </template>
+                </v-radio-group>
+              </v-col>
+              <v-col>
+                <span class="title">{{ $t('transactionsAnalysis.filter.aggregationType') }}</span>
                 <v-select
                   v-model="columnGrouping"
                   :items="columnGroupings"
@@ -22,6 +56,7 @@
                 ></v-select>
               </v-col>
               <v-col>
+                <span class="title">{{ $t('transactionsAnalysis.filter.displayDataType') }}</span>
                 <v-select
                   v-model="displayDataType"
                   :items="displayDataTypes"
@@ -42,26 +77,52 @@
             <v-simple-table>
               <thead>
                 <tr>
-                  <td></td>
-                  <td v-for="(header, i) in headers" :key="`th_${i}`">
-                    {{ header }}
-                  </td>
+                  <th></th>
+                  <th v-for="(header, i) in headers" :key="`th_${i}`">
+                    {{ header.replaceAll(' 00:00:00', '') }}
+                  </th>
                 </tr>
               </thead>
               <tbody>
-                <tr
-                  v-for="(budgetCategory, categoryIndex) in tableCategories"
-                  :key="`trc_${categoryIndex}`"
-                >
-                  <td>
-                    {{ budgetCategory.name }}
-                  </td>
-                  <td v-for="(key, keyIndex) in headers" :key="`trc_${categoryIndex}-${keyIndex}`">
-                    <nobr>
-                      {{ getTableCellValue(key, budgetCategory.budgetCategoryId) | money }}
-                    </nobr>
-                  </td>
-                </tr>
+                <template v-for="(budgetCategory, categoryIndex) in tableCategories">
+                  <tr :key="`trc_${categoryIndex}`">
+                    <td>
+                      {{ budgetCategory.name }}
+                    </td>
+                    <template v-if="displayMode == eDisplayMode.Table">
+                      <td
+                        v-for="(value, columnIndex) in getTableRow(budgetCategory.budgetCategoryId)"
+                        :key="`trc_${categoryIndex}-${columnIndex}`"
+                      >
+                        <nobr>
+                          {{ value | money }}
+                        </nobr>
+                      </td>
+                    </template>
+                    <template v-if="displayMode == eDisplayMode.Sparkline">
+                      <td :colspan="headers.length">
+                        <v-sparkline
+                          :value="getTableRow(budgetCategory.budgetCategoryId).map(v => v.amount)"
+                          :min="0"
+                          height="40"
+                          line-width="1"
+                          smooth
+                          padding="10"
+                          label-size="4"
+                          :radius="4"
+                        >
+                          <template v-slot:label="item">
+                            {{
+                              getTableRow(budgetCategory.budgetCategoryId).find(
+                                v => v.amount == item.value,
+                              ) | money
+                            }}
+                          </template>
+                        </v-sparkline>
+                      </td>
+                    </template>
+                  </tr>
+                </template>
               </tbody>
             </v-simple-table>
           </v-card-text>
@@ -92,6 +153,11 @@ enum eDisplayDataType {
   PerMonth,
 }
 
+enum eDisplayMode {
+  Table,
+  Sparkline,
+}
+
 @Component({
   components: {},
 })
@@ -100,10 +166,18 @@ export default class TransactionsAnalysis extends Vue {
   @budgetsStore.Getter('activeBudgetCategories') categories!: BudgetCategoryDto[];
 
   data: GetTransactionsTimeline.ResponseDto | null = null;
+  eBudgetCategoryType = eBudgetCategoryType;
 
   selectedBudgetCategoryType: eBudgetCategoryType = eBudgetCategoryType.Spending;
   minTransactionDateFilter: Date | null = null;
   maxTransactionDateFilter: Date | null = null;
+
+  eDisplayMode = eDisplayMode;
+  displayMode: eDisplayMode = eDisplayMode.Table;
+  displayModes = [
+    { name: 'Tabela', value: eDisplayMode.Table },
+    { name: 'Wykres w wierszu', value: eDisplayMode.Sparkline },
+  ];
 
   columnGrouping: GetTransactionsTimeline.eGroupingStep =
     GetTransactionsTimeline.eGroupingStep.Year;
@@ -131,7 +205,7 @@ export default class TransactionsAnalysis extends Vue {
   }
 
   get tableCategories(): BudgetCategoryDto[] {
-    if (!this.categories) {
+    if (!this.categories || !this.query) {
       return [];
     }
     return this.categories.filter(v => v.budgetCategoryType == this.query.budgetCategoryType);
@@ -158,6 +232,7 @@ export default class TransactionsAnalysis extends Vue {
     this.$wait.start(`loading.transactionsTimeline`);
     try {
       const query = Object.assign({}, this.query);
+      this.data = null;
       const data = await AnalysisApi.getTransactionsTimeline(query);
       const currentQuery = Object.assign({}, this.query);
       if (JSON.stringify(query) != JSON.stringify(currentQuery)) {
@@ -204,6 +279,9 @@ export default class TransactionsAnalysis extends Vue {
     }
     const dateRange = this.data.dateRanges.find(v => v.key == key);
     const brandData = dateRange.budgetCategories.find(v => v.budgetCategoryId == budgetCategoryId);
+    if (!brandData) {
+      return null;
+    }
     switch (this.displayDataType) {
       case eDisplayDataType.Total:
         return brandData.amountTotal;
@@ -214,6 +292,13 @@ export default class TransactionsAnalysis extends Vue {
       case eDisplayDataType.PerMonth:
         return brandData.amountPerMonth;
     }
+  }
+
+  getTableRow(budgetCategoryId: string) {
+    if (!this.data) {
+      return null;
+    }
+    return this.headers.map(key => this.getTableCellValue(key, budgetCategoryId));
   }
 
   @Watch('query')
