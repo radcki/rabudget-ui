@@ -172,30 +172,18 @@ export default class NavigationDrawer extends Vue {
         to: { name: 'allocationsHistory' },
         children: [],
       },
-      // {
-      //   name: this.$t('transactionSchedules.transactionSchedules').toString(),
-      //   icon: 'mdi-calendar-c lock',
-      //   to: { name: 'transactionSchedules' },
-      //   children: [],
-      // },
-      // {
-      //   name: this.$t('reports.reports').toString(),
-      //   icon: 'mdi-poll-box',
-      //   to: { name: 'reports' },
-      //   children: [],
-      // },
       {
         name: this.$t('budgetCategories.title').toString(),
         icon: 'mdi-tune',
         to: { name: 'budgetCategories' },
         children: [],
       },
-      // {
-      //   name: this.$t('general.allocations').toString(),
-      //   icon: 'mdi-directions',
-      //   to: { name: 'allocations' },
-      //   children: [],
-      // },
+      {
+        name: this.$t('transactionsAnalysis.title').toString(),
+        icon: 'mdi-text-search',
+        to: { name: 'transactionsAnalysis' },
+        children: [],
+      },
     ];
   }
 
