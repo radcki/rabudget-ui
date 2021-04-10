@@ -196,5 +196,8 @@
       "allocationDate": "Data alokacji"
     },
     "removeAllocation": "Usuń alokację"
+  },
+  "transactionsAnalysis": {
+    "title": "[WIP] Analiza transakcji"
   }
 }

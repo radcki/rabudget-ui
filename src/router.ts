@@ -48,6 +48,11 @@ const router = new Router({
       component: () => import('@/pages/allocations/AllocationsHistory.vue'),
     },
     {
+      path: '/transactions-analysis',
+      name: 'transactionsAnalysis',
+      component: () => import('@/pages/analysis/TransactionsAnalysis.vue'),
+    },
+    {
       path: '/auth/signinwin/main', // Needs to match redirectUri in you oidcSettings
       name: 'oidcCallback',
       component: OidcCallback,
