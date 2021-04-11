@@ -42,6 +42,11 @@ export interface DataPointDto {
   amountPerDay: MoneyAmount;
   amountPerWeek: MoneyAmount;
   amountPerMonth: MoneyAmount;
+
+  amountTotalChange: number | null;
+  amountPerDayChange: number | null;
+  amountPerWeekChange: number | null;
+  amountPerMonthChange: number | null;
 }
 
 export interface BudgetCategoryDataPointDto {
@@ -52,4 +57,9 @@ export interface BudgetCategoryDataPointDto {
   amountPerDay: MoneyAmount;
   amountPerWeek: MoneyAmount;
   amountPerMonth: MoneyAmount;
+
+  amountTotalChange: number | null;
+  amountPerDayChange: number | null;
+  amountPerWeekChange: number | null;
+  amountPerMonthChange: number | null;
 }

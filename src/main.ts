@@ -48,6 +48,20 @@ Vue.filter('percentage', (value, decimals) => {
   value = value * 100;
   return Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals) + '%';
 });
+Vue.filter('percentageChange', (value, decimals) => {
+  if (!value) {
+    value = 0;
+  }
+  if (!decimals) {
+    decimals = 0;
+  }
+  value = value * 100;
+  return (
+    (value > 0 ? '+' : '') +
+    Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals) +
+    '%'
+  );
+});
 
 const app = new Vue({
   store,
@@ -63,5 +77,8 @@ const app = new Vue({
 const currencyFilter = app.$root.$options.filters.currency;
 const currencyConfig = app.$currencyConfig;
 Vue.filter('money', (v: MoneyAmount) => {
+  if (!v) {
+    return '-';
+  }
   return currencyFilter(v.amount, currencyConfig(v));
 });

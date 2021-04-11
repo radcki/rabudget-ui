@@ -85,33 +85,49 @@
                 </tr>
               </thead>
               <tbody>
-                <template v-for="(budgetCategory, categoryIndex) in tableCategories">
+                <template v-for="(row, categoryIndex) in tableContent">
                   <tr :key="`trc_${categoryIndex}`">
                     <td>
                       <v-icon :color="color" left dark size="20">{{
-                        budgetCategory.budgetCategoryIconKey
+                        row.budgetCategory.budgetCategoryIconKey
                       }}</v-icon>
-                      {{ budgetCategory.name }}
+                      {{ row.budgetCategory.name }}
                     </td>
                     <template v-if="displayMode == eDisplayMode.Table">
                       <td
-                        v-for="(value, columnIndex) in getTableRow(budgetCategory.budgetCategoryId)"
+                        v-for="(cellData, columnIndex) in row.columns"
                         :key="`trc_${categoryIndex}-${columnIndex}`"
                       >
-                        <nobr>
-                          {{ value | money }}
+                        <nobr v-if="cellData">
+                          <v-tooltip top>
+                            <template #activator="{ on }">
+                              <v-icon
+                                small
+                                left
+                                :color="changeValueColor(cellData.change)"
+                                v-on="on"
+                              >
+                                {{ changeValueIcon(cellData.change) }}
+                              </v-icon>
+                            </template>
+                            <nobr v-if="cellData && cellData.change">
+                              {{ cellData.change | percentageChange }}
+                            </nobr>
+                          </v-tooltip>
+
+                          {{ cellData.value | money }}
                         </nobr>
                       </td>
                       <td class="grey lighten-5">
                         <nobr>
-                          {{ getTableRowSum(budgetCategory.budgetCategoryId) | money }}
+                          {{ getTableRowSum(row.budgetCategory.budgetCategoryId) | money }}
                         </nobr>
                       </td>
                     </template>
                     <template v-if="displayMode == eDisplayMode.Sparkline">
                       <td :colspan="headers.length">
                         <v-sparkline
-                          :value="getTableRow(budgetCategory.budgetCategoryId).map(v => v.amount)"
+                          :value="row.columns.map(v => v.amount)"
                           :min="0"
                           height="40"
                           line-width="1"
@@ -121,11 +137,7 @@
                           :radius="4"
                         >
                           <template v-slot:label="item">
-                            {{
-                              getTableRow(budgetCategory.budgetCategoryId).find(
-                                v => v.amount == item.value,
-                              ) | money
-                            }}
+                            {{ row.columns.find(v => v.amount == item.value) | money }}
                           </template>
                         </v-sparkline>
                       </td>
@@ -138,16 +150,27 @@
                   <th>Suma</th>
 
                   <template v-if="displayMode == eDisplayMode.Table">
-                    <th
-                      v-for="(value, columnIndex) in getTableFooter()"
-                      :key="`trfc_${categoryIndex}-${columnIndex}`"
-                    >
-                      <nobr>
-                        {{ value | money }}
+                    <th v-for="(cellData, columnIndex) in tableFooter" :key="`trfc_${columnIndex}`">
+                      <nobr v-if="cellData">
+                        <v-tooltip top>
+                          <template #activator="{ on }">
+                            <v-icon small left :color="changeValueColor(cellData.change)" v-on="on">
+                              {{ changeValueIcon(cellData.change) }}
+                            </v-icon>
+                          </template>
+                          <nobr v-if="cellData && cellData.change">
+                            {{ cellData.change | percentageChange }}
+                          </nobr>
+                        </v-tooltip>
+
+                        {{ cellData.value | money }}
                       </nobr>
                     </th>
                     <th>
-                      {{ getTableFooterSum() | money }}
+                      <nobr v-if="tableFooterSum">
+                        {{ tableFooterSum | money }}
+                      </nobr>
+                      <span v-else> - </span>
                     </th>
                   </template>
                   <template v-if="displayMode == eDisplayMode.Sparkline">
@@ -163,7 +186,7 @@
                         :radius="4"
                       >
                         <template v-slot:label="item">
-                          {{ getTableFooter().find(v => v.amount == item.value) | money }}
+                          {{ tableFooter.find(v => v.amount == item.value) | money }}
                         </template>
                       </v-sparkline>
                     </th>
@@ -323,54 +346,77 @@ export default class TransactionsAnalysis extends Vue {
     this.fetchData();
   }
 
-  getTableCellValue(key: string, budgetCategoryId: string) {
-    if (!this.data) {
-      return null;
-    }
-    const dateRange = this.data.dateRanges.find(v => v.key == key);
-    const brandData = dateRange.budgetCategories.find(v => v.budgetCategoryId == budgetCategoryId);
-    if (!brandData) {
-      return null;
-    }
-    switch (this.displayDataType) {
-      case eDisplayDataType.Total:
-        return brandData.amountTotal;
-      case eDisplayDataType.PerDay:
-        return brandData.amountPerDay;
-      case eDisplayDataType.PerWeek:
-        return brandData.amountPerWeek;
-      case eDisplayDataType.PerMonth:
-        return brandData.amountPerMonth;
-    }
-  }
-
-  getTableFooterValue(key: string) {
-    if (!this.data) {
-      return null;
-    }
-    const dateRange = this.data.dateRanges.find(v => v.key == key);
-    const data = dateRange.total;
-    if (!data) {
-      return null;
-    }
-    switch (this.displayDataType) {
-      case eDisplayDataType.Total:
-        return data.amountTotal;
-      case eDisplayDataType.PerDay:
-        return data.amountPerDay;
-      case eDisplayDataType.PerWeek:
-        return data.amountPerWeek;
-      case eDisplayDataType.PerMonth:
-        return data.amountPerMonth;
-    }
-  }
-
-  getTableRow(budgetCategoryId: string) {
+  get tableContent() {
     if (!this.data) {
       return [];
     }
-    return this.headers.map(key => this.getTableCellValue(key, budgetCategoryId));
+    return this.tableCategories.map(category => {
+      return {
+        budgetCategory: category,
+        columns: this.data.dateRanges.map(v => {
+          const categoryData = v.budgetCategories.find(
+            b => b.budgetCategoryId == category.budgetCategoryId,
+          );
+          if (!categoryData) {
+            return null;
+          }
+          switch (this.displayDataType) {
+            case eDisplayDataType.Total:
+              return {
+                value: categoryData.amountTotal,
+                change: categoryData.amountTotalChange,
+              };
+            case eDisplayDataType.PerDay:
+              return {
+                value: categoryData.amountPerDay,
+                change: categoryData.amountPerDayChange,
+              };
+            case eDisplayDataType.PerWeek:
+              return {
+                value: categoryData.amountPerWeek,
+                change: categoryData.amountPerWeekChange,
+              };
+            case eDisplayDataType.PerMonth:
+              return {
+                value: categoryData.amountPerMonth,
+                change: categoryData.amountPerMonthChange,
+              };
+          }
+        }),
+      };
+    });
   }
+
+  get tableFooter() {
+    if (!this.data) {
+      return [];
+    }
+    return this.data.dateRanges.map(v => {
+      switch (this.displayDataType) {
+        case eDisplayDataType.Total:
+          return {
+            value: v.total.amountTotal,
+            change: v.total.amountTotalChange,
+          };
+        case eDisplayDataType.PerDay:
+          return {
+            value: v.total.amountPerDay,
+            change: v.total.amountPerDayChange,
+          };
+        case eDisplayDataType.PerWeek:
+          return {
+            value: v.total.amountPerWeek,
+            change: v.total.amountPerWeekChange,
+          };
+        case eDisplayDataType.PerMonth:
+          return {
+            value: v.total.amountPerMonth,
+            change: v.total.amountPerMonthChange,
+          };
+      }
+    });
+  }
+
   getTableRowSum(budgetCategoryId: string) {
     if (!this.data) {
       return null;
@@ -393,13 +439,7 @@ export default class TransactionsAnalysis extends Vue {
     }
   }
 
-  getTableFooter() {
-    if (!this.data) {
-      return [];
-    }
-    return this.headers.map(key => this.getTableFooterValue(key));
-  }
-  getTableFooterSum() {
+  get tableFooterSum() {
     if (!this.data) {
       return null;
     }
@@ -417,6 +457,40 @@ export default class TransactionsAnalysis extends Vue {
       case eDisplayDataType.PerMonth:
         return data.amountPerMonth;
     }
+    return null;
+  }
+
+  changeValueIcon(value: number) {
+    if (value > 0.8) return 'mdi-chevron-triple-up';
+    if (value > 0.5) return 'mdi-chevron-double-up';
+    if (value > 0.1) return 'mdi-chevron-up';
+    if (value > -0.1) return 'mdi-minus';
+    if (value > -0.5) return 'mdi-chevron-down';
+    if (value > -0.8) return 'mdi-chevron-double-down';
+    if (value < -0.8) return 'mdi-chevron-triple-down';
+  }
+
+  changeValueColor(value: number) {
+    let scale: string[] = [
+      'red darken-2',
+      'amber darken-4',
+      'amber darken-2',
+      'blue',
+      'light-green',
+      'green darken-1',
+      'green darken-4',
+    ];
+    if (this.query.budgetCategoryType != eBudgetCategoryType.Spending) {
+      scale = scale.reverse();
+    }
+
+    if (value > 0.8) return scale[0];
+    if (value > 0.5) return scale[1];
+    if (value > 0.1) return scale[2];
+    if (value > -0.1) return scale[3];
+    if (value > -0.5) return scale[4];
+    if (value > -0.8) return scale[5];
+    if (value < -0.8) return scale[6];
   }
 
   @Watch('query')
