@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="modal" fullscreen>
+  <v-dialog v-model="modal" transition="slide-y-transition" fullscreen>
     <template #activator="{ on }">
       <v-btn color="red" fab right bottom fixed dark v-on="on">
         <v-icon>mdi-plus</v-icon>
@@ -7,7 +7,7 @@
     </template>
 
     <v-card>
-      <v-toolbar dark :color="tabColor">
+      <v-app-bar app dark :color="tabColor">
         <v-btn text icon @click="cancel()">
           <v-icon>mdi-arrow-left</v-icon>
         </v-btn>
@@ -47,37 +47,40 @@
           @click="createAllocation(newAllocation)"
           >{{ $t('newTransaction.createAllocation') }}</v-btn
         >
-      </v-toolbar>
-      <v-card-text v-if="activeBudget" class="pt-3">
-        <template v-if="inputType == eInputType.Spending">
-          <transaction-edit-form
-            key="formSpending"
-            v-model="newSpending"
-            :category-type="eBudgetCategoryType.Spending"
-          ></transaction-edit-form>
-        </template>
-        <template v-if="inputType == eInputType.Income">
-          <transaction-edit-form
-            key="formIncome"
-            v-model="newIncome"
-            :category-type="eBudgetCategoryType.Income"
-          ></transaction-edit-form>
-        </template>
-        <template v-if="inputType == eInputType.Saving">
-          <transaction-edit-form
-            key="formSaving"
-            v-model="newSaving"
-            :category-type="eBudgetCategoryType.Saving"
-          ></transaction-edit-form>
-        </template>
-        <template v-if="inputType == eInputType.Allocation">
-          <allocation-edit-form
-            key="formAllocation"
-            v-model="newAllocation"
-            :category-type="eBudgetCategoryType.Spending"
-          ></allocation-edit-form>
-        </template>
-      </v-card-text>
+      </v-app-bar>
+      <v-main>
+        <v-card-text v-if="activeBudget" class="pt-3">
+          <template v-if="inputType == eInputType.Spending">
+            <transaction-edit-form
+              key="formSpending"
+              v-model="newSpending"
+              :category-type="eBudgetCategoryType.Spending"
+            ></transaction-edit-form>
+          </template>
+          <template v-if="inputType == eInputType.Income">
+            <transaction-edit-form
+              key="formIncome"
+              v-model="newIncome"
+              :category-type="eBudgetCategoryType.Income"
+            ></transaction-edit-form>
+          </template>
+          <template v-if="inputType == eInputType.Saving">
+            <transaction-edit-form
+              key="formSaving"
+              v-model="newSaving"
+              :category-type="eBudgetCategoryType.Saving"
+            ></transaction-edit-form>
+          </template>
+          <template v-if="inputType == eInputType.Allocation">
+            <allocation-edit-form
+              key="formAllocation"
+              v-model="newAllocation"
+              :category-type="eBudgetCategoryType.Spending"
+            ></allocation-edit-form>
+          </template>
+        </v-card-text>
+      </v-main>
+
       <v-card-actions>
         <v-spacer></v-spacer>
 
