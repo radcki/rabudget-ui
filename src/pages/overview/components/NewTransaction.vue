@@ -13,6 +13,7 @@
       <v-row dense>
         <v-col class="text-right">
           <v-menu
+            v-if="categoryType"
             v-model="transactionTemplatesMenu"
             min-width="300"
             offset-y
@@ -27,7 +28,7 @@
             <v-list dense>
               <template v-for="(templateGroup, templateGroupIndex) in groupedTemplates">
                 <v-subheader :key="`tg_${templateGroupIndex}`">{{
-                  templateGroup.category.name
+                  templateGroup.category ? templateGroup.category.name : ''
                 }}</v-subheader>
                 <template
                   v-for="(
@@ -39,7 +40,7 @@
                     :value="transactionTemplate"
                     :category-type="categoryType"
                     @removed="fetchTransactionTemplates()"
-                    @load-template="loadTransactionTemplate(transactionTemplate)"
+                    @load-template="loadTransactionTemplate($copy(transactionTemplate))"
                   >
                   </transaction-template-list-item>
                 </template>
