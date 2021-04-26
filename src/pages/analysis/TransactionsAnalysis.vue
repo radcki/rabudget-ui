@@ -14,7 +14,7 @@
             <v-row>
               <v-col>
                 <span class="title">{{ $t('trasnsactionHistory.filter.categoryType') }}</span>
-                <v-radio-group v-model="selectedBudgetCategoryType" :mandatory="true" column>
+                <v-radio-group v-model="query.budgetCategoryType" :mandatory="true" column>
                   <v-radio
                     color="primary"
                     :label="$t('general.spendings')"
@@ -33,37 +33,56 @@
                 </v-radio-group>
               </v-col>
               <v-col>
-                <span class="title">{{ $t('transactionsAnalysis.displayMode') }}</span>
-                <v-radio-group v-model="displayMode" :mandatory="true" column>
-                  <template v-for="(mode, modeIndex) in displayModes">
+                <span class="title">{{ $t('transactionsAnalysis.filter.aggregationType') }}</span>
+                <v-radio-group v-model="query.groupingStep" :mandatory="true" column>
+                  <template v-for="(grouping, groupingIndex) in columnGroupings">
                     <v-radio
-                      :key="`dm_${modeIndex}`"
+                      :key="`gr_${groupingIndex}`"
                       color="primary"
-                      :label="mode.name"
-                      :value="mode.value"
+                      :disabled="!grouping.enabled"
+                      :label="grouping.name"
+                      :value="grouping.value"
                     ></v-radio>
                   </template>
                 </v-radio-group>
               </v-col>
               <v-col>
-                <span class="title">{{ $t('transactionsAnalysis.filter.aggregationType') }}</span>
-                <v-select
-                  v-model="columnGrouping"
-                  :items="columnGroupings"
-                  item-text="name"
-                  item-value="value"
-                  :return-object="false"
-                ></v-select>
+                <span class="title">{{ $t('transactionsAnalysis.filter.displayDataType') }}</span>
+                <v-radio-group v-model="displayDataType" :mandatory="true" column>
+                  <template v-for="(dataType, dataTypeIndex) in displayDataTypes">
+                    <v-radio
+                      :key="`dt_${dataTypeIndex}`"
+                      color="primary"
+                      :label="dataType.name"
+                      :value="dataType.value"
+                    ></v-radio>
+                  </template>
+                </v-radio-group>
               </v-col>
               <v-col>
-                <span class="title">{{ $t('transactionsAnalysis.filter.displayDataType') }}</span>
-                <v-select
-                  v-model="displayDataType"
-                  :items="displayDataTypes"
-                  item-text="name"
-                  item-value="value"
-                  :return-object="false"
-                ></v-select>
+                <span class="title">{{ $t('trasnsactionHistory.filter.transactionDate') }}</span>
+                <v-spacer class="py-2"></v-spacer>
+                <template v-if="datesRangeFilterLoading">
+                  <v-row dense>
+                    <v-col cols="6">
+                      <v-skeleton-loader type="chip"></v-skeleton-loader>
+                    </v-col>
+                    <v-col cols="6">
+                      <v-skeleton-loader type="chip"></v-skeleton-loader>
+                    </v-col>
+                    <v-col cols="12">
+                      <v-skeleton-loader type="text"></v-skeleton-loader>
+                    </v-col>
+                  </v-row>
+                </template>
+                <template v-if="showDatesRangeFilter">
+                  <v-date-range-slider
+                    v-model="selectedTransactionDateRange"
+                    :min="minTransactionDateFilter"
+                    :max="maxTransactionDateFilter"
+                    step="days"
+                  ></v-date-range-slider>
+                </template>
               </v-col>
             </v-row>
           </v-card-text>
@@ -71,10 +90,29 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col>
+      <v-col cols="12" class="text-right">
+        <v-btn-toggle
+          v-model="displayMode"
+          background-color="transparent"
+          active-class="primary"
+          mandatory
+        >
+          <v-btn :value="eDisplayMode.Table" color="transparent">
+            <v-icon color="white">mdi-table-large</v-icon>
+          </v-btn>
+
+          <v-btn :value="eDisplayMode.Sparkline" color="transparent">
+            <v-icon color="white">mdi-chart-line</v-icon>
+          </v-btn>
+        </v-btn-toggle>
+      </v-col>
+      <v-col cols="12">
         <v-card>
           <v-card-text>
-            <v-simple-table>
+            <template v-if="isLoading">
+              <v-skeleton-loader type="table"></v-skeleton-loader>
+            </template>
+            <v-simple-table v-if="showDataTable">
               <thead>
                 <tr>
                   <th></th>
@@ -88,10 +126,12 @@
                 <template v-for="(row, categoryIndex) in tableContent">
                   <tr :key="`trc_${categoryIndex}`">
                     <td>
-                      <v-icon :color="color" left dark size="20">{{
-                        row.budgetCategory.budgetCategoryIconKey
-                      }}</v-icon>
-                      {{ row.budgetCategory.name }}
+                      <nobr>
+                        <v-icon :color="color" left dark size="20">{{
+                          row.budgetCategory.budgetCategoryIconKey
+                        }}</v-icon>
+                        {{ row.budgetCategory.name }}
+                      </nobr>
                     </td>
                     <template v-if="displayMode == eDisplayMode.Table">
                       <td
@@ -99,7 +139,7 @@
                         :key="`trc_${categoryIndex}-${columnIndex}`"
                       >
                         <nobr v-if="cellData">
-                          <v-tooltip top>
+                          <v-tooltip v-if="cellData && cellData.change" top>
                             <template #activator="{ on }">
                               <v-icon
                                 small
@@ -110,10 +150,13 @@
                                 {{ changeValueIcon(cellData.change) }}
                               </v-icon>
                             </template>
-                            <nobr v-if="cellData && cellData.change">
+                            <nobr>
                               {{ cellData.change | percentageChange }}
                             </nobr>
                           </v-tooltip>
+                          <v-icon v-else small left :color="changeValueColor(cellData.change)">
+                            {{ changeValueIcon(cellData.change) }}</v-icon
+                          >
 
                           {{ cellData.value | money }}
                         </nobr>
@@ -127,17 +170,17 @@
                     <template v-if="displayMode == eDisplayMode.Sparkline">
                       <td :colspan="headers.length">
                         <v-sparkline
-                          :value="row.columns.map(v => v.amount)"
+                          :value="row.columns.map(v => v.value.amount)"
                           :min="0"
                           height="40"
                           line-width="1"
                           smooth
                           padding="10"
-                          label-size="4"
-                          :radius="4"
+                          label-size="3"
+                          :radius="3"
                         >
                           <template v-slot:label="item">
-                            {{ row.columns.find(v => v.amount == item.value) | money }}
+                            {{ row.columns.find(v => v.value.amount == item.value).value | money }}
                           </template>
                         </v-sparkline>
                       </td>
@@ -176,7 +219,7 @@
                   <template v-if="displayMode == eDisplayMode.Sparkline">
                     <th :colspan="headers.length">
                       <v-sparkline
-                        :value="getTableFooter().map(v => v.amount)"
+                        :value="tableFooter.map(v => v.value.amount)"
                         :min="0"
                         height="40"
                         line-width="1"
@@ -186,7 +229,7 @@
                         :radius="4"
                       >
                         <template v-slot:label="item">
-                          {{ tableFooter.find(v => v.amount == item.value) | money }}
+                          {{ tableFooter.find(v => v.value.amount == item.value).value | money }}
                         </template>
                       </v-sparkline>
                     </th>
@@ -228,7 +271,9 @@ enum eDisplayMode {
 }
 
 @Component({
-  components: {},
+  components: {
+    'v-date-range-slider': () => import('@/components/DateRangeSlider.vue'),
+  },
 })
 export default class TransactionsAnalysis extends Vue {
   @budgetsStore.Getter('activeBudget') activeBudget!: Budget;
@@ -237,9 +282,10 @@ export default class TransactionsAnalysis extends Vue {
   data: GetTransactionsTimeline.ResponseDto | null = null;
   eBudgetCategoryType = eBudgetCategoryType;
 
-  selectedBudgetCategoryType: eBudgetCategoryType = eBudgetCategoryType.Spending;
   minTransactionDateFilter: Date | null = null;
   maxTransactionDateFilter: Date | null = null;
+  selectedTransactionDateRange: any[] = [null, null];
+  queryTimeout: NodeJS.Timeout | null = null;
 
   eDisplayMode = eDisplayMode;
   displayMode: eDisplayMode = eDisplayMode.Table;
@@ -248,17 +294,33 @@ export default class TransactionsAnalysis extends Vue {
     { name: 'Wykres w wierszu', value: eDisplayMode.Sparkline },
   ];
 
-  columnGrouping: GetTransactionsTimeline.eGroupingStep =
-    GetTransactionsTimeline.eGroupingStep.Year;
-  columnGroupings = [
-    { name: 'Rok', value: GetTransactionsTimeline.eGroupingStep.Year },
-    { name: 'Kwartał', value: GetTransactionsTimeline.eGroupingStep.Quarter },
-    { name: 'Miesiąc', value: GetTransactionsTimeline.eGroupingStep.Month },
-    { name: 'Tydzień', value: GetTransactionsTimeline.eGroupingStep.Week },
-    { name: 'Dzień', value: GetTransactionsTimeline.eGroupingStep.Day },
-  ];
+  get columnGroupings() {
+    return [
+      {
+        name: 'Rok',
+        value: GetTransactionsTimeline.eGroupingStep.Year,
+        enabled: this.datesRangeFilterLength > 365,
+      },
+      {
+        name: 'Kwartał',
+        value: GetTransactionsTimeline.eGroupingStep.Quarter,
+        enabled: this.datesRangeFilterLength > 365 / 4,
+      },
+      {
+        name: 'Miesiąc',
+        value: GetTransactionsTimeline.eGroupingStep.Month,
+        enabled: this.datesRangeFilterLength > 30,
+      },
+      {
+        name: 'Tydzień',
+        value: GetTransactionsTimeline.eGroupingStep.Week,
+        enabled: this.datesRangeFilterLength > 7,
+      },
+      //{ name: 'Dzień', value: GetTransactionsTimeline.eGroupingStep.Day },
+    ];
+  }
 
-  displayDataType: eDisplayDataType = eDisplayDataType.Total;
+  displayDataType: eDisplayDataType = eDisplayDataType.PerWeek;
   displayDataTypes = [
     { name: 'Łącznie', value: eDisplayDataType.Total },
     { name: 'Dziennie', value: eDisplayDataType.PerDay },
@@ -280,30 +342,75 @@ export default class TransactionsAnalysis extends Vue {
     return this.categories.filter(v => v.budgetCategoryType == this.query.budgetCategoryType);
   }
 
-  get query(): GetTransactionsTimeline.Query | null {
-    if (!this.activeBudget || !this.minTransactionDateFilter || !this.maxTransactionDateFilter) {
-      return null;
-    }
-    return {
-      budgetId: this.activeBudget.budgetId,
-      budgetCategoryIds: [],
-      budgetCategoryType: this.selectedBudgetCategoryType,
-      transactionDateStart: this.minTransactionDateFilter,
-      transactionDateEnd: this.maxTransactionDateFilter,
-      groupingStep: this.columnGrouping,
-    };
-  }
+  previousQuery: GetTransactionsTimeline.Query | null = null;
+  query: GetTransactionsTimeline.Query = {
+    budgetId: this.activeBudget?.budgetId,
+    budgetCategoryIds: [],
+    budgetCategoryType: eBudgetCategoryType.Spending,
+    transactionDateStart: this.selectedTransactionDateRange[0],
+    transactionDateEnd: this.selectedTransactionDateRange[1],
+    groupingStep: GetTransactionsTimeline.eGroupingStep.Year,
+  };
 
   get color(): string {
-    return eBudgetCategoryType[this.selectedBudgetCategoryType].toLowerCase();
+    return eBudgetCategoryType[this.query.budgetCategoryType].toLowerCase();
+  }
+
+  get datesRangeFilterLength() {
+    if (!this.query.transactionDateStart || !this.query.transactionDateEnd) {
+      return 0;
+    }
+    return Math.round(
+      Math.abs(
+        (this.query.transactionDateEnd.valueOf() - this.query.transactionDateStart.valueOf()) /
+          (24 * 60 * 60 * 1000),
+      ),
+    );
+  }
+
+  get datesRangeFilterLoading() {
+    return this.$wait.is('loading.transactionDatesRange');
+  }
+  get isLoading() {
+    return (
+      this.$wait.is('loading.transactionDatesRange') ||
+      this.$wait.is('loading.transactionsTimeline')
+    );
+  }
+  get showDataTable() {
+    return this.data && !this.isLoading;
+  }
+  get showDatesRangeFilter() {
+    return (
+      !this.datesRangeFilterLoading &&
+      this.minTransactionDateFilter &&
+      this.maxTransactionDateFilter
+    );
   }
 
   async fetchData() {
-    if (!this.query) {
+    if (this.queryTimeout) {
+      clearTimeout(this.queryTimeout);
+    }
+    this.queryTimeout = setTimeout(() => {
+      this.executeFetchData();
+      this.queryTimeout = null;
+    }, 500);
+  }
+  async executeFetchData() {
+    if (
+      !this.query.budgetId ||
+      !this.query.transactionDateStart ||
+      !this.query.transactionDateEnd
+    ) {
+      return;
+    }
+    if (this.previousQuery && JSON.stringify(this.previousQuery) == JSON.stringify(this.query)) {
       return;
     }
     this.$wait.start(`loading.transactionsTimeline`);
     try {
+      this.previousQuery = Object.assign({}, this.query);
       const query = Object.assign({}, this.query);
       this.data = null;
       const data = await AnalysisApi.getTransactionsTimeline(query);
@@ -339,11 +446,26 @@ export default class TransactionsAnalysis extends Vue {
       this.$wait.end(`loading.transactionDatesRange`);
     }
   }
-  created() {
-    this.fetchDateFilterRange();
+
+  async mounted() {
+    await this.fetchDateFilterRange();
+    this.selectedTransactionDateRange = [
+      this.minTransactionDateFilter,
+      this.maxTransactionDateFilter,
+    ];
+    this.resetFilters();
   }
-  mounted() {
-    this.fetchData();
+
+  resetFilters() {
+    if (this.activeBudget) {
+      this.query.budgetId = this.activeBudget.budgetId;
+      this.query.budgetCategoryType = null;
+      this.query.budgetCategoryIds = [];
+      this.selectedTransactionDateRange = [
+        this.minTransactionDateFilter,
+        this.maxTransactionDateFilter,
+      ];
+    }
   }
 
   get tableContent() {
@@ -492,15 +614,36 @@ export default class TransactionsAnalysis extends Vue {
     if (value > -0.8) return scale[5];
     if (value < -0.8) return scale[6];
   }
+  setTransactionDatesQuery() {
+    this.query.transactionDateStart = this.selectedTransactionDateRange[0];
+    this.query.transactionDateEnd = this.selectedTransactionDateRange[1];
+    if (!this.columnGroupings.find(v => v.value == this.query.groupingStep).enabled) {
+      const availableGroupings = this.columnGroupings.find(v => v.enabled);
+      this.query.groupingStep = availableGroupings.value;
+    }
+  }
 
-  @Watch('query')
+  @Watch('query', { deep: true })
   onQueryChange() {
     this.fetchData();
   }
+  @Watch('selectedTransactionDateRange.0')
+  onSelectedRangeStartChange() {
+    this.setTransactionDatesQuery();
+  }
+  @Watch('selectedTransactionDateRange.1')
+  onSelectedRangeEndChange() {
+    this.setTransactionDatesQuery();
+  }
 
   @Watch('activeBudget')
-  onActiveBudgetChange() {
-    this.fetchDateFilterRange();
+  async onActiveBudgetChange() {
+    await this.fetchDateFilterRange();
+    this.resetFilters();
+  }
+  @Watch('categories')
+  async onCategoriesChange() {
+    this.resetFilters();
   }
 }
 </script>

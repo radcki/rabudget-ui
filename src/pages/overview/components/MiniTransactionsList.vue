@@ -295,6 +295,7 @@ export default class MiniTransactionsList extends Vue {
       amount: {
         currencyCode: transaction.amount.currencyCode,
         amount: 0,
+        display: '',
       },
       description: '',
       transactionDate: new Date(),

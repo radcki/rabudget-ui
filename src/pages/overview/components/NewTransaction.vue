@@ -260,6 +260,7 @@ export default class NewTransaction extends Vue {
       amount: {
         currencyCode: this.activeBudget ? this.activeBudget.currency.currencyCode : 0,
         amount: 0,
+        display: '',
       },
       description: '',
       transactionDate: new Date(),
@@ -273,6 +274,7 @@ export default class NewTransaction extends Vue {
       amount: {
         currencyCode: this.activeBudget ? this.activeBudget.currency.currencyCode : 0,
         amount: 0,
+        display: '',
       },
       description: '',
       allocationDate: new Date(),
