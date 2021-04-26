@@ -22,19 +22,42 @@
       </template>
 
       <template v-if="type == 'category'">
-        <div class="inline-field--display text-left" @click="startEdit()">
-          <template v-if="budgetCategory">
-            <v-icon
-              :left="!hideCategoryName"
-              :color="categoryColor(budgetCategory.budgetCategoryId)"
-              >{{ budgetCategory.budgetCategoryIconKey }}</v-icon
-            >
-            <span v-if="!hideCategoryName">
-              {{ budgetCategory.name }}
-            </span>
+        <v-menu nudge-bottom="30">
+          <template #activator="{ on }">
+            <div class="inline-field--display text-left" v-on="on">
+              <template v-if="budgetCategory">
+                <v-icon
+                  :left="!hideCategoryName"
+                  :color="categoryColor(budgetCategory.budgetCategoryId)"
+                  >{{ budgetCategory.budgetCategoryIconKey }}</v-icon
+                >
+                <span v-if="!hideCategoryName">
+                  {{ budgetCategory.name }}
+                </span>
+              </template>
+              <template v-else> - </template>
+            </div>
           </template>
-          <template v-else> - </template>
-        </div>
+          <v-list dense max-height="300" style="overflow: auto">
+            <v-list-item
+              v-for="(item, itemIndex) in budgetCategories"
+              :key="`ii_${itemIndex}`"
+              @click="selectCategory(item)"
+            >
+              <v-icon
+                left
+                :color="
+                  budgetCategory && budgetCategory.budgetCategoryId == item.budgetCategoryId
+                    ? categoryColor(budgetCategory.budgetCategoryId)
+                    : ''
+                "
+              >
+                {{ item.budgetCategoryIconKey }}
+              </v-icon>
+              {{ item.name }}
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </template>
 
       <template v-if="type == 'category-icon'">
@@ -113,44 +136,6 @@
             @click:append="cancelEdit"
             @blur="finishEdit()"
           ></money-field>
-        </div>
-      </template>
-
-      <template v-if="type == 'category'">
-        <div class="inline-field--editor" @click="startEdit()">
-          <v-select
-            ref="textEditor"
-            v-model="innerValue"
-            :return-object="false"
-            :items="budgetCategories"
-            item-value="budgetCategoryId"
-            item-name="name"
-            class="px-0 mx-0"
-            :style="hideCategoryName ? 'max-width: 50px' : 'max-width: 150px'"
-            filled
-            hide-details
-            :clearable="clearable"
-            :autofocus="true"
-            @keyup.enter="finishEdit()"
-            @keyup.esc="cancelEdit"
-            @click:append="cancelEdit"
-            @blur="finishEdit()"
-          >
-            <template #selection="{ item }">
-              <v-icon :size="30" :left="!hideCategoryName">
-                {{ item.budgetCategoryIconKey }}
-              </v-icon>
-              <span v-if="!hideCategoryName">
-                {{ item.name }}
-              </span>
-            </template>
-            <template #item="{ item }">
-              <v-icon left>
-                {{ item.budgetCategoryIconKey }}
-              </v-icon>
-              {{ item.name }}
-            </template>
-          </v-select>
         </div>
       </template>
     </template>
@@ -300,6 +285,11 @@ export default class InlineField extends Vue {
       }
       this.editMode = false;
     });
+  }
+
+  selectCategory(category: BudgetCategoryDto) {
+    this.innerValue = category.budgetCategoryId;
+    this.finishEdit();
   }
 
   @Watch('value')

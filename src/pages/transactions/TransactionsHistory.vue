@@ -358,7 +358,6 @@ const budgetsStore = namespace('budgets');
 @Component({
   components: {
     'v-category-select': () => import('@/components/CategorySelect.vue'),
-    'v-date-range-slider': () => import('@/components/DateRangeSlider.vue'),
     'filter-box': () => import('./components/FilterBox.vue'),
     'subtransactions-list': () => import('@/components/SubtransactionsList.vue'),
     InlineField,
@@ -613,6 +612,7 @@ export default class Transactions extends Vue {
       amount: {
         currencyCode: transaction.amount.currencyCode,
         amount: 0,
+        display: '',
       },
       description: '',
       transactionDate: new Date(),

@@ -80,5 +80,5 @@ Vue.filter('money', (v: MoneyAmount) => {
   if (!v) {
     return '-';
   }
-  return currencyFilter(v.amount, currencyConfig(v));
+  return v.display || currencyFilter(v.amount, currencyConfig(v));
 });
