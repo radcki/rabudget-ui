@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-tooltip v-if="tooltip" top>
+    <v-tooltip v-if="tooltip && !isMobile" top>
       <template #activator="{ on }">
         <span v-on="on">
           <v-btn icon :loading="loading" :small="small" :color="color" v-on="$listeners">
@@ -26,5 +26,9 @@ export default class IconButton extends Vue {
   @Prop(String) color!: string;
   @Prop(Boolean) small!: boolean;
   @Prop(Boolean) loading!: boolean;
+
+  get isMobile() {
+    return !this.$vuetify.breakpoint.smAndUp;
+  }
 }
 </script>
