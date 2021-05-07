@@ -1,60 +1,59 @@
 <template>
-  <v-card dark>
-    <v-card-text :class="color">
-      <v-row>
-        <v-col xs4 align-center></v-col>
-        <v-col xs4 align-center class="subtitle-2">{{ $t('budgetCategories.totalAmount') }}</v-col>
-        <v-col xs4 align-center class="subtitle-2">{{
-          $t('budgetCategories.monthPlanLeft')
-        }}</v-col>
-      </v-row>
-
-      <template v-for="(category, index) in categories">
-        <v-row :key="`ct_${index}`" no-gutters class="mt-2">
-          <v-col s4 align-center class="subtitle-2">
-            {{ category.name }}
-          </v-col>
-          <v-col xs4>
-            <v-skeleton-loader
-              v-if="balanceIsLoading(category)"
-              type="text"
-              class="mx-2"
-            ></v-skeleton-loader>
-            <v-chip
-              v-else-if="category.balance"
-              class="amber darken-2 elevation-3 white--text text-body-2"
-              small
-            >
-              {{ category.balance.totalTransactionsBalance | money }}
-              <!-- <v-animated-number
-                :value="category.balance.totalTransactionsBalance"
-                :format-value="formatAmount"
-                :duration="300"
-              /> -->
-            </v-chip>
-          </v-col>
-          <v-col xs4>
-            <v-skeleton-loader
-              v-if="balanceIsLoading(category)"
-              type="text"
-              class="mx-2"
-            ></v-skeleton-loader>
-            <v-chip
-              v-else-if="category.balance"
-              class="amber darken-2 elevation-3 white--text text-body-2"
-              small
-            >
-              {{ category.balance.thisMonthBudgetedAmountLeft | money }}
-              <!-- <v-animated-number
-                :value="category.balance.thisMonthBudgetedAmountLeft"
-                :format-value="formatAmount"
-                :duration="300"
-              /> -->
-            </v-chip>
-          </v-col>
+  <v-card dark :class="color">
+    <v-card-title class="py-1 subtitle-2">
+      <span>{{ title }}</span>
+      <v-spacer></v-spacer>
+      <expander-button v-model="expanded"></expander-button>
+    </v-card-title>
+    <v-expand-transition>
+      <v-card-text v-show="expanded" :class="color">
+        <v-row>
+          <v-col xs4 align-center></v-col>
+          <v-col xs4 align-center class="subtitle-2">{{
+            $t('budgetCategories.totalAmount')
+          }}</v-col>
+          <v-col xs4 align-center class="subtitle-2">{{
+            $t('budgetCategories.monthPlanLeft')
+          }}</v-col>
         </v-row>
-      </template>
-    </v-card-text>
+
+        <template v-for="(category, index) in categories">
+          <v-row :key="`ct_${index}`" no-gutters class="mt-2">
+            <v-col s4 align-center class="subtitle-2">
+              {{ category.name }}
+            </v-col>
+            <v-col xs4>
+              <v-skeleton-loader
+                v-if="balanceIsLoading(category)"
+                type="text"
+                class="mx-2"
+              ></v-skeleton-loader>
+              <v-chip
+                v-else-if="category.balance"
+                class="amber darken-2 elevation-3 white--text text-body-2"
+                small
+              >
+                {{ category.balance.totalTransactionsBalance | money }}
+              </v-chip>
+            </v-col>
+            <v-col xs4>
+              <v-skeleton-loader
+                v-if="balanceIsLoading(category)"
+                type="text"
+                class="mx-2"
+              ></v-skeleton-loader>
+              <v-chip
+                v-else-if="category.balance"
+                class="amber darken-2 elevation-3 white--text text-body-2"
+                small
+              >
+                {{ category.balance.thisMonthBudgetedAmountLeft | money }}
+              </v-chip>
+            </v-col>
+          </v-row>
+        </template>
+      </v-card-text>
+    </v-expand-transition>
   </v-card>
 </template>
 <script lang="ts">
@@ -76,12 +75,15 @@ const budgetsStore = namespace('budgets');
 @Component({
   components: {
     'v-animated-number': () => import('@/components/AnimatedNumber.vue'),
+    'expander-button': () => import('@/components/ExpanderButton.vue'),
   },
 })
 export default class MiniCategoriesSummary extends Vue {
   @Prop(Number) categoryType?: eBudgetCategoryType;
+  @Prop(String) title?: string;
 
   categories: BudgetCategoryWithBalance[] = [];
+  expanded = true;
 
   @budgetsStore.Getter('activeBudget') activeBudget!: Budget | null;
 

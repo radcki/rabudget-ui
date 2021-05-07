@@ -21,14 +21,15 @@
           </v-col>
           <v-col cols="12">
             <mini-categories-summary
+              :title="$t('budgetCategories.savingBalanceTitle')"
               :category-type="eBudgetCategoryType.Saving"
             ></mini-categories-summary>
           </v-col>
         </v-row>
       </v-col>
-      <v-col xs="12" sm="12" md="12" lg="6" xl="8" class="pl-2">
+      <v-col xs="12" sm="12" md="12" lg="6" xl="8">
         <v-row>
-          <v-col class="pr-2" :cols="isMobile ? 12 : 6">
+          <v-col :cols="isMobile ? 12 : 6">
             <value-card
               :value="budgetBalance ? budgetBalance.totalBalance : null"
               :label="$t('overview.totalBalance')"
@@ -36,7 +37,7 @@
               :loading="$wait.is('loading.budgetBalance*')"
             ></value-card>
           </v-col>
-          <v-col class="pl-2" :cols="isMobile ? 12 : 6">
+          <v-col :cols="isMobile ? 12 : 6">
             <value-card
               :value="budgetBalance ? budgetBalance.unassignedFunds : null"
               :label="$t('overview.unassignedFunds')"
@@ -45,27 +46,30 @@
             ></value-card
           ></v-col>
         </v-row>
-        <v-row class="mt-1">
+        <v-row>
           <v-col>
-            <categories-balance :category-type="eBudgetCategoryType.Spending"></categories-balance>
+            <categories-balance
+              :title="$t('budgetCategories.categoriesBalanceTitle')"
+              :category-type="eBudgetCategoryType.Spending"
+            ></categories-balance>
           </v-col>
         </v-row>
       </v-col>
     </v-row>
-    <v-row class="mt-1">
-      <v-col class="pr-2" cols="12" md="4">
+    <v-row>
+      <v-col cols="12" md="4">
         <mini-transaction-list
           :title="$t('general.spendings')"
           :category-type="eBudgetCategoryType.Spending"
         ></mini-transaction-list>
       </v-col>
-      <v-col class="px-2" cols="12" md="4">
+      <v-col cols="12" md="4">
         <mini-transaction-list
           :title="$t('general.incomes')"
           :category-type="eBudgetCategoryType.Income"
         ></mini-transaction-list
       ></v-col>
-      <v-col class="pl-2" cols="12" md="4">
+      <v-col cols="12" md="4">
         <mini-transaction-list
           :title="$t('general.savings')"
           :category-type="eBudgetCategoryType.Saving"

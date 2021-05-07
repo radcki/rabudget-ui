@@ -1,68 +1,76 @@
 <template>
   <v-card>
-    <v-card-text class="px-4 pb-1">
-      <v-list subheader>
-        <v-row v-if="!isMobile" no-gutters class="text-center">
-          <v-col :cols="3"></v-col>
-          <v-col class="px-1 subtitle-2">
-            {{ $t('budgetCategories.currentBalance') }}
-          </v-col>
-          <v-col class="px-1 subtitle-2">
-            {{ $t('budgetCategories.spendingThisMonth') }}
-          </v-col>
-          <v-col class="px-1 subtitle-2">
-            {{ $t('budgetCategories.yearBalance') }}
-          </v-col>
-        </v-row>
-        <v-row v-for="(category, i) in categories" :key="i" no-gutters class="mt-2">
-          <v-col :cols="3">
-            <v-avatar :color="color" size="30" class="mr-4">
-              <v-icon dark size="20">{{ category.budgetCategoryIconKey }}</v-icon>
-            </v-avatar>
-            {{ category.name }}
-          </v-col>
-          <template>
-            <v-col class="px-1">
-              <v-skeleton-loader
-                v-if="balanceIsLoading(category)"
-                type="text@2"
-              ></v-skeleton-loader>
-              <value-bar
-                v-else-if="category.balance"
-                :value="category.balance.totalCategoryBalance"
-                :max="category.currentBudgetedAmount"
-              ></value-bar>
+    <v-card-title class="py-1 subtitle-2">
+      <span>{{ title }}</span>
+      <v-spacer></v-spacer>
+      <expander-button v-model="expanded"></expander-button>
+    </v-card-title>
+    <v-expand-transition>
+      <v-card-text v-show="expanded" class="px-4 pb-1">
+        <v-list subheader>
+          <v-row v-if="!isMobile" no-gutters class="text-center">
+            <v-col :cols="3"></v-col>
+            <v-col class="px-1 subtitle-2">
+              {{ $t('budgetCategories.currentBalance') }}
             </v-col>
-            <v-col class="px-1">
-              <v-skeleton-loader
-                v-if="balanceIsLoading(category)"
-                type="text@2"
-              ></v-skeleton-loader>
-              <value-bar
-                v-else-if="category.balance"
-                :value="category.balance.thisMonthTransactionsTotal"
-                inverse-color
-                :max="category.currentBudgetedAmount"
-              ></value-bar>
+            <v-col class="px-1 subtitle-2">
+              {{ $t('budgetCategories.spendingThisMonth') }}
             </v-col>
-            <v-col class="px-1">
-              <v-skeleton-loader
-                v-if="balanceIsLoading(category)"
-                type="text@2"
-              ></v-skeleton-loader>
-              <value-bar
-                v-else-if="category.balance"
-                :value="category.balance.budgetLeftToEndOfYear"
-                :max="category.balance.thisYearBudgetedAmount"
-              ></value-bar>
+            <v-col class="px-1 subtitle-2">
+              {{ $t('budgetCategories.yearBalance') }}
             </v-col>
-          </template>
-        </v-row>
-      </v-list>
-      <div v-if="showNoData" class="text-center pa-3 pb-5">
-        <h3>{{ $t('budgetCategories.noCategories') }}</h3>
-      </div>
-    </v-card-text>
+          </v-row>
+          <v-row v-for="(category, i) in categories" :key="i" no-gutters class="mt-2">
+            <v-col :cols="3">
+              <v-avatar :color="color" size="30" class="mr-4">
+                <v-icon dark size="20">{{ category.budgetCategoryIconKey }}</v-icon>
+              </v-avatar>
+              {{ category.name }}
+            </v-col>
+            <template>
+              <v-col class="px-1">
+                <v-skeleton-loader
+                  v-if="balanceIsLoading(category)"
+                  type="text@2"
+                ></v-skeleton-loader>
+                <value-bar
+                  v-else-if="category.balance"
+                  :value="category.balance.totalCategoryBalance"
+                  :max="category.currentBudgetedAmount"
+                ></value-bar>
+              </v-col>
+              <v-col class="px-1">
+                <v-skeleton-loader
+                  v-if="balanceIsLoading(category)"
+                  type="text@2"
+                ></v-skeleton-loader>
+                <value-bar
+                  v-else-if="category.balance"
+                  :value="category.balance.thisMonthTransactionsTotal"
+                  inverse-color
+                  :max="category.currentBudgetedAmount"
+                ></value-bar>
+              </v-col>
+              <v-col class="px-1">
+                <v-skeleton-loader
+                  v-if="balanceIsLoading(category)"
+                  type="text@2"
+                ></v-skeleton-loader>
+                <value-bar
+                  v-else-if="category.balance"
+                  :value="category.balance.budgetLeftToEndOfYear"
+                  :max="category.balance.thisYearBudgetedAmount"
+                ></value-bar>
+              </v-col>
+            </template>
+          </v-row>
+        </v-list>
+
+        <div v-if="showNoData" class="text-center pa-3 pb-5">
+          <h3>{{ $t('budgetCategories.noCategories') }}</h3>
+        </div>
+      </v-card-text>
+    </v-expand-transition>
   </v-card>
 </template>
 
@@ -86,12 +94,15 @@ interface BudgetCategoryWithBalance extends BudgetCategoryDto {
 @Component({
   components: {
     ValueBar,
+    'expander-button': () => import('@/components/ExpanderButton.vue'),
   },
 })
 export default class CategoriesBalance extends Vue {
   @Prop(Number) categoryType?: eBudgetCategoryType;
+  @Prop(String) title?: string;
 
   categories: BudgetCategoryWithBalance[] = [];
+  expanded = true;
 
   @budgetsStore.Getter('activeBudget') activeBudget!: Budget | null;
   get showNoData() {
