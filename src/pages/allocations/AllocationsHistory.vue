@@ -554,6 +554,7 @@ export default class Allocations extends Vue {
       await AllocationsApi.removeAllocation({
         allocationId: allocation.allocationId,
       });
+      this.allocations.splice(this.allocations.indexOf(allocation), 1);
     } catch (error) {
       this.$msgBox.apiError(error);
     } finally {

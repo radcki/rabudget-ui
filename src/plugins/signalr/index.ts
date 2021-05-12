@@ -61,11 +61,13 @@ class SignalrPlugin {
 
     for (const key of this.enumKeys(BalanceNotificationEvents)) {
       this.balanceNotificationsHubConnection.on(key, payload => {
+        //console.log(key);
         notificationHub.$emit(key, payload);
       });
     }
     for (const key of this.enumKeys(TransactionNotificationEvents)) {
       this.transactionNotificationsHubConnection.on(key, payload => {
+        //console.log(key);
         notificationHub.$emit(key, payload);
       });
     }
