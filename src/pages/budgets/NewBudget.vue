@@ -54,6 +54,7 @@ export default class NewBudget extends Vue {
     currencyCode: eCurrencyCode.PLN,
   };
 
+  // eslint-disable-next-line no-unused-vars
   requiredRule: ((v) => boolean | string)[] = [
     v => !!v || this.$t('forms.requiredField').toString(),
   ];
