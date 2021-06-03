@@ -23,7 +23,9 @@ class ApiService {
             for (const value of query[key]) {
               const dataOrderValue = value as FieldOrderInfo<string>;
               params.push(
-                `${key}=${dataOrderValue.descending ? '-' : '+'}${dataOrderValue.fieldName}`,
+                `${key}=${
+                  dataOrderValue.descending ? '-' : '+'
+                }${dataOrderValue.fieldName.toString()}`,
               );
             }
           } else {

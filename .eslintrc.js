@@ -21,6 +21,12 @@ module.exports = {
     '@typescript-eslint/no-empty-interface': 'off',
     '@typescript-eslint/no-use-before-define': 'off',
     'no-use-before-define': 'off',
+    'vue/valid-v-slot': [
+      'error',
+      {
+        allowModifiers: false,
+      },
+    ],
   },
   parserOptions: {
     sourceType: 'module',

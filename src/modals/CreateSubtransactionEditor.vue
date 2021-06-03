@@ -54,6 +54,10 @@ export default class CreateSubtransactionEditor extends Vue {
 
   subTransaction: AddSubTransaction.Command = Object.assign({}, this.payload);
 
+  created() {
+    this.subTransaction = Object.assign({}, this.payload);
+  }
+
   @Watch('subTransaction', { deep: true })
   onInput() {
     this.setPayload(this.subTransaction);

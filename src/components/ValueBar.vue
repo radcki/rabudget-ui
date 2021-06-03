@@ -9,14 +9,14 @@
       </span>
     </div>
     <v-tooltip bottom>
-      <template v-slot:activator="{ on }">
-        <v-progress-linear
-          class="ma-0"
-          :height="subValue > 0 ? 9 : 15"
-          :value="100 * percent"
-          :color="conditionalColor(100 * percent)"
-          v-on="on"
-        ></v-progress-linear>
+      <template #activator="{ on }">
+        <div v-on="on">
+          <inline-bar-chart
+            :max="1"
+            :value="percent"
+            :color="conditionalColor(100 * percent)"
+          ></inline-bar-chart>
+        </div>
       </template>
       <span>
         {{ percent | percentage }}
@@ -25,22 +25,24 @@
         </span>
       </span>
     </v-tooltip>
-    <v-progress-linear
-      v-if="value != 0 && subValue > 0"
-      class="ma-0"
-      :height="6"
-      :value="100 * subPercent"
-      :color="conditionalColor(100 * (1 - subPercent))"
-    ></v-progress-linear>
+    <div v-if="value != 0 && subValue > 0">
+      <inline-bar-chart
+        :max="1"
+        :value="subValue"
+        :color="conditionalColor(100 * (1 - subPercent))"
+      ></inline-bar-chart>
+    </div>
   </div>
 </template>
 <script lang="ts">
 import { MoneyAmount } from '@/typings/MoneyAmount';
 import { Vue, Component, Prop } from 'vue-property-decorator';
+import InlineBarChart from './InlineBarChart.vue';
 
 @Component({
   components: {
     'animated-number': () => import('@/components/AnimatedNumber.vue'),
+    InlineBarChart,
   },
 })
 export default class ValueBar extends Vue {

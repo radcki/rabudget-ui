@@ -36,6 +36,9 @@ export default class CategoryIconSelect extends Vue {
 
   innerValue: string | BudgetCategoryIconDto | null = this.value ? this.value : null;
 
+  created() {
+    this.innerValue = this.value ? this.value : null;
+  }
   @Watch('innerValue')
   onInnerValueChange(newValue) {
     this.$emit('input', newValue);

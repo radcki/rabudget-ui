@@ -21,14 +21,14 @@
           disable-pagination
           hide-default-footer
         >
-          <template #item.name="{ item }">
+          <template #[`item.name`]="{ item }">
             <inline-field
               v-model="item.name"
               :loading="$wait.is(`saving.budget.name${item.budgetId}`)"
               @change="updateBudgetName(item)"
             ></inline-field>
           </template>
-          <template #item.startingDate="{ item }">
+          <template #[`item.startingDate`]="{ item }">
             <inline-field
               v-model="item.startingDate"
               type="date"
@@ -36,10 +36,10 @@
               @change="updateBudgetStartingDate(item)"
             ></inline-field>
           </template>
-          <template #item.currency="{ item }">
+          <template #[`item.currency`]="{ item }">
             {{ item.currency.symbol }} - {{ item.currency.nativeName }}
           </template>
-          <template #item.actions="{ item }">
+          <template #[`item.actions`]="{ item }">
             <icon-button
               icon="mdi-delete"
               small
@@ -72,6 +72,7 @@ export default class BudgetsManager extends Vue {
 
   @budgetsStore.State((state: BudgetState) => state.budgets) budgets!: Budget[];
   @budgetsStore.Getter('activeBudget') activeBudget!: Budget | null;
+  // eslint-disable-next-line no-unused-vars
   @budgetsStore.Mutation('setActive') setActiveBudgetId!: (budget: Budget) => void;
   @budgetsStore.Action('loadBudgets') loadBudgets!: () => Promise<void>;
 

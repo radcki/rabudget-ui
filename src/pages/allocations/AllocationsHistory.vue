@@ -69,7 +69,14 @@
                   :options.sync="gridOptions"
                   :items-per-page-options="pageSizes"
                 >
-                  <template #item.sourceBudgetCategoryId="{ item }">
+                  <template #footer>
+                    <div v-if="totalAmount" class="text-right text-subtitle-2 mt-2">
+                      <span>{{ $t('transactionHistory.totalAmount') }} </span>
+                      {{ totalAmount | money }}
+                    </div>
+                  </template>
+
+                  <template #[`item.sourceBudgetCategoryId`]="{ item }">
                     <inline-field
                       v-model="item.sourceBudgetCategoryId"
                       type="category"
@@ -81,7 +88,7 @@
                       @change="updateAllocationSourceCategory(item)"
                     ></inline-field>
                   </template>
-                  <template #item.targetBudgetCategoryId="{ item }">
+                  <template #[`item.targetBudgetCategoryId`]="{ item }">
                     <inline-field
                       v-model="item.targetBudgetCategoryId"
                       type="category"
@@ -93,7 +100,7 @@
                     ></inline-field>
                   </template>
 
-                  <template #item.description="{ item }">
+                  <template #[`item.description`]="{ item }">
                     <inline-field
                       v-model="item.description"
                       :loading="$wait.is(`saving.allocation.description${item.allocationId}`)"
@@ -101,7 +108,7 @@
                     ></inline-field>
                   </template>
 
-                  <template #item.allocationDate="{ item }">
+                  <template #[`item.allocationDate`]="{ item }">
                     <nobr>
                       <inline-field
                         v-model="item.allocationDate"
@@ -112,7 +119,7 @@
                     </nobr>
                   </template>
 
-                  <template #item.amount="{ item }">
+                  <template #[`item.amount`]="{ item }">
                     <nobr>
                       <inline-field
                         v-model="item.amount"
@@ -123,7 +130,7 @@
                     </nobr>
                   </template>
 
-                  <template #item.actions="{ item }">
+                  <template #[`item.actions`]="{ item }">
                     <icon-button
                       :tooltip="$t('allocationHistory.removeAllocation')"
                       icon="mdi-trash-can"
@@ -286,6 +293,7 @@ import { TableOptions } from '@/typings/TableOptions';
 import AllocationsApi from '@/api/AllocationsApi';
 import { FieldOrderInfo } from '@/typings/api/baseTypes/GridQuery';
 import InlineField from '@/components/InlineField.vue';
+import { MoneyAmount } from '@/typings/MoneyAmount';
 
 const budgetsStore = namespace('budgets');
 
@@ -355,6 +363,7 @@ export default class Allocations extends Vue {
   format = format;
   eBudgetCategoryType = eBudgetCategoryType;
   allocations: GetAllocationList.AllocationDto[] = [];
+  totalAmount: MoneyAmount | null = null;
   totalAllocations = 0;
   gridOptions: TableOptions<GetAllocationList.AllocationDto> = {
     sortBy: ['allocationDate'],
@@ -366,6 +375,7 @@ export default class Allocations extends Vue {
     multiSort: true,
     mustSort: false,
   };
+  // eslint-disable-next-line no-undef
   queryTimeout: NodeJS.Timeout | null = null;
 
   pageSizes = [20, 50, 100, 500];
@@ -414,14 +424,16 @@ export default class Allocations extends Vue {
   }
 
   categoryType(budgetCategoryId): eBudgetCategoryType {
-    const categoryType = this.categories.find(v => v.budgetCategoryId == budgetCategoryId)
-      ?.budgetCategoryType;
+    const categoryType = this.categories.find(
+      v => v.budgetCategoryId == budgetCategoryId,
+    )?.budgetCategoryType;
 
     return categoryType;
   }
   categoryColor(budgetCategoryId): string {
-    const categoryType = this.categories.find(v => v.budgetCategoryId == budgetCategoryId)
-      ?.budgetCategoryType;
+    const categoryType = this.categories.find(
+      v => v.budgetCategoryId == budgetCategoryId,
+    )?.budgetCategoryType;
 
     return categoryType ? eBudgetCategoryType[categoryType].toLowerCase() : '';
   }
@@ -460,6 +472,7 @@ export default class Allocations extends Vue {
       );
       this.allocations = data.data;
       this.totalAllocations = data.total;
+      this.totalAmount = data.amountTotal;
     } catch (error) {
       this.$msgBox.apiError(error);
     } finally {

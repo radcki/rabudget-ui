@@ -54,18 +54,6 @@
   </div>
 </template>
 
-<style>
-.r-date-field input {
-  -webkit-appearance: none;
-}
-.r-date-field input::-webkit-calendar-picker-indicator,
-.r-date-field input::-webkit-clear-button,
-.r-date-field input::-webkit-inner-spin-button {
-  display: none;
-  -webkit-appearance: none;
-}
-</style>
-
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
 import { MoneyAmount } from '@/typings/MoneyAmount';
@@ -81,6 +69,7 @@ import { eCurrencyCode } from '@/typings/enums/eCurrencyCode';
 export default class MoneyField extends Vue {
   @Prop(Object) value!: MoneyAmount;
   @Prop(String) label!: string;
+  // eslint-disable-next-line no-unused-vars
   @Prop(Array) rules!: ((v) => boolean | string)[];
   @Prop(Boolean) clearable!: boolean;
   @Prop(Boolean) filled!: boolean;
@@ -98,6 +87,15 @@ export default class MoneyField extends Vue {
   hasFocus = false;
 
   errors: string[] = [];
+
+  created() {
+    this.innerValue = this.value
+      ? this.value
+      : {
+          amount: 0,
+          currencyCode: null,
+        };
+  }
 
   get currencyCode() {
     return this.innerValue.currencyCode ? eCurrencyCode[this.innerValue.currencyCode] : '';
@@ -122,6 +120,7 @@ export default class MoneyField extends Vue {
 
   validate() {
     const errors: string[] = [];
+    // eslint-disable-next-line no-unused-vars
     let rules: ((v) => boolean | string)[] = [];
     if (this.rules) {
       rules = [...this.rules];
@@ -230,3 +229,15 @@ export default class MoneyField extends Vue {
   }
 }
 </script>
+
+<style>
+.r-date-field input {
+  -webkit-appearance: none;
+}
+.r-date-field input::-webkit-calendar-picker-indicator,
+.r-date-field input::-webkit-clear-button,
+.r-date-field input::-webkit-inner-spin-button {
+  display: none;
+  -webkit-appearance: none;
+}
+</style>

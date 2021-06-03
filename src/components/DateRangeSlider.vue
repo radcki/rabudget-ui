@@ -101,6 +101,14 @@ export default class DateRangeSlider extends Vue {
     this.value && this.value[1] ? new Date(this.value[1].toISOString()) : new Date();
   sliderValue: (number | null)[] = [null, null];
 
+  created() {
+    this.selectedMin =
+      this.value && this.value[0] ? new Date(this.value[0].toISOString()) : new Date();
+    this.selectedMax =
+      this.value && this.value[1] ? new Date(this.value[1].toISOString()) : new Date();
+    this.sliderValue = [null, null];
+  }
+
   @Watch('value')
   OnValueChange(newValue: Date[]) {
     if (newValue[0] != this.selectedMin) this.selectedMin = new Date(newValue[0].toISOString());

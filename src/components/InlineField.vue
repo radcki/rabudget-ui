@@ -71,7 +71,7 @@
           ></v-progress-circular>
         </template>
         <v-menu v-else max-height="300" bottom close-on-click>
-          <template v-slot:activator="{ on }">
+          <template #activator="{ on }">
             <div class="inline-select--display text-center" v-on="on">
               <v-icon v-if="innerValue" color="white">{{ iconKey }}</v-icon>
               <div v-else class="d-block" style="min-width: 20px; min-height: 20px">&nbsp;</div>
@@ -142,46 +142,6 @@
   </div>
 </template>
 
-<style>
-.inline-field {
-  display: flex;
-  flex-direction: row;
-}
-.inline-field--display {
-  cursor: text;
-  flex-grow: 1;
-  min-height: 10px;
-  padding: 2px;
-}
-.inline-field--display:hover {
-  background-color: #f5f5f5;
-}
-.inline-select--display {
-  cursor: pointer;
-  flex-grow: 1;
-  min-height: 10px;
-  padding: 2px;
-}
-.inline-select--display:hover {
-  background-color: #00000013;
-  border-radius: 100%;
-}
-.inline-field--editor,
-.inline-field--editor .v-text-field__slot {
-  flex-grow: 1;
-  font-size: 14px !important;
-}
-.inline-field--editor .v-input__slot {
-  min-height: 28px !important;
-}
-.inline-field--editor .v-icon {
-  font-size: 18px !important;
-}
-.inline-field--editor .v-input__append-inner {
-  margin-top: 3px !important;
-}
-</style>
-
 <script lang="ts">
 import { BudgetCategoryDto } from '@/typings/api/budgetCategories/GetBudgetCategoriesList';
 import { BudgetCategoryIconDto } from '@/typings/api/dictionaries/GetBudgetCategoryIcons';
@@ -215,10 +175,15 @@ export default class InlineField extends Vue {
   @Prop(Boolean) hideCategoryName!: boolean;
   @Prop(Boolean) clearable!: boolean;
 
-  innerValue = this.value;
-  initialValue = JSON.parse(JSON.stringify(this.value));
+  innerValue = this.value || null;
+  initialValue = this.value ? JSON.parse(JSON.stringify(this.value)) : null;
   editMode = false;
-  timeout: null | NodeJS.Timeout = null;
+  timeout: null | any = null;
+
+  created() {
+    this.innerValue = this.value;
+    this.initialValue = JSON.parse(JSON.stringify(this.value));
+  }
 
   @dictionaries.State('budgetCategoryIcons') budgetCategoryIcons?: BudgetCategoryIconDto[];
   @budgetsStore.Getter('activeBudgetCategories') allBudgetCategories!: BudgetCategoryDto[];
@@ -297,9 +262,45 @@ export default class InlineField extends Vue {
     this.innerValue = !value ? null : value;
     this.initialValue = JSON.parse(JSON.stringify(this.value));
   }
-
-  mounted() {
-    //
-  }
 }
 </script>
+
+<style>
+.inline-field {
+  display: flex;
+  flex-direction: row;
+}
+.inline-field--display {
+  cursor: text;
+  flex-grow: 1;
+  min-height: 10px;
+  padding: 2px;
+}
+.inline-field--display:hover {
+  background-color: #f5f5f5;
+}
+.inline-select--display {
+  cursor: pointer;
+  flex-grow: 1;
+  min-height: 10px;
+  padding: 2px;
+}
+.inline-select--display:hover {
+  background-color: #00000013;
+  border-radius: 100%;
+}
+.inline-field--editor,
+.inline-field--editor .v-text-field__slot {
+  flex-grow: 1;
+  font-size: 14px !important;
+}
+.inline-field--editor .v-input__slot {
+  min-height: 28px !important;
+}
+.inline-field--editor .v-icon {
+  font-size: 18px !important;
+}
+.inline-field--editor .v-input__append-inner {
+  margin-top: 3px !important;
+}
+</style>

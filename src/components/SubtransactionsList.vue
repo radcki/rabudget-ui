@@ -9,7 +9,7 @@
         :headers="subtransactionHeaders"
         :items="items"
       >
-        <template #item.description="{ item }">
+        <template #[`item.description`]="{ item }">
           <inline-field
             v-model="item.description"
             :loading="$wait.is(`saving.subTransaction.description${item.subTransactionId}`)"
@@ -17,8 +17,9 @@
           ></inline-field>
         </template>
 
-        <template #item.transactionDate="{ item }">
+        <template #[`item.transactionDate`]="{ item }">
           <inline-field
+            v-if="item.transactionDate"
             v-model="item.transactionDate"
             type="date"
             :loading="$wait.is(`saving.subTransaction.transactionDate${item.subTransactionId}`)"
@@ -26,7 +27,7 @@
           ></inline-field>
         </template>
 
-        <template #item.amount="{ item }">
+        <template #[`item.amount`]="{ item }">
           <inline-field
             v-model="item.amount"
             type="money"
@@ -35,7 +36,7 @@
           ></inline-field>
         </template>
 
-        <template #item.actions="{ item }">
+        <template #[`item.actions`]="{ item }">
           <icon-button
             :tooltip="$t('transaction.removeTransanction')"
             icon="mdi-trash-can"
