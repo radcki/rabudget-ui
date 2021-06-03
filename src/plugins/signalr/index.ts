@@ -1,4 +1,4 @@
-import * as signalR from '@aspnet/signalr';
+import * as signalR from '@microsoft/signalr';
 import { VueConstructor } from 'vue/types/umd';
 
 export interface NotificationHub {

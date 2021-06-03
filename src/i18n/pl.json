@@ -86,7 +86,8 @@
     "deleteBudget": {
       "title": "Usunięcie budżetu",
       "message": "Czy napewno chcesz usunąć budżet **{budgetName}**?"
-    }
+    },
+    "currency": "Waluta"
   },
   "error": {
     "generic": "Wystąpił nieokreślony błąd",
@@ -143,7 +144,8 @@
       "new": "Dodaj nową",
       "noData": "Brak danych do pokazania. Aby dodać subtransakcję użyj przycisku powyżej",
       "editorTitle": "Tworzenie subtransakcji"
-    }
+    },
+    "totalAmount": "Suma:"
   },
   "transaction": {
     "amount": "Kwota",
@@ -186,7 +188,8 @@
       "editorTitle": "Tworzenie nowej subtransakcji",
       "removeConfirmTitle": "Usuwanie subtransakcji",
       "removeConfirm": "Subtransakcja zostanie usunięta. Czy jesteś pewien?"
-    }
+    },
+    "totalAmount": "Suma: "
   },
   "allocationsHistory": {
     "title": "Historia alokacji"

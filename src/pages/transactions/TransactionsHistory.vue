@@ -72,7 +72,14 @@
                   :options.sync="gridOptions"
                   :items-per-page-options="pageSizes"
                 >
-                  <template #item.budgetCategoryId="{ item }">
+                  <template #footer>
+                    <div v-if="totalAmount" class="text-right text-subtitle-2 mt-2">
+                      <span>{{ $t('transactionHistory.totalAmount') }} </span>
+                      {{ totalAmount | money }}
+                    </div>
+                  </template>
+
+                  <template #[`item.budgetCategoryId`]="{ item }">
                     <inline-field
                       v-model="item.budgetCategoryId"
                       type="category"
@@ -82,7 +89,7 @@
                     ></inline-field>
                   </template>
 
-                  <template #item.description="{ item }">
+                  <template #[`item.description`]="{ item }">
                     <inline-field
                       v-model="item.description"
                       :loading="$wait.is(`saving.transaction.description${item.transactionId}`)"
@@ -90,7 +97,7 @@
                     ></inline-field>
                   </template>
 
-                  <template #item.transactionDate="{ item }">
+                  <template #[`item.transactionDate`]="{ item }">
                     <nobr>
                       <inline-field
                         v-model="item.transactionDate"
@@ -103,7 +110,7 @@
                     </nobr>
                   </template>
 
-                  <template #item.amount="{ item }">
+                  <template #[`item.amount`]="{ item }">
                     <nobr>
                       <inline-field
                         v-model="item.amount"
@@ -117,7 +124,7 @@
                     </template>
                   </template>
 
-                  <template #item.actions="{ item }">
+                  <template #[`item.actions`]="{ item }">
                     <v-row no-gutters>
                       <v-col>
                         <icon-button
@@ -140,7 +147,7 @@
                     </v-row>
                   </template>
 
-                  <template v-slot:expanded-item="{ headers, item }">
+                  <template #expanded-item="{ headers, item }">
                     <td :colspan="headers.length" class="py-2">
                       <v-row no-gutters>
                         <v-col>
@@ -317,6 +324,7 @@
                     :min="1"
                     :max="pages"
                   />
+                  <span class="grey--text text--lighten-1 pr-3"> / {{ pages }} </span>
                 </v-sheet>
 
                 <v-pagination
@@ -352,6 +360,7 @@ import InlineField from '@/components/InlineField.vue';
 import * as AddSubTransaction from '@/typings/api/transactions/AddSubTransaction';
 import CreateSubtransactionEditor from '@/modals/CreateSubtransactionEditor.vue';
 import TransactionTemplatesApi from '@/api/TransactionTemplatesApi';
+import { MoneyAmount } from '@/typings/MoneyAmount';
 
 const budgetsStore = namespace('budgets');
 
@@ -414,6 +423,7 @@ export default class Transactions extends Vue {
   eBudgetCategoryType = eBudgetCategoryType;
   transactions: GetTransactionList.TransactionDto[] = [];
   totalTransactions = 0;
+  totalAmount: MoneyAmount | null = null;
   gridOptions: TableOptions<GetTransactionList.TransactionDto> = {
     sortBy: ['transactionDate'],
     page: 1,
@@ -424,6 +434,7 @@ export default class Transactions extends Vue {
     multiSort: true,
     mustSort: false,
   };
+  // eslint-disable-next-line no-undef
   queryTimeout: NodeJS.Timeout | null = null;
 
   pageSizes = [20, 50, 100, 500];
@@ -440,9 +451,7 @@ export default class Transactions extends Vue {
     }
   }
 
-  get pages() {
-    return Math.ceil(this.totalTransactions / this.gridOptions.itemsPerPage);
-  }
+  pages = 0;
 
   get showTransactionsList() {
     return true;
@@ -472,14 +481,16 @@ export default class Transactions extends Vue {
   }
 
   categoryType(budgetCategoryId): eBudgetCategoryType {
-    const categoryType = this.categories.find(v => v.budgetCategoryId == budgetCategoryId)
-      ?.budgetCategoryType;
+    const categoryType = this.categories.find(
+      v => v.budgetCategoryId == budgetCategoryId,
+    )?.budgetCategoryType;
 
     return categoryType;
   }
   categoryColor(budgetCategoryId): string {
-    const categoryType = this.categories.find(v => v.budgetCategoryId == budgetCategoryId)
-      ?.budgetCategoryType;
+    const categoryType = this.categories.find(
+      v => v.budgetCategoryId == budgetCategoryId,
+    )?.budgetCategoryType;
 
     return categoryType ? eBudgetCategoryType[categoryType].toLowerCase() : '';
   }
@@ -518,6 +529,8 @@ export default class Transactions extends Vue {
       );
       this.transactions = data.data;
       this.totalTransactions = data.total;
+      this.totalAmount = data.amountTotal;
+      this.pages = data.pages;
     } catch (error) {
       this.$msgBox.apiError(error);
     } finally {
@@ -681,7 +694,7 @@ export default class Transactions extends Vue {
     await this.fetchTransactions();
   }
 
-  @Watch('query')
+  @Watch('query', { deep: true })
   async onQueryChange() {
     await this.fetchTransactions();
   }

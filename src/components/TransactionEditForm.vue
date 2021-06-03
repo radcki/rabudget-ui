@@ -63,6 +63,10 @@ export default class TransactionEditForm extends Vue {
 
   innerValue: CreateTransaction.Command = Object.assign({}, this.value);
 
+  mounted() {
+    this.innerValue = Object.assign({}, this.value);
+  }
+
   @budgetsStore.Getter('activeBudget') activeBudget!: Budget | null;
   @budgetsStore.Getter('activeBudgetCategories') activeBudgetCategories!: BudgetCategoryDto[];
 

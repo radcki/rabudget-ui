@@ -20,40 +20,45 @@
             :close-on-content-click="false"
           >
             <template #activator="{ on }">
-              <v-btn text :loading="templatesAreLoading" v-on="on">
+              <v-btn text v-on="on">
                 {{ $t('transaction.transactionTemplates') }}
                 <v-icon>mdi-chevron-down</v-icon>
               </v-btn>
             </template>
             <v-list dense>
-              <template v-for="(templateGroup, templateGroupIndex) in groupedTemplates">
-                <v-subheader :key="`tg_${templateGroupIndex}`">{{
-                  templateGroup.category ? templateGroup.category.name : ''
-                }}</v-subheader>
-                <template
-                  v-for="(
-                    transactionTemplate, transactionTemaplateIndex
-                  ) in templateGroup.templates"
-                >
-                  <transaction-template-list-item
-                    :key="`tt_${templateGroupIndex}_${transactionTemaplateIndex}`"
-                    :value="transactionTemplate"
-                    :category-type="categoryType"
-                    @removed="fetchTransactionTemplates()"
-                    @load-template="loadTransactionTemplate($copy(transactionTemplate))"
+              <template v-if="!templatesAreLoading">
+                <template v-for="(templateGroup, templateGroupIndex) in groupedTemplates">
+                  <v-subheader :key="`tg_${templateGroupIndex}`">{{
+                    templateGroup.category ? templateGroup.category.name : ''
+                  }}</v-subheader>
+                  <template
+                    v-for="(
+                      transactionTemplate, transactionTemaplateIndex
+                    ) in templateGroup.templates"
                   >
-                  </transaction-template-list-item>
+                    <transaction-template-list-item
+                      :key="`tt_${templateGroupIndex}_${transactionTemaplateIndex}`"
+                      :value="transactionTemplate"
+                      :category-type="categoryType"
+                      @removed="fetchTransactionTemplates()"
+                      @load-template="loadTransactionTemplate($copy(transactionTemplate))"
+                    >
+                    </transaction-template-list-item>
+                  </template>
+                </template>
+
+                <template v-if="transactionTemplates.length == 0">
+                  <v-list-item>
+                    <v-list-item-content>
+                      <v-list-item-title>
+                        {{ $t('transaction.noTemplates') }}
+                      </v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
                 </template>
               </template>
-
-              <template v-if="transactionTemplates.length == 0">
-                <v-list-item>
-                  <v-list-item-content>
-                    <v-list-item-title>
-                      {{ $t('transaction.noTemplates') }}
-                    </v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
+              <template v-else>
+                <v-skeleton-loader type="list-item@5"></v-skeleton-loader>
               </template>
             </v-list>
           </v-menu>
@@ -153,6 +158,7 @@
 </template>
 
 <script lang="ts">
+/* eslint-disable no-unused-vars */
 import { Vue, Component, Watch } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import { Budget } from '@/typings/api/budget/GetBudgetList';

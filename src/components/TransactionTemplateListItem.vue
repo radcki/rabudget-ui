@@ -73,6 +73,10 @@ export default class TransactionTemplateListItem extends Vue {
 
   innerValue: TransactionTemplateDto = Object.assign({}, this.value);
 
+  created() {
+    this.innerValue = Object.assign({}, this.value);
+  }
+
   @budgetsStore.Getter('activeBudget') activeBudget!: Budget | null;
 
   get currencyCode(): eCurrencyCode {

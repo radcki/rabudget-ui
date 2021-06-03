@@ -7,7 +7,7 @@
     offset-y
     min-width="290px"
   >
-    <template v-slot:activator="{ on }">
+    <template #activator="{ on }">
       <v-text-field
         ref="inputField"
         v-model="date"
@@ -38,19 +38,8 @@
   </v-menu>
 </template>
 
-<style>
-.r-date-field input {
-  -webkit-appearance: none;
-}
-.r-date-field input::-webkit-calendar-picker-indicator,
-.r-date-field input::-webkit-clear-button,
-.r-date-field input::-webkit-inner-spin-button {
-  display: none;
-  -webkit-appearance: none;
-}
-</style>
-
 <script lang="ts">
+/* eslint-disable no-unused-vars */
 import { format } from 'date-fns';
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
 import { debounce } from 'debounce';
@@ -137,3 +126,15 @@ export default class DateField extends Vue {
   }
 }
 </script>
+
+<style>
+.r-date-field input {
+  -webkit-appearance: none;
+}
+.r-date-field input::-webkit-calendar-picker-indicator,
+.r-date-field input::-webkit-clear-button,
+.r-date-field input::-webkit-inner-spin-button {
+  display: none;
+  -webkit-appearance: none;
+}
+</style>

@@ -13,7 +13,9 @@ export interface Query extends GridQuery<TransactionDto> {
   maxAmount?: number | null;
 }
 
-export interface Result extends CollectionResponse<TransactionDto> {}
+export interface Result extends CollectionResponse<TransactionDto> {
+  amountTotal: MoneyAmount;
+}
 
 export interface TransactionDto {
   transactionId: string;

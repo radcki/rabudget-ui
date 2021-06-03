@@ -115,6 +115,11 @@ export default class FilterBox extends Vue {
   format = format;
   eBudgetCategoryType = eBudgetCategoryType;
 
+  created() {
+    this.query = Object.assign({}, this.value);
+    this.previousQuery = Object.assign({}, this.value);
+  }
+
   @budgetsStore.Getter('activeBudget') activeBudget!: Budget;
   @budgetsStore.Getter('activeBudgetCategories') categories!: BudgetCategoryDto[];
 
@@ -191,8 +196,9 @@ export default class FilterBox extends Vue {
     return this.categories.find(v => v.budgetCategoryId == budgetCategoryId)?.name || '';
   }
   categoryColor(budgetCategoryId): string {
-    const categoryType = this.categories.find(v => v.budgetCategoryId == budgetCategoryId)
-      ?.budgetCategoryType;
+    const categoryType = this.categories.find(
+      v => v.budgetCategoryId == budgetCategoryId,
+    )?.budgetCategoryType;
 
     return categoryType ? eBudgetCategoryType[categoryType].toLowerCase() : '';
   }

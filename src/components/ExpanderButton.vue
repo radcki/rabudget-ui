@@ -28,12 +28,6 @@
   </div>
 </template>
 
-<style>
-.r-animated {
-  transition: all 0.5s linear;
-}
-</style>
-
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
 
@@ -45,7 +39,7 @@ export default class ExpanderButton extends Vue {
   @Prop(Boolean) small!: boolean;
   @Prop(Boolean) loading!: boolean;
 
-  innerValue = !!this.value;
+  innerValue = true;
 
   get iconStyle() {
     return this.innerValue
@@ -61,19 +55,25 @@ export default class ExpanderButton extends Vue {
     return !this.$vuetify.breakpoint.smAndUp;
   }
 
+  mounted() {
+    this.innerValue = this.value;
+  }
+
   onClick() {
     this.innerValue = !this.innerValue;
     this.$emit('click');
-  }
-
-  @Watch('innerValue')
-  onInnerValueChange() {
     this.$emit('input', this.innerValue);
   }
 
   @Watch('value')
   onValueChange(newValue) {
-    if (newValue != this.innerValue) this.innerValue = newValue;
+    this.innerValue = newValue;
   }
 }
 </script>
+
+<style>
+.r-animated {
+  transition: all 0.5s linear;
+}
+</style>

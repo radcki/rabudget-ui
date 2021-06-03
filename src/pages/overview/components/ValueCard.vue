@@ -1,36 +1,22 @@
 <template>
-  <v-card class="text-sm-center pa-2" :color="color" dark>
-    <v-card-title class="subtitle-2 py-1 mb-0`">
-      <span>{{ label }}</span>
-      <v-spacer></v-spacer>
-      <expander-button v-model="expanded" small></expander-button>
-    </v-card-title>
-    <v-expand-transition>
-      <v-card-text v-show="expanded" class="display-1 pb-1">
-        <span v-if="value">{{ value | money }}</span>
-        <!-- <animated-number v-if="value" :value="value" :duration="300" /> -->
-        <span v-else>-</span>
-      </v-card-text>
-    </v-expand-transition>
-    <v-card-actions style="min-height: 7px" class="pa-0 ma-0">
-      <v-progress-linear
-        v-show="loading"
-        class="pa-0 ma-0"
-        indeterminate
-        color="white"
-      ></v-progress-linear>
-    </v-card-actions>
-  </v-card>
+  <overview-card filled :color="color" :loading="loading" :title="label" dark>
+    <div class="display-1 pb-1 text-center">
+      <span v-if="value">{{ value | money }}</span>
+      <span v-else>-</span>
+    </div>
+  </overview-card>
 </template>
 
 <script lang="ts">
 import { MoneyAmount } from '@/typings/MoneyAmount';
 import { Vue, Component, Prop } from 'vue-property-decorator';
+import OverviewCard from './OverviewCard.vue';
 
 @Component({
   components: {
     'animated-number': () => import('@/components/AnimatedNumber.vue'),
     'expander-button': () => import('@/components/ExpanderButton.vue'),
+    OverviewCard,
   },
 })
 export default class ValueCard extends Vue {

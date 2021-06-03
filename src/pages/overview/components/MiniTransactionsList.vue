@@ -1,183 +1,146 @@
 <template>
-  <v-card class="cardBackground">
-    <v-card-title :class="`${color} py-1 mb-0`">
-      <div style="width: 100%">
-        <v-row no-gutters>
-          <v-col class="pa-0 mt-0">
-            <span class="subtitle-2 white--text text-sm-left">{{ title }}</span>
-          </v-col>
+  <overview-card :color="color" :title="title" :loading="loading || loadingMore" dark>
+    <v-list class="py-0 mt-0 cardBackground" dense subheader light>
+      <v-skeleton-loader v-if="loading" class="py-3" type="list-item-avatar@5"></v-skeleton-loader>
 
-          <v-col class="pa-0 mt-0 d-flex flex-grow-0">
-            <expander-button v-model="expanded" small color="white"></expander-button>
-          </v-col>
-        </v-row>
-        <v-row no-gutters style="min-height: 5px">
-          <v-progress-linear
-            v-show="loading"
-            top
-            class="pa-0 ma-0"
-            color="white"
-            height="5"
-            buffer-value="0"
-            query
-            stream
-          >
-          </v-progress-linear>
-        </v-row>
-      </div>
-    </v-card-title>
-    <v-expand-transition>
-      <v-card-text v-show="expanded" class="pa-0 ma-0 pb-2">
-        <v-list class="py-0 mt-0 cardBackground" dense subheader>
-          <v-skeleton-loader
-            v-if="loading"
-            class="py-3"
-            type="list-item-avatar@5"
-          ></v-skeleton-loader>
+      <template v-else>
+        <template v-for="(transactions, date) in itemsByDate">
+          <v-list-item-title :key="date" class="my-1 px-3 text-xs-right grey--text caption">{{
+            new Date(date) | dateFormat('EEEE, d.MM.yyyy', $i18n.locale)
+          }}</v-list-item-title>
+          <v-divider :key="date + '_divider'" inset></v-divider>
+          <template v-for="transaction in transactions">
+            <v-list-item :key="'tr_' + transaction.transactionId" class="pb-1">
+              <v-list-item-action :size="24" style="width: 24px">
+                <inline-field
+                  v-model="transaction.budgetCategoryId"
+                  type="category"
+                  :hide-category-name="true"
+                  :category-type="categoryType"
+                  :loading="
+                    $wait.is(`saving.transaction.budgetCategory${transaction.transactionId}`)
+                  "
+                  @change="updateTransactionCategory(transaction)"
+                ></inline-field>
+              </v-list-item-action>
 
-          <template v-else>
-            <template v-for="(transactions, date) in itemsByDate">
-              <v-list-item-title :key="date" class="my-1 px-3 text-xs-right grey--text caption">{{
-                new Date(date) | dateFormat('EEEE, d.MM.yyyy', $i18n.locale)
-              }}</v-list-item-title>
-              <v-divider :key="date + '_divider'" inset></v-divider>
-              <template v-for="transaction in transactions">
-                <v-list-item :key="'tr_' + transaction.transactionId" class="pb-1">
-                  <v-list-item-action :size="24" style="width: 24px">
-                    <inline-field
-                      v-model="transaction.budgetCategoryId"
-                      type="category"
-                      :hide-category-name="true"
-                      :category-type="categoryType"
-                      :loading="
-                        $wait.is(`saving.transaction.budgetCategory${transaction.transactionId}`)
-                      "
-                      @change="updateTransactionCategory(transaction)"
-                    ></inline-field>
-                  </v-list-item-action>
-
-                  <v-list-item-content class="py-0">
-                    <v-list-item-title class="font-weight-medium">
+              <v-list-item-content class="py-0">
+                <v-list-item-title class="font-weight-medium">
+                  <inline-field
+                    v-model="transaction.description"
+                    :loading="
+                      $wait.is(`saving.transaction.description${transaction.transactionId}`)
+                    "
+                    @change="updateTransactionDescription(transaction)"
+                  ></inline-field>
+                </v-list-item-title>
+                <v-list-item-subtitle class="text--primary">
+                  <v-row no-gutters>
+                    <v-col>
                       <inline-field
-                        v-model="transaction.description"
-                        :loading="
-                          $wait.is(`saving.transaction.description${transaction.transactionId}`)
-                        "
-                        @change="updateTransactionDescription(transaction)"
+                        v-model="transaction.amount"
+                        type="money"
+                        :loading="$wait.is(`saving.transaction.amount${transaction.transactionId}`)"
+                        @change="updateTransactionAmount(transaction)"
                       ></inline-field>
-                    </v-list-item-title>
-                    <v-list-item-subtitle class="text--primary">
-                      <v-row no-gutters>
-                        <v-col>
-                          <inline-field
-                            v-model="transaction.amount"
-                            type="money"
-                            :loading="
-                              $wait.is(`saving.transaction.amount${transaction.transactionId}`)
-                            "
-                            @change="updateTransactionAmount(transaction)"
-                          ></inline-field>
-                        </v-col>
-                        <v-col class="text-right">
-                          <template v-if="transaction.subTransactions.length > 0">
-                            <nobr> ({{ transaction.totalAmount | money }}) </nobr>
-                          </template>
-                        </v-col>
-                      </v-row>
-                    </v-list-item-subtitle>
-                  </v-list-item-content>
-                  <v-list-item-action class="d-flex flex-row">
-                    <expander-button
-                      small
-                      :tooltip="$t('transaction.subtransanctions')"
-                      :value="transactionIsExpanded(transaction)"
-                      @input="toggleTransactionExpand(transaction, $event)"
-                    ></expander-button>
-                    <v-menu>
-                      <template #activator="{ on }">
-                        <icon-button
-                          small
-                          :tooltip="$t('transaction.changeTransactionDate')"
-                          icon="mdi-calendar"
-                          :loading="
-                            $wait.is(
-                              `saving.transaction.transactionDate${transaction.transactionId}`,
-                            )
-                          "
-                          v-on="on"
-                        ></icon-button>
+                    </v-col>
+                    <v-col class="text-right">
+                      <template v-if="transaction.subTransactions.length > 0">
+                        <nobr> ({{ transaction.totalAmount | money }}) </nobr>
                       </template>
-
-                      <date-picker
-                        v-model="transaction.transactionDate"
-                        @input="updateTransactionDate(transaction)"
-                      ></date-picker>
-                    </v-menu>
+                    </v-col>
+                  </v-row>
+                </v-list-item-subtitle>
+              </v-list-item-content>
+              <v-list-item-action class="d-flex flex-row">
+                <expander-button
+                  small
+                  :tooltip="$t('transaction.subtransanctions')"
+                  :value="transactionIsExpanded(transaction)"
+                  @input="toggleTransactionExpand(transaction, $event)"
+                ></expander-button>
+                <v-menu>
+                  <template #activator="{ on }">
                     <icon-button
                       small
-                      :tooltip="$t('transaction.removeTransanction')"
-                      icon="mdi-trash-can-outline"
-                      :loading="$wait.is(`removing.transaction${transaction.transactionId}`)"
-                      @click="removeTransaction(transaction)"
+                      :tooltip="$t('transaction.changeTransactionDate')"
+                      icon="mdi-calendar"
+                      :loading="
+                        $wait.is(`saving.transaction.transactionDate${transaction.transactionId}`)
+                      "
+                      v-on="on"
                     ></icon-button>
-                  </v-list-item-action>
-                </v-list-item>
-                <v-expand-transition :key="`st_${transaction.transactionId}`">
-                  <div v-show="transactionIsExpanded(transaction)" class="inset-shadow">
-                    <v-row :key="`stt_${transaction.transactionId}`" no-gutters>
-                      <v-col>
-                        <v-subheader>{{
-                          $t('trasnsactionHistory.subtransactions.title')
-                        }}</v-subheader>
-                      </v-col>
-                      <v-col class="d-flex flex-grow-0 mt-2">
-                        <v-btn
-                          color="primary"
-                          small
-                          text
-                          :loading="$wait.is(`saving.subTransaction${transaction.transactionId}`)"
-                          @click="createNewSubtransaction(transaction)"
-                        >
-                          <v-icon left>mdi-plus</v-icon>
-                          {{ $t('trasnsactionHistory.subtransactions.new') }}
-                        </v-btn>
-                      </v-col>
-                    </v-row>
-                    <v-row :key="`stl_${transaction.transactionId}`" no-gutters class="mt-0">
-                      <v-col class="text-center pa-2 pb-4">
-                        <template v-if="transaction.subTransactions.length > 0">
-                          <subtransactions-list
-                            :items="transaction.subTransactions"
-                          ></subtransactions-list>
-                        </template>
-                        <template v-else>
-                          <span>{{ $t('trasnsactionHistory.subtransactions.noData') }}</span>
-                        </template>
-                      </v-col>
-                    </v-row>
-                  </div>
-                </v-expand-transition>
-              </template>
-            </template>
-          </template>
+                  </template>
 
-          <v-list-item v-if="transactions.length == 0 && !loading" class="py-2 justify-center">
-            <v-subheader>
-              {{ $t('general.noData') }}
-            </v-subheader>
-          </v-list-item>
-          <v-divider></v-divider>
-          <v-list-item @click="$emit('load-more')">
-            <v-list-item-content class="pb-0">
-              <v-list-item-title class="text-right" @click="loadMore()">{{
-                $t('general.loadMore')
-              }}</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
-      </v-card-text>
-    </v-expand-transition>
-  </v-card>
+                  <date-picker
+                    v-model="transaction.transactionDate"
+                    @input="updateTransactionDate(transaction)"
+                  ></date-picker>
+                </v-menu>
+                <icon-button
+                  small
+                  :tooltip="$t('transaction.removeTransanction')"
+                  icon="mdi-trash-can-outline"
+                  :loading="$wait.is(`removing.transaction${transaction.transactionId}`)"
+                  @click="removeTransaction(transaction)"
+                ></icon-button>
+              </v-list-item-action>
+            </v-list-item>
+            <v-expand-transition :key="`st_${transaction.transactionId}`">
+              <div v-show="transactionIsExpanded(transaction)" class="inset-shadow">
+                <v-row :key="`stt_${transaction.transactionId}`" no-gutters>
+                  <v-col>
+                    <v-subheader>{{ $t('trasnsactionHistory.subtransactions.title') }}</v-subheader>
+                  </v-col>
+                  <v-col class="d-flex flex-grow-0 mt-2">
+                    <v-btn
+                      color="primary"
+                      small
+                      text
+                      :loading="$wait.is(`saving.subTransaction${transaction.transactionId}`)"
+                      @click="createNewSubtransaction(transaction)"
+                    >
+                      <v-icon left>mdi-plus</v-icon>
+                      {{ $t('trasnsactionHistory.subtransactions.new') }}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+                <v-row :key="`stl_${transaction.transactionId}`" no-gutters class="mt-0">
+                  <v-col class="text-center pa-2 pb-4">
+                    <template v-if="transaction.subTransactions.length > 0">
+                      <subtransactions-list
+                        :items="transaction.subTransactions"
+                      ></subtransactions-list>
+                    </template>
+                    <template v-else>
+                      <span>{{ $t('trasnsactionHistory.subtransactions.noData') }}</span>
+                    </template>
+                  </v-col>
+                </v-row>
+              </div>
+            </v-expand-transition>
+          </template>
+        </template>
+      </template>
+
+      <v-list-item v-if="transactions.length == 0 && !loading" class="py-2 justify-center">
+        <v-subheader>
+          {{ $t('general.noData') }}
+        </v-subheader>
+      </v-list-item>
+      <v-divider></v-divider>
+      <v-list-item @click="$emit('load-more')">
+        <v-list-item-content class="pb-0">
+          <v-list-item-title v-if="loadingMore">
+            <v-progress-linear buffer-value="0" query stream></v-progress-linear>
+          </v-list-item-title>
+          <v-list-item-title v-else class="text-right" @click="loadMore()">{{
+            $t('general.loadMore')
+          }}</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+    </v-list>
+  </overview-card>
 </template>
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
@@ -188,20 +151,21 @@ import { Budget } from '@/typings/api/budget/GetBudgetList';
 import { BudgetCategoryDto } from '@/typings/api/budgetCategories/GetBudgetCategoriesList';
 import { eBudgetCategoryType } from '@/typings/enums/eBudgetCategoryType';
 import InlineField from '@/components/InlineField.vue';
-import ExpanderButton from '@/components/ExpanderButton.vue';
 import TransactionsApi from '@/api/TransactionsApi';
 import { TransactionNotificationEvents } from '@/plugins/signalr';
 import * as AddSubTransaction from '@/typings/api/transactions/AddSubTransaction';
 import CreateSubtransactionEditor from '@/modals/CreateSubtransactionEditor.vue';
+import OverviewCard from './OverviewCard.vue';
 
 const budgetsStore = namespace('budgets');
 
 @Component({
   components: {
     InlineField,
-    ExpanderButton,
     'date-picker': () => import('@/components/DatePicker.vue'),
+    'expander-button': () => import('@/components/ExpanderButton.vue'),
     'subtransactions-list': () => import('@/components/SubtransactionsList.vue'),
+    OverviewCard,
   },
 })
 export default class MiniTransactionsList extends Vue {
@@ -210,6 +174,7 @@ export default class MiniTransactionsList extends Vue {
 
   transactions: GetTransactionList.TransactionDto[] = [];
   pageSize = 10;
+  pages: number | null = null;
   expanded = true;
   expandedTransactions: GetTransactionList.TransactionDto[] = [];
 
@@ -233,16 +198,19 @@ export default class MiniTransactionsList extends Vue {
   get loading() {
     return this.$wait.is(`loading.transactions${this.categoryType}`);
   }
+  get loadingMore() {
+    return this.$wait.is(`loading.moreTransactions${this.categoryType}`);
+  }
 
   get color(): string {
     return eBudgetCategoryType[this.categoryType].toLowerCase();
   }
 
-  async fetchTransactions() {
+  async fetchTransactions(silent = false) {
     if (!this.activeBudget) {
       return;
     }
-    this.$wait.start(`loading.transactions${this.categoryType}`);
+    if (!silent) this.$wait.start(`loading.transactions${this.categoryType}`);
     try {
       const data = await TransactionsApi.getTransactionList({
         budgetId: this.activeBudget.budgetId,
@@ -252,6 +220,7 @@ export default class MiniTransactionsList extends Vue {
         dataOrder: [{ fieldName: 'transactionDate', descending: true }],
       });
       this.transactions = data.data;
+      this.pages = data.pages;
     } catch (error) {
       this.$msgBox.apiError(error);
     } finally {
@@ -414,8 +383,10 @@ export default class MiniTransactionsList extends Vue {
   }
 
   @Watch('pageSize')
-  onPageSizeChange() {
-    this.fetchTransactions();
+  async onPageSizeChange() {
+    this.$wait.start(`loading.moreTransactions${this.categoryType}`);
+    await this.fetchTransactions(true);
+    this.$wait.end(`loading.moreTransactions${this.categoryType}`);
   }
 }
 </script>
