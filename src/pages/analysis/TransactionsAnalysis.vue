@@ -3,7 +3,7 @@
     <v-row>
       <v-col>
         <v-subheader class="headline white--text">{{
-          this.$t('transactionsAnalysis.title')
+          $t('transactionsAnalysis.title')
         }}</v-subheader>
       </v-col>
     </v-row>
@@ -179,7 +179,7 @@
                           label-size="3"
                           :radius="3"
                         >
-                          <template v-slot:label="item">
+                          <template #label="item">
                             {{ row.columns.find(v => v.value.amount == item.value).value | money }}
                           </template>
                         </v-sparkline>
@@ -228,7 +228,7 @@
                         label-size="4"
                         :radius="4"
                       >
-                        <template v-slot:label="item">
+                        <template #label="item">
                           {{ tableFooter.find(v => v.value.amount == item.value).value | money }}
                         </template>
                       </v-sparkline>
@@ -245,6 +245,7 @@
 </template>
 
 <script lang="ts">
+/* eslint-disable no-unused-vars */
 import { Vue, Component, Watch } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 
@@ -285,6 +286,7 @@ export default class TransactionsAnalysis extends Vue {
   minTransactionDateFilter: Date | null = null;
   maxTransactionDateFilter: Date | null = null;
   selectedTransactionDateRange: any[] = [null, null];
+  // eslint-disable-next-line no-undef
   queryTimeout: NodeJS.Timeout | null = null;
 
   eDisplayMode = eDisplayMode;
