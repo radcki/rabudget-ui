@@ -63,7 +63,7 @@ export default class TransactionEditForm extends Vue {
 
   innerValue: CreateTransaction.Command = Object.assign({}, this.value);
 
-  mounted() {
+  created() {
     this.innerValue = Object.assign({}, this.value);
   }
 

@@ -208,6 +208,7 @@ export default class MobileNewTransactiopn extends Vue {
   };
   modal = false;
   inputType: eInputType = eInputType.Spending;
+
   get inputTypes(): { text: string; value: eInputType }[] {
     return [
       {
