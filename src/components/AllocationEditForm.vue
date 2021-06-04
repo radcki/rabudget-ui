@@ -79,6 +79,10 @@ export default class AllocationEditForm extends Vue {
 
   categories: BudgetCategoryDto[] = [];
 
+  created() {
+    this.innerValue = Object.assign({}, this.value);
+  }
+
   get currencyCode(): eCurrencyCode {
     return this.activeBudget ? this.activeBudget.currency.currencyCode : 0;
   }

@@ -212,6 +212,13 @@ export default class NewTransaction extends Vue {
   transactionTemplates: TransactionTemplateDto[] = [];
   transactionTemplatesMenu = false;
 
+  created() {
+    this.newSpending = this.generateEmptyTransaction();
+    this.newSaving = this.generateEmptyTransaction();
+    this.newIncome = this.generateEmptyTransaction();
+    this.newAllocation = this.generateEmptyAllocation();
+  }
+
   get tabColor() {
     return this.color[this.tab];
   }
