@@ -25,6 +25,8 @@
             :category="category"
             :show-move-down="i != categories.length - 1"
             :show-move-up="i != 0"
+            @order-changed="fetchBudgetCategories()"
+            @category-removed="fetchBudgetCategories()"
           ></categories-list-item>
         </template>
       </v-list>
@@ -78,7 +80,10 @@ export default class CategoriesList extends Vue {
   get budgetedAmountSum(): MoneyAmount {
     return {
       currencyCode: this.activeBudget ? this.activeBudget.currency.currencyCode : null,
-      amount: this.categories.map(v => v.currentBudgetedAmount.amount).reduce((a, b) => a + b, 0),
+      amount: this.categories
+        .filter(v => !!v && !!v.currentBudgetedAmount)
+        .map(v => v.currentBudgetedAmount.amount)
+        .reduce((a, b) => a + b, 0),
     };
   }
 
