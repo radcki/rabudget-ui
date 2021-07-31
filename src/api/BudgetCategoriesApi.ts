@@ -40,7 +40,9 @@ class BudgetCategoriesApi {
   ): Promise<CreateBudgetCategory.Result> {
     const url = this.baseUrl + 'create';
 
-    return await (await api.post<CreateBudgetCategory.Result>(url, command)).data;
+    return await (
+      await api.post<CreateBudgetCategory.Result>(url, command)
+    ).data;
   }
 
   async getBudgetCategoryBalance(
@@ -75,7 +77,9 @@ class BudgetCategoriesApi {
   ): Promise<MoveBudgetCategoryUp.Result> {
     const url = this.baseUrl + 'move-up';
 
-    return await (await api.patch<MoveBudgetCategoryUp.Result>(url, command)).data;
+    return await (
+      await api.patch<MoveBudgetCategoryUp.Result>(url, command)
+    ).data;
   }
 
   async moveBudgetCategoryDown(
@@ -83,7 +87,9 @@ class BudgetCategoriesApi {
   ): Promise<MoveBudgetCategoryDown.Result> {
     const url = this.baseUrl + 'move-down';
 
-    return await (await api.patch<MoveBudgetCategoryDown.Result>(url, command)).data;
+    return await (
+      await api.patch<MoveBudgetCategoryDown.Result>(url, command)
+    ).data;
   }
 
   async updateBudgetCategoryName(
@@ -91,7 +97,9 @@ class BudgetCategoriesApi {
   ): Promise<UpdateBudgetCategoryName.Result> {
     const url = this.baseUrl + 'update/name';
 
-    return await (await api.patch<UpdateBudgetCategoryName.Result>(url, command)).data;
+    return await (
+      await api.patch<UpdateBudgetCategoryName.Result>(url, command)
+    ).data;
   }
 
   async updateBudgetCategoryIcon(
@@ -99,24 +107,36 @@ class BudgetCategoriesApi {
   ): Promise<UpdateBudgetCategoryIcon.Result> {
     const url = this.baseUrl + 'update/icon';
 
-    return await (await api.patch<UpdateBudgetCategoryIcon.Result>(url, command)).data;
+    return await (
+      await api.patch<UpdateBudgetCategoryIcon.Result>(url, command)
+    ).data;
   }
 
   async updateBudgetedAmountAmount(
     command: UpdateBudgetedAmountAmount.Command,
   ): Promise<UpdateBudgetedAmountAmount.Result> {
     const url = this.baseUrl + 'budgeted-amount/update/amount';
+    const response = await (await api.patch<UpdateBudgetedAmountAmount.Result>(url, command)).data;
 
-    return await (await api.patch<UpdateBudgetedAmountAmount.Result>(url, command)).data;
+    response.data.budgetedAmounts.forEach(budgetedAmount => {
+      budgetedAmount.validFrom = new Date(budgetedAmount.validFrom);
+      if (budgetedAmount.validTo) budgetedAmount.validTo = new Date(budgetedAmount.validTo);
+    });
+    return response;
   }
 
   async updateBudgetedAmountValidFrom(
     command: UpdateBudgetedAmountValidFrom.Command,
   ): Promise<UpdateBudgetedAmountValidFrom.Result> {
     const url = this.baseUrl + 'budgeted-amount/update/valid-from';
-    const response = await (await api.patch<UpdateBudgetedAmountValidFrom.Result>(url, command))
-      .data;
-    response.data = new Date(response.data);
+    const response = await (
+      await api.patch<UpdateBudgetedAmountValidFrom.Result>(url, command)
+    ).data;
+    response.data.budgetedAmounts.forEach(budgetedAmount => {
+      console.log(budgetedAmount);
+      budgetedAmount.validFrom = new Date(budgetedAmount.validFrom);
+      if (budgetedAmount.validTo) budgetedAmount.validTo = new Date(budgetedAmount.validTo);
+    });
     return response;
   }
 
@@ -125,14 +145,21 @@ class BudgetCategoriesApi {
   ): Promise<RemoveBudgetedAmount.Result> {
     const url = this.baseUrl + 'budgeted-amount/remove';
 
-    return await (await api.post<RemoveBudgetedAmount.Result>(url, command)).data;
+    const response = await (await api.post<RemoveBudgetedAmount.Result>(url, command)).data;
+    response.data.budgetedAmounts.forEach(budgetedAmount => {
+      budgetedAmount.validFrom = new Date(budgetedAmount.validFrom);
+      if (budgetedAmount.validTo) budgetedAmount.validTo = new Date(budgetedAmount.validTo);
+    });
+    return response;
   }
 
   async addBudgetedAmount(command: AddBudgetedAmount.Command): Promise<AddBudgetedAmount.Result> {
     const url = this.baseUrl + 'budgeted-amount/add';
     const response = await (await api.post<AddBudgetedAmount.Result>(url, command)).data;
-    response.data.validFrom = new Date(response.data.validFrom);
-    if (response.data.validTo) response.data.validTo = new Date(response.data.validTo);
+    response.data.budgetedAmounts.forEach(budgetedAmount => {
+      budgetedAmount.validFrom = new Date(budgetedAmount.validFrom);
+      if (budgetedAmount.validTo) budgetedAmount.validTo = new Date(budgetedAmount.validTo);
+    });
     return response;
   }
 }

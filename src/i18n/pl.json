@@ -203,7 +203,7 @@
     "removeAllocation": "Usuń alokację"
   },
   "transactionsAnalysis": {
-    "title": "[WIP] Analiza transakcji",
+    "title": "Analiza transakcji",
     "filter": {
       "displayDataType": "Sposób zliczania",
       "aggregationType": "Poziom agregacji"

@@ -55,19 +55,20 @@ class SignalrPlugin {
       .build();
 
     if (this.token) {
+      console.log('balanceNotificationsHubConnection');
       this.balanceNotificationsHubConnection.start();
       this.transactionNotificationsHubConnection.start();
     }
 
     for (const key of this.enumKeys(BalanceNotificationEvents)) {
       this.balanceNotificationsHubConnection.on(key, payload => {
-        //console.log(key);
+        console.log(key);
         notificationHub.$emit(key, payload);
       });
     }
     for (const key of this.enumKeys(TransactionNotificationEvents)) {
       this.transactionNotificationsHubConnection.on(key, payload => {
-        //console.log(key);
+        console.log(key);
         notificationHub.$emit(key, payload);
       });
     }

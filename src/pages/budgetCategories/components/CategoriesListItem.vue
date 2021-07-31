@@ -68,7 +68,12 @@
                       <money-field v-model="newBudgetAmount.amount" filled dense></money-field>
                     </v-col>
                     <v-col>
-                      <date-field v-model="newBudgetAmount.validFrom" filled dense></date-field>
+                      <date-field
+                        v-model="newBudgetAmount.validFrom"
+                        type="month"
+                        filled
+                        dense
+                      ></date-field>
                     </v-col>
                     <v-col class="text-right">
                       <v-btn color="primary" small @click="addBudgetedAmount()">
@@ -87,7 +92,7 @@
                           <span class="subtitle-2">{{ $t('budgetCategories.validFrom') }}</span>
                           <inline-field
                             v-model="budgetedAmount.validFrom"
-                            type="date"
+                            type="month"
                             :loading="
                               $wait.is(
                                 `saving.category.budgetedAmount.validFrom${budgetedAmount.budgetedAmountId}`,
@@ -152,8 +157,6 @@
     </v-list-item>
   </div>
 </template>
-
-<style></style>
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator';
@@ -289,7 +292,7 @@ export default class CategoriesListItem extends Vue {
     this.$wait.start(`saving.category.budgetedAmount`);
     try {
       const response = await BudgetCategoriesApi.addBudgetedAmount(this.newBudgetAmount);
-      this.category.budgetedAmounts.push(response.data);
+      Object.assign(this.category, response.data);
       this.newBudgetAmount = this.generateNewBudgetAmount();
     } catch (error) {
       this.$msgBox.apiError(error);
@@ -305,7 +308,7 @@ export default class CategoriesListItem extends Vue {
         budgetedAmountId: budgetedAmount.budgetedAmountId,
         validFrom: budgetedAmount.validFrom,
       });
-      budgetedAmount.validFrom = response.data;
+      Object.assign(this.category, response.data);
     } catch (error) {
       this.$msgBox.apiError(error);
     } finally {
@@ -324,12 +327,10 @@ export default class CategoriesListItem extends Vue {
 
     this.$wait.start(`removing.category.budgetedAmount${budgetedAmount.budgetedAmountId}`);
     try {
-      await BudgetCategoriesApi.removeBudgetedAmount({
+      const response = await BudgetCategoriesApi.removeBudgetedAmount({
         budgetedAmountId: budgetedAmount.budgetedAmountId,
       });
-      this.category.budgetedAmounts.splice(
-        this.category.budgetedAmounts.indexOf(budgetedAmount, 1),
-      );
+      Object.assign(this.category, response.data);
     } catch (error) {
       this.$msgBox.apiError(error);
     } finally {
@@ -344,7 +345,7 @@ export default class CategoriesListItem extends Vue {
         budgetedAmountId: budgetedAmount.budgetedAmountId,
         amount: budgetedAmount.amount,
       });
-      budgetedAmount.amount = response.data;
+      Object.assign(this.category, response.data);
     } catch (error) {
       this.$msgBox.apiError(error);
     } finally {

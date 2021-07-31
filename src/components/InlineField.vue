@@ -17,6 +17,10 @@
         <div class="inline-field--display" @click="startEdit()">{{ innerValue | shortDate }}</div>
       </template>
 
+      <template v-if="type == 'month'">
+        <div class="inline-field--display" @click="startEdit()">{{ innerValue | monthDate }}</div>
+      </template>
+
       <template v-if="type == 'money'">
         <div class="inline-field--display" @click="startEdit()">{{ innerValue | money }}</div>
       </template>
@@ -122,6 +126,24 @@
           ></date-field>
         </div>
       </template>
+      <template v-if="type == 'month'">
+        <div class="inline-field--editor">
+          <date-field
+            ref="textEditor"
+            v-model="innerValue"
+            dense
+            hide-details
+            filled
+            type="month"
+            disable-input
+            append-icon="mdi-close"
+            @keyup.enter="finishEdit()"
+            @keyup.esc="cancelEdit"
+            @click:append="cancelEdit"
+            @change="finishEdit()"
+          ></date-field>
+        </div>
+      </template>
       <template v-if="type == 'money'">
         <div class="inline-field--editor">
           <money-field
@@ -169,6 +191,7 @@ export default class InlineField extends Vue {
     | 'text'
     | 'category'
     | 'date'
+    | 'month'
     | 'money'
     | 'category-icon';
   @Prop({ type: Number, required: false }) categoryType!: eBudgetCategoryType | null;

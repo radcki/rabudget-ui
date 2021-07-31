@@ -71,7 +71,7 @@ export default class CategoriesList extends Vue {
     return this.categories.length == 0;
   }
 
-  get isLoadgin() {
+  get isLoading() {
     return this.$wait.is(`loading.budgetCategories${this.categoryType}`);
   }
 
