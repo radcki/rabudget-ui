@@ -4,6 +4,7 @@ import * as GetBudgetCategoryBalance from '@/typings/api/budgetCategories/GetBud
 import * as GetCurrentBudgetCategorySummary from '@/typings/api/budgetCategories/GetCurrentBudgetCategorySummary';
 import * as GetBudgetedAmountsSummary from '@/typings/api/budgetCategories/GetBudgetedAmountsSummary';
 import * as CreateBudgetCategory from '@/typings/api/budgetCategories/CreateBudgetCategory';
+import * as RemoveBudgetCategory from '@/typings/api/budgetCategories/RemoveBudgetCategory';
 import * as MoveBudgetCategoryDown from '@/typings/api/budgetCategories/MoveBudgetCategoryDown';
 import * as MoveBudgetCategoryUp from '@/typings/api/budgetCategories/MoveBudgetCategoryUp';
 import * as UpdateBudgetCategoryName from '@/typings/api/budgetCategories/UpdateBudgetCategoryName';
@@ -61,6 +62,15 @@ class BudgetCategoriesApi {
     const data = await (await api.get<GetBudgetedAmountsSummary.Result>(url, query)).data;
 
     return data;
+  }
+
+  async removeBudgetCategory(
+    command: RemoveBudgetCategory.Command,
+  ): Promise<RemoveBudgetCategory.Result> {
+    const url = this.baseUrl + 'remove';
+
+    const response = await (await api.post<RemoveBudgetCategory.Result>(url, command)).data;
+    return response;
   }
 
   async getCurrentBudgetCategoryBalance(

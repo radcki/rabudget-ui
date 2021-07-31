@@ -47,6 +47,15 @@
       </v-list-item-content>
 
       <v-list-item-action>
+        <icon-button
+          icon="mdi-delete-outline"
+          small
+          :tooltip="$t('budgetCategories.removeCategory')"
+          :loading="$wait.is(`removing.category${category.budgetCategoryId}`)"
+          @click="removeCategory()"
+        ></icon-button>
+      </v-list-item-action>
+      <v-list-item-action>
         <v-menu :close-on-content-click="false">
           <template #activator="{ on }">
             <icon-button
@@ -335,6 +344,27 @@ export default class CategoriesListItem extends Vue {
       this.$msgBox.apiError(error);
     } finally {
       this.$wait.end(`removing.category.budgetedAmount${budgetedAmount.budgetedAmountId}`);
+    }
+  }
+  async removeCategory() {
+    const confirmed = await this.$msgBox.confirm(
+      this.$t('budgetCategories.budgetedCategoryRemoveTitle').toString(),
+      this.$t('budgetCategories.budgetedCategoryRemoveMessage').toString(),
+    );
+    if (!confirmed) {
+      return;
+    }
+
+    this.$wait.start(`removing.category${this.category.budgetCategoryId}`);
+    try {
+      await BudgetCategoriesApi.removeBudgetCategory({
+        budgetCategoryId: this.category.budgetCategoryId,
+      });
+      this.$emit('category-removed');
+    } catch (error) {
+      this.$msgBox.apiError(error);
+    } finally {
+      this.$wait.end(`removing.category${this.category.budgetCategoryId}`);
     }
   }
 

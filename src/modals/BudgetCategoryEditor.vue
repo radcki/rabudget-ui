@@ -100,6 +100,10 @@ export default class BudgetCategoryEditor extends Vue {
 
   budgetCategory: BudgetCategoryDto = Object.assign({}, this.payload);
 
+  mounted() {
+    this.budgetCategory = Object.assign({}, this.payload);
+  }
+
   @Watch('budgetCategory', { deep: true })
   onInput() {
     this.setPayload(this.budgetCategory);
