@@ -15,9 +15,9 @@ const oidcSettings = {
   popupRedirectUri: popupRedirectUri,
   postLogoutRedirectUri: postLogoutRedirectUri,
   responseType: 'code',
-  scope: 'openid profile email rabudget',
+  scope: 'openid profile email',
   automaticSilentRenew: true,
-  automaticSilentSignin: false,
+  automaticSilentSignin: true,
   silentRedirectUri: silentRedirectUri,
 };
 
