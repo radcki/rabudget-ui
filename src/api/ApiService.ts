@@ -1,23 +1,26 @@
 import { FieldOrderInfo } from '@/typings/api/baseTypes/GridQuery';
 import axios, { AxiosRequestConfig } from 'axios';
-import { User } from 'oidc-client';
+import { User, UserManager } from 'oidc-client';
 import { vuexOidcCreateUserManager } from 'vuex-oidc';
 
 class ApiService {
   private baseUrl = `${process.env.VUE_APP_APIURL}/`;
-  private interceptor: any = null;
+  private userManager: any = null;
 
-  setInterceptor(user: User) {
-    if (this.interceptor) {
-      axios.interceptors.request.eject(this.interceptor);
+  setInterceptor(userManager: UserManager) {
+    if (!this.userManager) {
+      this.userManager = userManager;
+      axios.interceptors.request.use(async (config: AxiosRequestConfig) => {
+        const user = await this.userManager.getUser();
+        config.headers.Authorization =
+          user && user.access_token ? `Bearer ${user.access_token}` : null;
+
+        return config;
+      });
+      console.log('setInterceptor');
+    } else {
+      console.log('interceptor already set');
     }
-    this.interceptor = function (config: AxiosRequestConfig) {
-      config.headers.Authorization =
-        user && user.access_token ? `Bearer ${user.access_token}` : null;
-      return config;
-    };
-    axios.interceptors.request.use(this.interceptor);
-    console.log('setInterceptor');
   }
 
   async get<T = any>(url: string, query?: any) {
