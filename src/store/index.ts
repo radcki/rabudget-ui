@@ -1,6 +1,8 @@
 import Vue from 'vue';
 import Vuex, { StoreOptions } from 'vuex';
 import { vuexOidcCreateStoreModule } from 'vuex-oidc';
+import { vuexOidcCreateUserManager } from 'vuex-oidc';
+
 import oidcSettings from '@/auth';
 
 import { budget } from './budget.module';
@@ -35,12 +37,16 @@ const store: StoreOptions<RootState> = {
       {
         userLoaded: user => {
           // console.log('OIDC user is loaded:', user);
-          api.setInterceptor(user);
+          api.setInterceptor(vuexOidcCreateUserManager(oidcSettings));
           signalrPlugin.setToken(user.access_token);
         },
         userUnloaded: () => console.log('OIDC user is unloaded'),
-        accessTokenExpiring: () => console.log('Access token will expire'),
-        accessTokenExpired: () => console.log('Access token did expire'),
+        accessTokenExpiring: () => {
+          console.log('Access token will expire');
+        },
+        accessTokenExpired: () => {
+          console.log('Access token did expire');
+        },
         silentRenewError: () => console.log('OIDC user is unloaded - silentRenewError'),
         userSignedOut: () => console.log('OIDC user is signed out'),
         oidcError: payload => console.log('OIDC error', payload),
