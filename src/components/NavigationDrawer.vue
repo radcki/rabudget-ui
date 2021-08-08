@@ -69,6 +69,18 @@
                     <v-icon class="mr-2">mdi-web</v-icon>
                   </v-btn>
                 </template>
+                <v-list>
+                  <v-list-item @click="setLocale('pl')">
+                    <v-list-item-content>
+                      <v-list-item-title> PL </v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-list-item @click="setLocale('en')">
+                    <v-list-item-content>
+                      <v-list-item-title> EN </v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-list>
               </v-menu>
             </v-col>
             <v-col v-if="isAuthenticated && accountManagementUrl" class="text-center">
@@ -204,11 +216,17 @@ export default class NavigationDrawer extends Vue {
   }
 
   created() {
+    this.loadLocale();
     this.loadDarkModeStatus();
   }
 
   openAccountManagement() {
     window.open(this.accountManagementUrl, '_blank');
+  }
+
+  setLocale(code: string) {
+    this.$i18n.locale = code;
+    localStorage.setItem('locale', code);
   }
 
   toggleDarkMode() {
@@ -222,6 +240,14 @@ export default class NavigationDrawer extends Vue {
       this.$vuetify.theme.dark = true;
     } else {
       this.$vuetify.theme.dark = false;
+    }
+  }
+  loadLocale() {
+    const storedValue = localStorage.getItem('locale');
+    if (storedValue == 'en') {
+      this.setLocale('en');
+    } else {
+      this.setLocale('pl');
     }
   }
 
