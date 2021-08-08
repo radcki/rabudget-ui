@@ -250,7 +250,7 @@
               <v-col class="d-flex flex-grow-0 justify-end" style="min-width: 320px">
                 <nobr class="pr-2 white--text">{{ $t('general.page') }}:</nobr>
                 <v-sheet
-                  color="white"
+                  color="cardBackground"
                   class="v-input v-text-field--rounded justify-center py-1 align-center"
                   style="max-width: 100px"
                 >

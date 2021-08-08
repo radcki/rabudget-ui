@@ -1,6 +1,12 @@
 <template>
-  <overview-card :color="color" :title="title" :loading="loading || loadingMore" dark>
-    <v-list class="py-0 mt-0 cardBackground" dense subheader light>
+  <overview-card
+    :color="color"
+    :title="title"
+    :loading="loading || loadingMore"
+    :dark="$vuetify.theme.dark"
+    dark-header
+  >
+    <v-list class="py-0 mt-0" dense subheader :dark="$vuetify.theme.dark">
       <v-skeleton-loader v-if="loading" class="py-3" type="list-item-avatar@5"></v-skeleton-loader>
 
       <template v-else>

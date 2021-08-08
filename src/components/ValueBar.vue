@@ -24,9 +24,7 @@
       </template>
       <span>
         {{ percent | percentage }}
-        <span v-if="subValue > 0">
-          ({{ $t('transactionSchedules.inclScheduled') }}: {{ subPercent | percentage }})
-        </span>
+        <span v-if="subValue > 0"> ({{ subPercent | percentage }}) </span>
       </span>
     </v-tooltip>
     <div v-if="value != 0 && subValue > 0">

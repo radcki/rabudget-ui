@@ -52,7 +52,7 @@
       ></menu-item>
     </v-list>
 
-    <template v-slot:append>
+    <template #append>
       <v-expand-transition>
         <div v-if="!minNav" class="navigationBarAccent pb-3">
           <v-list-item two-line>
@@ -64,7 +64,7 @@
           <v-row no-gutters>
             <v-col class="text-right">
               <v-menu>
-                <template v-slot:activator="{ on }">
+                <template #activator="{ on }">
                   <v-btn icon v-on="on">
                     <v-icon class="mr-2">mdi-web</v-icon>
                   </v-btn>
@@ -78,7 +78,7 @@
               ></icon-button>
             </v-col>
             <v-col class="text-center">
-              <v-btn icon @click="$vuetify.theme.dark = !$vuetify.theme.dark">
+              <v-btn icon @click="toggleDarkMode()">
                 <v-icon>mdi-weather-night</v-icon>
               </v-btn>
             </v-col>
@@ -142,7 +142,7 @@ export default class NavigationDrawer extends Vue {
   }
 
   get drawerTopColor() {
-    return this.$vuetify.theme.dark ? 'teal darken-4' : 'secondary';
+    return 'secondary';
   }
 
   get activeBudgetText(): string {
@@ -203,8 +203,26 @@ export default class NavigationDrawer extends Vue {
     });
   }
 
+  created() {
+    this.loadDarkModeStatus();
+  }
+
   openAccountManagement() {
     window.open(this.accountManagementUrl, '_blank');
+  }
+
+  toggleDarkMode() {
+    this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
+    localStorage.setItem('darkMode', this.$vuetify.theme.dark ? '1' : '0');
+  }
+
+  loadDarkModeStatus() {
+    const storedValue = localStorage.getItem('darkMode');
+    if (storedValue && storedValue == '1') {
+      this.$vuetify.theme.dark = true;
+    } else {
+      this.$vuetify.theme.dark = false;
+    }
   }
 
   @Watch('drawer')

@@ -1,5 +1,5 @@
 <template>
-  <overview-card color="white" :title="title">
+  <overview-card :dark="$vuetify.theme.dark" :title="title">
     <v-list subheader>
       <v-row v-if="!isMobile" no-gutters class="text-center">
         <v-col :cols="3"></v-col>
