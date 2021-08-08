@@ -41,7 +41,7 @@
             <value-card
               :value="budgetBalance ? budgetBalance.unassignedFunds : null"
               :label="$t('overview.unassignedFunds')"
-              color="blue-grey darken-1"
+              color="unassignedFundsCard"
               :loading="$wait.is('loading.budgetBalance*')"
             ></value-card
           ></v-col>

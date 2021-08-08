@@ -52,7 +52,7 @@
       ></menu-item>
     </v-list>
 
-    <template v-slot:append>
+    <template #append>
       <v-expand-transition>
         <div v-if="!minNav" class="navigationBarAccent pb-3">
           <v-list-item two-line>
@@ -64,11 +64,23 @@
           <v-row no-gutters>
             <v-col class="text-right">
               <v-menu>
-                <template v-slot:activator="{ on }">
+                <template #activator="{ on }">
                   <v-btn icon v-on="on">
                     <v-icon class="mr-2">mdi-web</v-icon>
                   </v-btn>
                 </template>
+                <v-list>
+                  <v-list-item @click="setLocale('pl')">
+                    <v-list-item-content>
+                      <v-list-item-title> PL </v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-list-item @click="setLocale('en')">
+                    <v-list-item-content>
+                      <v-list-item-title> EN </v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-list>
               </v-menu>
             </v-col>
             <v-col v-if="isAuthenticated && accountManagementUrl" class="text-center">
@@ -78,7 +90,7 @@
               ></icon-button>
             </v-col>
             <v-col class="text-center">
-              <v-btn icon @click="$vuetify.theme.dark = !$vuetify.theme.dark">
+              <v-btn icon @click="toggleDarkMode()">
                 <v-icon>mdi-weather-night</v-icon>
               </v-btn>
             </v-col>
@@ -142,7 +154,7 @@ export default class NavigationDrawer extends Vue {
   }
 
   get drawerTopColor() {
-    return this.$vuetify.theme.dark ? 'teal darken-4' : 'secondary';
+    return 'secondary';
   }
 
   get activeBudgetText(): string {
@@ -203,8 +215,40 @@ export default class NavigationDrawer extends Vue {
     });
   }
 
+  created() {
+    this.loadLocale();
+    this.loadDarkModeStatus();
+  }
+
   openAccountManagement() {
     window.open(this.accountManagementUrl, '_blank');
+  }
+
+  setLocale(code: string) {
+    this.$i18n.locale = code;
+    localStorage.setItem('locale', code);
+  }
+
+  toggleDarkMode() {
+    this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
+    localStorage.setItem('darkMode', this.$vuetify.theme.dark ? '1' : '0');
+  }
+
+  loadDarkModeStatus() {
+    const storedValue = localStorage.getItem('darkMode');
+    if (storedValue && storedValue == '1') {
+      this.$vuetify.theme.dark = true;
+    } else {
+      this.$vuetify.theme.dark = false;
+    }
+  }
+  loadLocale() {
+    const storedValue = localStorage.getItem('locale');
+    if (storedValue == 'en') {
+      this.setLocale('en');
+    } else {
+      this.setLocale('pl');
+    }
   }
 
   @Watch('drawer')

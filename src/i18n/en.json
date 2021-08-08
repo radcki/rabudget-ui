@@ -1,0 +1,177 @@
+{
+  "account": {
+    "logOut": "Sign out",
+    "signedOut": "Signed out",
+    "logged": "Signed in"
+  },
+  "allocation": {
+    "allocationDate": "Allocation date",
+    "amount": "Amount",
+    "description": "Description",
+    "removeConfirm": "Allocation will be deleted. Are you sure?",
+    "removeConfirmTitle": "Remove allocation",
+    "sourceBudgetCategory": "Source category",
+    "targetBudgetCategory": "Target category"
+  },
+  "allocationHistory": {
+    "filter": {
+      "allocationDate": "Allocation date",
+      "sourceCategory": "Source category",
+      "targetCategory": "Target category"
+    },
+    "removeAllocation": "Remove allocation"
+  },
+  "allocationsHistory": {
+    "title": "Allocations history"
+  },
+  "budgetCategories": {
+    "budgetedAmount": "Amount",
+    "budgetedAmountDeleteMessage": "Budgeted amount will be removed. Are you sure?",
+    "budgetedAmountDeleteTitle": "Remove budgeted amount",
+    "budgetedAmounts": "Budgeted monthly amounts",
+    "budgetedCategoryRemoveMessage": "Category will be removed with all related transactions and allocations. Are you sure?",
+    "create": "Create category",
+    "categoriesBalanceTitle": "Category balance",
+    "budgetedCategoryRemoveTitle": "Category remove",
+    "currentBalance": "Current budget balance",
+    "dailyAmount": "Daily",
+    "income": "Invome",
+    "monthPlanLeft": "Monthly plan left",
+    "name": "Category name",
+    "newBudgetedAmount": "New amount",
+    "noCategories": "No categories",
+    "removeCategory": "Remove category",
+    "saving": "Savings",
+    "savingBalanceTitle": "Savings balance",
+    "showBudgetedAmounts": "Show budgeted monthly amounts",
+    "spending": "Spendings",
+    "spendingThisMonth": "Spendings this month",
+    "title": "Budget categories",
+    "totalAmount": "Category total",
+    "validFrom": "Valid from",
+    "yearBalance": "Funds left in year",
+    "yearlyAmount": "Yearly amount"
+  },
+  "budgetsManager": {
+    "currency": "Currency",
+    "deleteBudget": {
+      "message": "Are you sure to remove budget **{budgetName}**?",
+      "title": "Remove budget"
+    },
+    "name": "Name",
+    "newBudget": "New budget",
+    "startingDate": "Starting date",
+    "title": "Budget management"
+  },
+  "error": {
+    "failure": "Failure",
+    "fieldRequired": "Field is required",
+    "generic": "Unkown error have occured"
+  },
+  "forms": {
+    "requiredField": "Field is required"
+  },
+  "general": {
+    "actions": "Actions",
+    "add": "Add",
+    "allTypes": "All types",
+    "allocation": "Allocation",
+    "amount": "Amount",
+    "balance": "Balance",
+    "cancel": "Cancel",
+    "category": "Category",
+    "create": "Create",
+    "date": "Date",
+    "description": "Description",
+    "goTomePage": "Go to homepage",
+    "income": "Income",
+    "incomes": "Incomes",
+    "loadMore": "Load more",
+    "itemsPerPage": "Show #",
+    "no": "No",
+    "none": "None",
+    "noData": "No data",
+    "ok": "Ok",
+    "page": "Page",
+    "remove": "Remove",
+    "reset": "Reset",
+    "saving": "Saving",
+    "savings": "Savings",
+    "search": "Search",
+    "spending": "Spending",
+    "spendings": "Spendings",
+    "success": "Success",
+    "toDate": "To date",
+    "yes": "Yes"
+  },
+  "newBudget": {
+    "name": "Name",
+    "currency": "Currency",
+    "startingDate": "Starting date"
+  },
+  "newTransaction": {
+    "createAllocation": "Add an allocation",
+    "createSaving": "Add saving",
+    "createIncome": "Add income",
+    "createSpending": "Add an expense",
+    "createTransactionTemplate": "Create a template"
+  },
+  "overview": {
+    "title": "Overview",
+    "totalBalance": "Total balance",
+    "unassignedFunds": "Unassigned funds"
+  },
+  "reports": {
+    "period1m": "1 month",
+    "period6m": "6 months",
+    "periodFull": "Full period"
+  },
+  "transaction": {
+    "amount": "Amount",
+    "applyTemplate": "Apply template",
+    "category": "Category",
+    "changeTransactionDate": "Change trasnaction date",
+    "createTemplateFromTransaction": "Create template from transaction",
+    "description": "Description",
+    "noTemplates": "No saved templates",
+    "removeConfirm": "The transaction will be deleted. Are you sure?",
+    "removeConfirmTitle": "Remove transaction",
+    "removeTransanction": "Delete transaction",
+    "subtransanctions": "Subtransactions",
+    "templateRemoveConfirmMessage": "The transaction template will be irretrievably deleted without affecting the transactions created on its basis. Do you want to continue?",
+    "templateRemoveConfirmTitle": "Removal of the transaction template",
+    "removeTemplate": "Remove the transaction template",
+    "transactionDate": "Transaction date",
+    "transactionTemplateCreated": "The transaction template has been created",
+    "transactionTemplates": "Templates"
+  },
+  "transactionHistory": {
+    "subtransactions": {
+      "editorTitle": "Create a new sub-transaction",
+      "removeConfirm": "The sub-transaction will be deleted. Are you sure?",
+      "removeConfirmTitle": "Remove sub-transaction"
+    },
+    "totalAmount": "Sum:"
+  },
+  "transactionsAnalysis": {
+    "filter": {
+      "aggregationType": "Aggregation level",
+      "displayDataType": "Counting method"
+    },
+    "title": "Transaction analysis"
+  },
+  "trasnsactionHistory": {
+    "filter": {
+      "category": "Category",
+      "categoryType": "Category type",
+      "title": "Filters",
+      "transactionDate": "Transaction date"
+    },
+    "subtransactions": {
+      "new": "Add new",
+      "title": "Subtransactions",
+      "noData": "No data to show. To add a sub-transaction, use the button above"
+    },
+    "title": "Transaction history"
+  }
+}

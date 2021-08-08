@@ -1,6 +1,8 @@
 <template>
   <v-card :color="bodyColor" :dark="dark" :light="!dark">
-    <v-card-title :class="`${headerColor} subtitle-2 pt-3 pb-1 mb-0`">
+    <v-card-title
+      :class="`${headerColor} subtitle-2 pt-3 pb-1 mb-0 ${darkHeader ? 'white--text' : ''}`"
+    >
       <div style="width: 100%">
         <v-row no-gutters>
           <v-col class="pa-0 pt-1 mt-0">
@@ -49,6 +51,7 @@ export default class OverviewCard extends Vue {
   @Prop(Boolean) loading?: boolean;
   @Prop(Boolean) filled?: boolean;
   @Prop(Boolean) dark?: boolean;
+  @Prop(Boolean) darkHeader?: boolean;
   @Prop(String) color?: string;
 
   expanded = true;
@@ -58,7 +61,7 @@ export default class OverviewCard extends Vue {
   }
 
   get bodyColor() {
-    return (this.filled ? this.color : 'white') || 'white';
+    return (this.filled ? this.color : undefined) || undefined;
   }
 }
 </script>

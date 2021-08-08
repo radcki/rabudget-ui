@@ -19,7 +19,7 @@
           ></v-skeleton-loader>
           <v-chip
             v-else-if="category.balance"
-            class="amber darken-2 elevation-3 white--text text-body-2"
+            class="amber darken-3 elevation-3 white--text text-body-2 d-flex mr-4"
             small
           >
             {{ category.balance.totalTransactionsBalance | money }}
@@ -33,7 +33,7 @@
           ></v-skeleton-loader>
           <v-chip
             v-else-if="category.balance"
-            class="amber darken-2 elevation-3 white--text text-body-2"
+            class="amber darken-3 elevation-3 white--text text-body-2 d-flex mr-4"
             small
           >
             {{ category.balance.thisMonthBudgetedAmountLeft | money }}

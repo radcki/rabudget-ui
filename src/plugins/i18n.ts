@@ -5,11 +5,11 @@ Vue.use(VueI18n);
 
 const messages = {
   pl: require('@/i18n/pl.json'),
-  //en: require('@/i18n/en.json'),
+  en: require('@/i18n/en.json'),
 };
 
 export default new VueI18n({
   locale: 'pl',
-  fallbackLocale: 'pl',
+  fallbackLocale: 'en',
   messages,
 });
