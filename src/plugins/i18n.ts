@@ -1,8 +1,6 @@
 import Vue from 'vue';
 import VueI18n from 'vue-i18n';
-import VueI18nFilter from 'vue-i18n-filter';
 
-Vue.use(VueI18nFilter);
 Vue.use(VueI18n);
 
 const messages = {

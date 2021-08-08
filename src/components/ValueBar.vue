@@ -1,7 +1,11 @@
 <template>
   <div>
     <div class="text-xs-center caption">
-      {{ value | money }}
+      <v-row no-gutters>
+        <v-col class="text-no-wrap">{{ value | money }} </v-col>
+        <v-col class="d-flex flex-grow-0 text-no-wrap grey--text">/ {{ max | money }}</v-col>
+      </v-row>
+
       <!-- <animated-number :value="value" :format-value="formatAmount" :duration="300" /> -->
       <span v-if="subValue && subValue > 0" class="grey--text font-italic">
         ({{ subValue | money }})

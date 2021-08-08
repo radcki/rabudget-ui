@@ -10,7 +10,7 @@
         cols="12"
         :sm="12"
         :md="8"
-        :lg="6"
+        :lg="5"
         :xl="4"
         class="d-flex flex-grow-0"
         :style="!isMobile ? { width: 480 } : {}"
@@ -27,7 +27,7 @@
           </v-col>
         </v-row>
       </v-col>
-      <v-col xs="12" sm="12" md="12" lg="6" xl="8">
+      <v-col xs="12" sm="12" md="12" lg="7" xl="8">
         <v-row>
           <v-col :cols="isMobile ? 12 : 6">
             <value-card
