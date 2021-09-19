@@ -10,7 +10,11 @@
           </v-col>
 
           <v-col class="pa-0 mt-0 d-flex flex-grow-0">
-            <expander-button v-model="expanded" small></expander-button>
+            <expander-button
+              v-model="expanded"
+              :color="darkHeader ? 'white' : 'black'"
+              small
+            ></expander-button>
           </v-col>
         </v-row>
         <v-row no-gutters style="min-height: 5px">

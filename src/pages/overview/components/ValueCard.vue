@@ -1,5 +1,5 @@
 <template>
-  <overview-card filled :color="color" :loading="loading" :title="label" dark>
+  <overview-card filled :color="color" :loading="loading" :title="label" dark dark-header>
     <div class="display-1 pb-1 text-center">
       <span v-if="value">{{ value | money }}</span>
       <span v-else>-</span>
