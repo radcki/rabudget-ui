@@ -1,5 +1,5 @@
 <template>
-  <overview-card filled :color="color" :title="title" dark>
+  <overview-card filled :color="color" :title="title" dark dark-header>
     <v-row>
       <v-col xs4 align-center></v-col>
       <v-col xs4 align-center class="subtitle-2">{{ $t('budgetCategories.totalAmount') }}</v-col>
