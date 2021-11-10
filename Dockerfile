@@ -1,4 +1,4 @@
-FROM node:latest
+FROM node:16.6.1
 COPY ./ /app
 WORKDIR /app
 RUN echo "$VUE_APP_APIURL"
