@@ -287,7 +287,7 @@ export default class TransactionsAnalysis extends Vue {
   maxTransactionDateFilter: Date | null = null;
   selectedTransactionDateRange: any[] = [null, null];
   // eslint-disable-next-line no-undef
-  queryTimeout: NodeJS.Timeout | null = null;
+  queryTimeout: any | null = null;
 
   eDisplayMode = eDisplayMode;
   displayMode: eDisplayMode = eDisplayMode.Table;

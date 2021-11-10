@@ -376,7 +376,7 @@ export default class Allocations extends Vue {
     mustSort: false,
   };
   // eslint-disable-next-line no-undef
-  queryTimeout: NodeJS.Timeout | null = null;
+  queryTimeout: any | null = null;
 
   pageSizes = [20, 50, 100, 500];
 
