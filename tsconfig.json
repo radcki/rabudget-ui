@@ -19,7 +19,7 @@
     "paths": {
       "@/*": ["src/*"]
     },
-    "lib": ["es2019", "es2016", "es5", "dom", "dom.iterable", "scripthost"]
+    "lib": ["esnext", "es2019", "es2016", "es5", "dom", "dom.iterable", "scripthost"]
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "tests/**/*.ts", "tests/**/*.tsx"],
   "exclude": ["node_modules"]
