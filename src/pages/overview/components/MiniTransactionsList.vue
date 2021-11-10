@@ -246,7 +246,7 @@ export default class MiniTransactionsList extends Vue {
     return this.expandedTransactions.includes(transaction);
   }
 
-  mounted() {
+  created() {
     this.fetchTransactions();
 
     this.$notificationHub.on(

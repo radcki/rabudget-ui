@@ -154,7 +154,7 @@ export default class CategoriesBalance extends Vue {
     );
   }
 
-  mounted() {
+  created() {
     if (this.activeBudget) {
       this.fetchBudgetCategories();
     }
