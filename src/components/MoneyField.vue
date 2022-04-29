@@ -24,7 +24,8 @@
             locale="PL"
             @focus="hasFocus = true"
             @blur="onBlur"
-            @keyup="$emit('keyup', $event)"
+            @keydown="onKeyDown($event)"
+            @keyup="onKeyUp($event)"
           />
           <input
             v-else
@@ -35,7 +36,8 @@
             step="0.01"
             @focus="hasFocus = true"
             @blur="onBlur"
-            @keyup="$emit('keyup', $event)"
+            @keydown="onKeyDown($event)"
+            @keyup="onKeyUp($event)"
           />
         </div>
       </div>
@@ -213,6 +215,17 @@ export default class MoneyField extends Vue {
     this.$emit('blur');
   }
 
+  onKeyDown(event: KeyboardEvent) {
+    if (event.key == '-' && this.innerValue.amount == 0) {
+      (this.innerValue.amount as unknown) = NaN;
+    }
+    this.$emit('keydown', event);
+  }
+
+  onKeyUp(event: KeyboardEvent) {
+    this.$emit('keyup', event);
+  }
+
   @Watch('value')
   onValueChange(value) {
     if (value != this.innerValue) {
@@ -223,8 +236,9 @@ export default class MoneyField extends Vue {
 
   @Watch('innerValue')
   onInput(value) {
-    if (this.value != value) {
-      this.$emit('input', value);
+    const numberValue = parseFloat(value);
+    if (!isNaN(numberValue)) {
+      this.$emit('input', numberValue);
     }
   }
 }
