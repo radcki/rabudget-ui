@@ -1,0 +1,43 @@
+
+server {
+  listen       80;
+  server_name  localhost;
+  location / {
+    root   /app;
+    index  index.html;
+    try_files $uri $uri/ /index.html;
+  }
+
+  error_page   500 502 503 504  /50x.html;
+  location = /50x.html {
+    root   /usr/share/nginx/html;
+  }
+
+  location ~* \.(?:jpg|jpeg|gif|png|ico|cur|gz|svg|svgz|mp4|ogg|ogv|webm|htc)$ {
+      root   /app;
+      expires 1M;
+      access_log off;
+      add_header Cache-Control "public";
+  }
+
+  location ~* \.(?:css|js)$ {
+      root   /app;
+      expires 1y;
+      access_log off;
+      add_header Cache-Control "no-cache, public, must-revalidate, proxy-revalidate";
+  }
+
+  location ~* \.(?:eot|woff|woff2|ttf|svg|otf) {
+      root   /app;
+      access_log        off;
+      log_not_found     off;
+      expires           5m;
+      add_header        Cache-Control "public";
+      add_header        Access-Control-Allow-Origin *;
+      types     {font/opentype otf;}
+      types     {application/vnd.ms-fontobject eot;}
+      types     {font/truetype ttf;}
+      types     {application/font-woff woff;}
+      types     {font/x-woff woff2;}
+  }
+}

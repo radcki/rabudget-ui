@@ -25,7 +25,7 @@ class BudgetCategoriesApi {
   async getBudgetsCategoriesList(
     query: GetBudgetCategoriesList.Query,
   ): Promise<GetBudgetCategoriesList.Response> {
-    const url = this.baseUrl + 'get-list';
+    const url = this.baseUrl + '';
     const data = await (await api.get<GetBudgetCategoriesList.Response>(url, query)).data;
     for (const category of data.data) {
       for (const amount of category.budgetedAmounts) {
@@ -49,8 +49,8 @@ class BudgetCategoriesApi {
   async getBudgetCategoryBalance(
     query: GetBudgetCategoryBalance.Query,
   ): Promise<GetBudgetCategoryBalance.Result> {
-    const url = this.baseUrl + 'balance';
-    const data = await (await api.get<GetBudgetCategoryBalance.Result>(url, query)).data;
+    const url = this.baseUrl + 'get-balance';
+    const data = await (await api.post<GetBudgetCategoryBalance.Result>(url, query)).data;
 
     return data;
   }
@@ -76,8 +76,8 @@ class BudgetCategoriesApi {
   async getCurrentBudgetCategoryBalance(
     query: GetCurrentBudgetCategorySummary.Query,
   ): Promise<GetCurrentBudgetCategorySummary.Result> {
-    const url = this.baseUrl + 'current-balance';
-    const data = await (await api.get<GetCurrentBudgetCategorySummary.Result>(url, query)).data;
+    const url = this.baseUrl + 'get-current-balance';
+    const data = await (await api.post<GetCurrentBudgetCategorySummary.Result>(url, query)).data;
 
     return data;
   }
