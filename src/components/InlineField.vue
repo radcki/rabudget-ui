@@ -1,13 +1,5 @@
 <template>
   <div class="inline-field">
-    <template v-if="loading && type != 'category-icon'">
-      <v-progress-circular
-        size="10"
-        class="mr-1 mt-1"
-        width="2"
-        indeterminate
-      ></v-progress-circular>
-    </template>
     <template v-if="!editMode">
       <template v-if="type == 'text'">
         <div class="inline-field--display" @click="startEdit()">{{ innerValue }}</div>
@@ -92,6 +84,14 @@
           </v-list>
         </v-menu>
       </template>
+    </template>
+    <template v-if="loading && type != 'category-icon'">
+      <v-progress-circular
+        size="10"
+        class="ml-1 mt-1"
+        width="2"
+        indeterminate
+      ></v-progress-circular>
     </template>
     <template v-if="editMode">
       <template v-if="type == 'text'">

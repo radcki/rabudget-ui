@@ -16,8 +16,8 @@ class AllocationsApi {
     return await api.get(url, null);
   }
   async getAllocationList(query: GetAllocationList.Query): Promise<GetAllocationList.Result> {
-    const url = this.baseUrl + 'get-list';
-    const data = await (await api.get<GetAllocationList.Result>(url, query)).data;
+    const url = this.baseUrl + 'search';
+    const data = await (await api.post<GetAllocationList.Result>(url, query)).data;
     for (const allocation of data.data) {
       allocation.allocationDate = new Date(allocation.allocationDate);
     }

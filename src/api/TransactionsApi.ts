@@ -21,8 +21,8 @@ class TransactionsApi {
     return await api.get(url, null);
   }
   async getTransactionList(query: GetTransactionList.Query): Promise<GetTransactionList.Result> {
-    const url = this.baseUrl + 'get-list';
-    const data = await (await api.get<GetTransactionList.Result>(url, query)).data;
+    const url = this.baseUrl + 'search';
+    const data = await (await api.post<GetTransactionList.Result>(url, query)).data;
     for (const transaction of data.data) {
       transaction.transactionDate = new Date(transaction.transactionDate);
 
