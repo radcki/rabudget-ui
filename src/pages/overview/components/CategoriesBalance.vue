@@ -62,9 +62,7 @@ import { namespace } from 'vuex-class';
 import { Budget } from '@/typings/api/budget/GetBudgetList';
 import BudgetCategoriesApi from '@/api/BudgetCategoriesApi';
 import { BudgetCategoryBalanceDto } from '@/typings/api/budgetCategories/GetBudgetCategoryBalance';
-import ValueBar from '@/components/ValueBar.vue';
 import { BalanceNotificationEvents } from '@/plugins/signalr';
-import OverviewCard from './OverviewCard.vue';
 
 const budgetsStore = namespace('budgets');
 
@@ -74,8 +72,8 @@ interface BudgetCategoryWithBalance extends BudgetCategoryDto {
 
 @Component({
   components: {
-    ValueBar,
-    OverviewCard,
+    ValueBar: () => import('@/components/ValueBar.vue'),
+    OverviewCard: () => import('./OverviewCard.vue'),
   },
 })
 export default class CategoriesBalance extends Vue {

@@ -46,7 +46,6 @@ import { eBudgetCategoryType } from '@/typings/enums/eBudgetCategoryType';
 import { namespace } from 'vuex-class';
 import { Budget } from '@/typings/api/budget/GetBudgetList';
 import BudgetCategoriesApi from '@/api/BudgetCategoriesApi';
-import IconButton from '@/components/IconButton.vue';
 import * as CreateBudgetCategory from '@/typings/api/budgetCategories/CreateBudgetCategory';
 import { MoneyAmount } from '@/typings/MoneyAmount';
 import BudgetCategoryEditor from '@/modals/BudgetCategoryEditor.vue';
@@ -55,7 +54,6 @@ const budgetsStore = namespace('budgets');
 
 @Component({
   components: {
-    IconButton,
     'categories-list-item': () => import('./CategoriesListItem.vue'),
   },
 })

@@ -5,7 +5,7 @@
         <h4 :class="titleTextClass">{{ title }}</h4>
       </v-card-title>
       <v-card-text v-show="!!message" class="pa-3">
-        <vue-markdown>{{ message }}</vue-markdown>
+        {{ message }}
       </v-card-text>
       <v-card-text v-if="options.input">
         <v-text-field v-model="input" :type="options.input"></v-text-field>
@@ -42,13 +42,10 @@
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
-import VueMarkdown from 'vue-markdown';
 import { ConfirmDialogOptions, eDialogButtons } from './confirm.plugin';
 
 @Component({
-  components: {
-    'vue-markdown': VueMarkdown,
-  },
+  components: {},
 })
 export default class VueConfirm extends Vue {
   defaultOptions: ConfirmDialogOptions = {

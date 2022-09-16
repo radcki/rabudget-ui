@@ -10,8 +10,6 @@
       <router-view></router-view>
       <mobile-new-transaction v-if="isMobile"></mobile-new-transaction>
     </v-main>
-    <!--
-    <modal-dialog></modal-dialog> -->
     <r-modal />
   </v-app>
 </template>
@@ -20,7 +18,6 @@
 import { Vue, Component, Watch } from 'vue-property-decorator';
 import { Action, namespace } from 'vuex-class';
 import { Budget } from '@/typings/api/budget/GetBudgetList';
-import NavigationDrawer from '@/components/NavigationDrawer.vue';
 
 const budgetsStore = namespace('budgets');
 const accountStore = namespace('account');
@@ -28,7 +25,7 @@ const oidcStore = namespace('oidcStore');
 
 @Component({
   components: {
-    NavigationDrawer,
+    NavigationDrawer: () => import('@/components/NavigationDrawer.vue'),
     'mobile-new-transaction': () => import('@/components/MobileNewTransaction.vue'),
   },
 })

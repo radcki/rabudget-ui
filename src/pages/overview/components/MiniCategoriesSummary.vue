@@ -54,7 +54,6 @@ import { eBudgetCategoryType } from '@/typings/enums/eBudgetCategoryType';
 import { MoneyAmount } from '@/typings/MoneyAmount';
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
-import OverviewCard from './OverviewCard.vue';
 
 interface BudgetCategoryWithBalance extends BudgetCategoryDto {
   balance: BudgetCategoryBalanceDto | null;
@@ -64,7 +63,7 @@ const budgetsStore = namespace('budgets');
 @Component({
   components: {
     'v-animated-number': () => import('@/components/AnimatedNumber.vue'),
-    OverviewCard,
+    OverviewCard: () => import('./OverviewCard.vue'),
   },
 })
 export default class MiniCategoriesSummary extends Vue {
