@@ -42,12 +42,10 @@
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator';
-import ExpanderButton from '@/components/ExpanderButton.vue';
 
 @Component({
   components: {
-    'animated-number': () => import('@/components/AnimatedNumber.vue'),
-    ExpanderButton,
+    ExpanderButton: () => import('@/components/ExpanderButton.vue'),
   },
 })
 export default class OverviewCard extends Vue {

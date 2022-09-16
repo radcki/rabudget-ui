@@ -161,7 +161,6 @@ import TransactionsApi from '@/api/TransactionsApi';
 import { TransactionNotificationEvents } from '@/plugins/signalr';
 import * as AddSubTransaction from '@/typings/api/transactions/AddSubTransaction';
 import CreateSubtransactionEditor from '@/modals/CreateSubtransactionEditor.vue';
-import OverviewCard from './OverviewCard.vue';
 
 const budgetsStore = namespace('budgets');
 
@@ -171,7 +170,7 @@ const budgetsStore = namespace('budgets');
     'date-picker': () => import('@/components/DatePicker.vue'),
     'expander-button': () => import('@/components/ExpanderButton.vue'),
     'subtransactions-list': () => import('@/components/SubtransactionsList.vue'),
-    OverviewCard,
+    OverviewCard: () => import('./OverviewCard.vue'),
   },
 })
 export default class MiniTransactionsList extends Vue {
