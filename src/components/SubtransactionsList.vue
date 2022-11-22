@@ -114,11 +114,13 @@ import { Vue, Component, Prop } from 'vue-property-decorator';
 import * as GetTransactionList from '@/typings/api/transactions/GetTransactionList';
 import TransactionsApi from '@/api/TransactionsApi';
 import { TableHeader } from '@/typings/TableHeader';
+import InlineField from '@/components/InlineField.vue';
 
 @Component({
   components: {
     'v-category-select': () => import('@/components/CategorySelect.vue'),
     'v-date-range-slider': () => import('@/components/DateRangeSlider.vue'),
+    InlineField,
   },
 })
 export default class SubtransactionsList extends Vue {
