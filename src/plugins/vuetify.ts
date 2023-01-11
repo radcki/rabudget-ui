@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import '@mdi/font/css/materialdesignicons.css';
 import Vuetify from 'vuetify/lib';
 import colors from 'vuetify/lib/util/colors';
 
@@ -28,5 +29,8 @@ export default new Vuetify({
         unassignedFundsCard: colors.blueGrey.darken3,
       },
     },
+  },
+  icons: {
+    iconfont: 'mdiSvg',
   },
 });

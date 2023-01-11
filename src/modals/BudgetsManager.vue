@@ -64,7 +64,11 @@ import BudgetApi from '@/api/BudgetApi';
 
 const budgetsStore = namespace('budgets');
 
-@Component
+@Component({
+  components: {
+    'inline-field': () => import('@/components/InlineField.vue'),
+  },
+})
 export default class BudgetsManager extends Vue {
   @Inject('setPayload') setPayload?: any;
   @Inject('payload') payload?: any;
