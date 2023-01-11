@@ -183,6 +183,7 @@ const budgetsStore = namespace('budgets');
 
 @Component({
   components: {
+    'inline-field': () => import('@/components/InlineField.vue'),
     'date-field': () => import('@/components/DateField.vue'),
     'money-field': () => import('@/components/MoneyField.vue'),
   },
