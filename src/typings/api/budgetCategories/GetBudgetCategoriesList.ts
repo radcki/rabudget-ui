@@ -5,6 +5,7 @@ import { MoneyAmount } from '../../MoneyAmount';
 export interface Query {
   budgetId: string;
   budgetCategoryTypes?: eBudgetCategoryType[];
+  includeHidden?: boolean;
 }
 
 export interface Response extends CollectionResponse<BudgetCategoryDto> {}
@@ -18,6 +19,7 @@ export interface BudgetCategoryDto {
   order: number;
   name: string;
   budgetedAmounts: BudgetedAmountDto[];
+  hidden: boolean;
   currentBudgetedAmount: MoneyAmount;
 }
 

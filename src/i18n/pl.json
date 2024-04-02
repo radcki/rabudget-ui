@@ -87,7 +87,8 @@
     "savingBalanceTitle": "Bilans oszczędności",
     "removeCategory": "Usuń kategorię",
     "budgetedCategoryRemoveTitle": "Usuwanie kategorii",
-    "budgetedCategoryRemoveMessage": "Kategoria oraz wszystkie powiązane z nią transakcję i alokacje zostaną usuniętę. Czy chcesz kontynuować?"
+    "budgetedCategoryRemoveMessage": "Kategoria oraz wszystkie powiązane z nią transakcję i alokacje zostaną usuniętę. Czy chcesz kontynuować?",
+    "toggleVisibility": "Przełącz widoczność kategorii"
   },
   "overview": {
     "title": "Przegląd",

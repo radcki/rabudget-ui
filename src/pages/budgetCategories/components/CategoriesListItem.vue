@@ -56,6 +56,15 @@
         ></icon-button>
       </v-list-item-action>
       <v-list-item-action>
+        <icon-button
+          :icon="category.hidden ? 'mdi-eye' : 'mdi-eye-off-outline'"
+          small
+          :tooltip="$t('budgetCategories.toggleVisibility')"
+          :loading="$wait.is(`saving.category.hidden${category.budgetCategoryId}`)"
+          @click="toggleCategoryVisibility()"
+        ></icon-button>
+      </v-list-item-action>
+      <v-list-item-action>
         <v-menu :close-on-content-click="false">
           <template #activator="{ on }">
             <icon-button
@@ -366,6 +375,22 @@ export default class CategoriesListItem extends Vue {
       this.$msgBox.apiError(error);
     } finally {
       this.$wait.end(`removing.category${this.category.budgetCategoryId}`);
+    }
+  }
+
+  async toggleCategoryVisibility() {
+    this.$wait.start(`saving.category.hidden${this.category.budgetCategoryId}`);
+    try {
+      const expectedValue = !this.category.hidden;
+      const response = await BudgetCategoriesApi.updateBudgetCategoryVisibility({
+        budgetCategoryId: this.category.budgetCategoryId,
+        hidden: expectedValue,
+      });
+      this.category.hidden = response.data;
+    } catch (error) {
+      this.$msgBox.apiError(error);
+    } finally {
+      this.$wait.end(`saving.category.hidden${this.category.budgetCategoryId}`);
     }
   }
 

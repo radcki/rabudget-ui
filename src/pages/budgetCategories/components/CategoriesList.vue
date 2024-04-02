@@ -196,6 +196,7 @@ export default class CategoriesList extends Vue {
       const data = await BudgetCategoriesApi.getBudgetsCategoriesList({
         budgetId: this.activeBudget.budgetId,
         budgetCategoryTypes: [this.categoryType],
+        includeHidden: true,
       });
       this.categories = data.data;
     } catch (error) {
