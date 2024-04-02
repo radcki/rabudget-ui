@@ -8,6 +8,7 @@ import * as RemoveBudgetCategory from '@/typings/api/budgetCategories/RemoveBudg
 import * as MoveBudgetCategoryDown from '@/typings/api/budgetCategories/MoveBudgetCategoryDown';
 import * as MoveBudgetCategoryUp from '@/typings/api/budgetCategories/MoveBudgetCategoryUp';
 import * as UpdateBudgetCategoryName from '@/typings/api/budgetCategories/UpdateBudgetCategoryName';
+import * as UpdateBudgetCategoryVisibility from '@/typings/api/budgetCategories/UpdateBudgetCategoryVisibility';
 import * as UpdateBudgetCategoryIcon from '@/typings/api/budgetCategories/UpdateBudgetCategoryIcon';
 
 import * as UpdateBudgetedAmountAmount from '@/typings/api/budgetCategories/UpdateBudgetedAmountAmount';
@@ -109,6 +110,16 @@ class BudgetCategoriesApi {
 
     return await (
       await api.patch<UpdateBudgetCategoryName.Result>(url, command)
+    ).data;
+  }
+
+  async updateBudgetCategoryVisibility(
+    command: UpdateBudgetCategoryVisibility.Command,
+  ): Promise<UpdateBudgetCategoryVisibility.Result> {
+    const url = this.baseUrl + 'update/hidden';
+
+    return await (
+      await api.patch<UpdateBudgetCategoryVisibility.Result>(url, command)
     ).data;
   }
 

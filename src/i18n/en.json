@@ -50,7 +50,8 @@
     "totalAmount": "Category total",
     "validFrom": "Valid from",
     "yearBalance": "Funds left in year",
-    "yearlyAmount": "Yearly amount"
+    "yearlyAmount": "Yearly amount",
+    "toggleVisibility": "Toggle category visibility"
   },
   "budgetsManager": {
     "currency": "Currency",
