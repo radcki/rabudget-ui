@@ -26,7 +26,7 @@ jobs:
         with:
           push: true
           tags: radekadamczewski/rabudget-ui:latest
-          env:
+          build-args: |
             VUE_APP_AUTH_AUTHORITY=${{ secrets.VUE_APP_AUTH_AUTHORITY }}
             VUE_APP_AUTH_REDIRECT_URI=${{ secrets.VUE_APP_AUTH_REDIRECT_URI }}
             VUE_APP_AUTH_POPUP_REDIRECT_URI=${{ secrets.VUE_APP_AUTH_POPUP_REDIRECT_URI }}
